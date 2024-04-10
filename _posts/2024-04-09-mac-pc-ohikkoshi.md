@@ -54,7 +54,7 @@ brew install git
 
 gitは動くようになりましたがクローンしていたリポジトリがpushできないエラーも発生しました。
 
-![gitが動かない](/assets/20240409/image.png)
+![gitが動かない](/assets/images/20240409/image.png)
 
 これは調べるのも手間だったのでリポジトリをcloneし直して解決！
 
