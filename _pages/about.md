@@ -37,7 +37,11 @@ PHP,JavaScript,Laravel,MySQL,AWS,GCP,Firebase,Git,Scrum,MobProgramming
 
 最高のプロダクトと最高の開発チームを作るべく日々奮闘中。
 
-### 2015/03〜2021/01 株式会社アローズ・システムズ
+### 2019/12〜2021/01 株式会社SOUSEI Technology
+
+あとで書く
+
+### 2015/03〜2019/11 株式会社アローズ・システムズ
 
 あとで書く
 
