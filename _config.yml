@@ -16,7 +16,7 @@
 title: naoqoo2
 email:
 description: >- # this means to ignore newlines until "baseurl:"
-  [自己紹介](https://naoqoo2.github.io/about/)
+  naoqoo2のエンジニアブログです。
 twitter_username: naoqoo2
 github_username: naoqoo2
 minimal_mistakes_skin: default
@@ -24,6 +24,8 @@ search: true
 
 # Build settings
 markdown: kramdown
+repository: "mmistakes/minimal-mistakes"
+# theme: minimal-mistakes-jekyll
 remote_theme: mmistakes/minimal-mistakes
 # Outputting
 permalink: /:categories/:title/
@@ -59,7 +61,7 @@ plugins:
 author:
   name   : "naoqoo2"
   avatar : "/assets/images/naoqoo2.jpg"
-  bio    : "naoqoo2です。"
+  bio    : "[自己紹介](https://naoqoo2.github.io/about/)"
   links:
     - label: "Website"
       icon: "fas fa-fw fa-link"
