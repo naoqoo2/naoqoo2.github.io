@@ -51,7 +51,7 @@ PHP,JavaScript,Laravel,MySQL,AWS,GCP,Firebase,Git,Scrum,MobProgramming
 
 ### 2014/05〜2015/06 ニート
 
-憧れのニート生活を始めるも転職エージェントに脅されて想定より早く社会復帰。
+憧れのニート生活を始めるも想定より早く社会復帰。
 
 ### 2006/04〜2014/04 株式会社アローズ・システムズ
 
