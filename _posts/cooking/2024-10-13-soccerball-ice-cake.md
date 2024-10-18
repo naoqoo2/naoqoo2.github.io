@@ -12,7 +12,7 @@ tags:
 
 ![alt text](/assets/images/20241013/image-14.png)
 
-今回はインスタで見つけたショート動画[](https://images.app.goo.gl/TJBayPDbQaBvjxKi9)を参考に！
+今回は[インスタで見つけたショート動画](https://images.app.goo.gl/TJBayPDbQaBvjxKi9)を参考に！
 
 
 ## 材料
