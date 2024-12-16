@@ -9,7 +9,7 @@ tags:
   - GAS
 ---
 
-これは 株式会社マイホム Advent Calendar 2024 16日目の記事です。
+これは [株式会社マイホム Advent Calendar 2024](https://qiita.com/advent-calendar/2024/myhm) 16日目の記事です。
 
 ## はじめに
 
