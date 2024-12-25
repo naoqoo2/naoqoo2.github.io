@@ -57,6 +57,7 @@ plugins:
   - jekyll-feed
   - jemoji
   - jekyll-include-cache
+  - jekyll-seo-tag
 
 author:
   name   : "naoqoo2"
@@ -101,6 +102,7 @@ defaults:
       share: true
       related: true
       classes: wide #記事の表示幅を広げる
+      image: /assets/images/naoqoo2.jpg
   # _pages
   - scope:
       path: "_pages"
