@@ -5,6 +5,7 @@ categories:
 tags:
   - ふりかえり手法
   - おかし(OKS)
+image: /assets/images/20241224/image.png
 ---
 
 ## はじめに
