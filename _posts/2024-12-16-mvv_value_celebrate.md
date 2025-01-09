@@ -88,11 +88,11 @@ function main() {
 
       const originalMessage = fetchOriginalMessageFromUrl(url, SLACK_TOKEN);
       if (!originalMessage) {
-        console.log('nothing originalMessage')
+        console.log('nothing originalMessage'); // 元メッセージが取得できない場合のログ
         return;
       }
 
-      console.log(originalMessage)
+      console.log(originalMessage); // デバッグ用
       const posterId = originalMessage.user; // 元メッセージの投稿者ID
       if (!results[posterId]) {
         results[posterId] = {};
@@ -120,6 +120,34 @@ function getSlackToken() {
 }
 
 /**
+ * Slack APIリクエストのヘルパー関数
+ * レート制限に対応し、必要に応じてリトライ処理を行う
+ */
+function fetchWithRateLimit(url, options) {
+  while (true) {
+    try {
+      const response = UrlFetchApp.fetch(url, options);
+      const jsonResponse = JSON.parse(response.getContentText());
+
+      if (jsonResponse.ok) {
+        return jsonResponse; // 成功した場合
+      } else if (jsonResponse.error === "ratelimited") {
+        // レート制限エラー
+        const retryAfter = parseInt(response.getHeaders()["Retry-After"], 10) || 1;
+        console.warn(`Rate limited. Retrying after ${retryAfter} seconds...`); // レート制限時のログ
+        Utilities.sleep(retryAfter * 1000); // 指定された秒数だけ待機
+      } else {
+        console.error(`Slack API Error: ${jsonResponse.error}`); // その他のエラー
+        return null;
+      }
+    } catch (e) {
+      console.error(`Fetch error: ${e.message}`); // リクエスト自体のエラー
+      return null;
+    }
+  }
+}
+
+/**
  * 指定期間のメッセージを取得し、元メッセージのURLを返す
  */
 function fetchMessagesWithUrls(channelId, start, end, SLACK_TOKEN) {
@@ -133,14 +161,13 @@ function fetchMessagesWithUrls(channelId, start, end, SLACK_TOKEN) {
       response.messages.forEach((message) => {
         const tsDate = new Date(Number(message.ts) * 1000);
         if (tsDate >= new Date(start) && tsDate <= new Date(end)) {
-          console.log(message.text);
+          console.log(message.text); // メッセージテキストのログ
           const urls = extractUrlsFromMessage(message.text);
-          // console.log(urls);
-          messages.push(...urls);
+          messages.push(...urls); // メッセージ内のURLを収集
         }
       });
     }
-    cursor = response.response_metadata ? response.response_metadata.next_cursor : null;
+    cursor = response.response_metadata ? response.response_metadata.next_cursor : null; // 次ページのカーソル
   } while (cursor);
 
   return messages;
@@ -157,7 +184,6 @@ function fetchOriginalMessageFromUrl(url, SLACK_TOKEN) {
   const ts = `${matches[2].slice(0, 10)}.${matches[2].slice(10)}`; // メッセージのTS
   const threadTs = matches[4] || ts; // スレッドTS（なければ通常TS）
 
-  // `conversations.replies` を使ってスレッド全体を取得
   const apiUrl = `https://slack.com/api/conversations.replies?channel=${channelId}&ts=${threadTs}`;
   const options = {
     method: "get",
@@ -166,13 +192,8 @@ function fetchOriginalMessageFromUrl(url, SLACK_TOKEN) {
     },
   };
 
-  const response = UrlFetchApp.fetch(apiUrl, options);
-  const jsonResponse = JSON.parse(response.getContentText());
-
-  if (!jsonResponse.ok) {
-    console.error(`Error fetching message: ${jsonResponse.error}`);
-    return null;
-  }
+  const jsonResponse = fetchWithRateLimit(apiUrl, options);
+  if (!jsonResponse) return null;
 
   // スレッドの中で、指定されたTSに一致するメッセージ（返信メッセージ）を返す
   return jsonResponse.messages.find((msg) => msg.ts === ts) || null;
@@ -190,8 +211,7 @@ function fetchSlackMessages(channelId, cursor, SLACK_TOKEN) {
     },
   };
 
-  const response = UrlFetchApp.fetch(url, options);
-  return JSON.parse(response.getContentText());
+  return fetchWithRateLimit(url, options);
 }
 
 /**
@@ -214,15 +234,13 @@ function fetchUserNames(SLACK_TOKEN) {
     },
   };
 
-  const response = UrlFetchApp.fetch(apiUrl, options);
-  const jsonResponse = JSON.parse(response.getContentText());
+  const jsonResponse = fetchWithRateLimit(apiUrl, options);
+  if (!jsonResponse) return {};
 
   const userNames = {};
-  if (jsonResponse.ok) {
-    jsonResponse.members.forEach((member) => {
-      userNames[member.id] = member.profile.display_name || member.profile.real_name;
-    });
-  }
+  jsonResponse.members.forEach((member) => {
+    userNames[member.id] = member.profile.display_name || member.profile.real_name;
+  });
   return userNames;
 }
 
