@@ -118,7 +118,7 @@ function onOpen() {
 
 ## さいごに  
   
-- [スプレッドシートからTrelloのカードを作成](https://naoqoo2.github.io/20180402-スプレッドシートからTrelloにカード追加する（任意の行だけ選択可能）.md)  
-- [Trelloからスプレッドシートに転記](https://naoqoo2.github.io/20201210-Trelloからスプレッドシートに転記する.md)  
+- [スプレッドシートからTrelloのカードを作成](https://naoqoo2.com/20180402-スプレッドシートからTrelloにカード追加する（任意の行だけ選択可能）.md)  
+- [Trelloからスプレッドシートに転記](https://naoqoo2.com/20201210-Trelloからスプレッドシートに転記する.md)  
   
 もよければどうぞ😎  

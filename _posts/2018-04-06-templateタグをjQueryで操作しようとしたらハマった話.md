@@ -31,7 +31,7 @@ var clone = $('#productrow').children();
 ## 検証用メモ  
   
 HTMLはこちらを使用  
-https://naoqoo2.github.io/20180403-templateタグはクローンしてから使おう.md  
+https://naoqoo2.com/20180403-templateタグはクローンしてから使おう.md  
   
 ```html
 

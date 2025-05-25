@@ -32,7 +32,7 @@ getDateTime = function(format, add_day){if (format == null) format = null;if (ad
 ```
 
 用途に応じて様々なフォーマットで。  
-[JavaScriptで現在日から前後x日を取得する](https://naoqoo2.github.io/20151009-JavaScriptで現在日から前後x日を取得する.md#%E3%82%BD%E3%83%BC%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89)のワンライナーなので詳しくはこちらを参照ください。  
+[JavaScriptで現在日から前後x日を取得する](https://naoqoo2.com/20151009-JavaScriptで現在日から前後x日を取得する.md#%E3%82%BD%E3%83%BC%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89)のワンライナーなので詳しくはこちらを参照ください。  
   
 下記は一例。  
   
