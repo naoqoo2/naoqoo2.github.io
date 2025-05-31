@@ -1,5 +1,5 @@
 ---
-title: "PHPエンジニアがTypeScriptを30分で理解するために聞いたこと全まとめ"
+title: "PHPエンジニアがTypeScriptを30分で理解するためにAIに聞いたこと全まとめ"
 categories:
   - blog
 tags:
