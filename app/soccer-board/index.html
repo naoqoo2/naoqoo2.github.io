@@ -1,0 +1,29 @@
+---
+layout: none
+---
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soccer Board</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{margin:0;font-family:sans-serif;background:#0a5;color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center}
+#field{position:relative;width:100%;flex:1;background:#070;border:5px solid #fff;box-sizing:border-box}
+.player, #ball{position:absolute;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;font-size:12px;font-weight:bold;touch-action:none}
+form{display:flex;gap:5px;margin:5px}
+#ball{background:#fff;width:20px;height:20px}
+</style>
+</head>
+<body>
+<div id="field"></div>
+<form id="addForm">
+<input id="pname" placeholder="Name" required>
+<input id="pnum" placeholder="No" required style="width:40px">
+<input type="color" id="pcolor" value="#ff0000">
+<button type="submit">Add</button>
+</form>
+<script src="js/board.js"></script>
+</body>
+</html>
