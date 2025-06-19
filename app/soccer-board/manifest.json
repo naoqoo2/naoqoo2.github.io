@@ -1,0 +1,9 @@
+{
+  "name": "Soccer Board",
+  "short_name": "Board",
+  "display": "standalone",
+  "start_url": ".",
+  "background_color": "#0a5",
+  "theme_color": "#0a5",
+  "icons": []
+}
