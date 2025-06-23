@@ -20,6 +20,55 @@ This repository also hosts a soccer tactics board PWA under [`app/soccer-board`]
 
 ---
 
+## ローカル環境での実行方法
+
+このサイトをローカル環境で実行するには、以下の手順に従ってください：
+
+### 前提条件
+
+- Ruby 3.0.0以上
+- Bundler
+
+### セットアップ手順
+
+1. rbenvを使用してRubyをインストール：
+
+```bash
+# Homebrewを使用してrbenvをインストール
+brew install rbenv ruby-build
+
+# シェルに rbenv を設定
+echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+source ~/.zshrc
+
+# Rubyをインストール
+rbenv install 3.2.2
+rbenv local 3.2.2
+```
+
+2. 依存関係をインストール：
+
+```bash
+gem install bundler
+bundle install
+```
+
+3. ローカルサーバーを起動：
+
+```bash
+bundle exec jekyll serve
+```
+
+4. ブラウザで http://127.0.0.1:4000 にアクセス
+
+### その他のオプション
+
+- ファイル変更を監視して自動的に再構築する場合：
+
+```bash
+bundle exec jekyll serve --livereload
+```
+
 ## Troubleshooting
 
 If you have a question about using Jekyll, start a discussion on the [Jekyll Forum](https://talk.jekyllrb.com/) or [StackOverflow](https://stackoverflow.com/questions/tagged/jekyll). Other resources:
