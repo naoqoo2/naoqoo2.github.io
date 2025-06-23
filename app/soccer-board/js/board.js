@@ -1,5 +1,5 @@
 const PASSWORD = 'soccer-secret';
-let state = {players:[], ball:{x:50,y:50}};
+let state = {players:[]};
 const field = document.getElementById('field');
 const modal = document.getElementById('modal');
 const nameInput = document.getElementById('m-name');
@@ -57,7 +57,7 @@ function openEdit(id){
   selectColor(p.color);
   deleteBtn.style.display='block';
   modal.classList.remove('hidden');
-  nameInput.focus();
+  numInput.focus();
 }
 
 function openNew(x,y){
@@ -68,12 +68,15 @@ function openNew(x,y){
   selectColor(x>50?'blue':'red');
   deleteBtn.style.display='none';
   modal.classList.remove('hidden');
-  nameInput.focus();
+  numInput.focus();
 }
 
 function createPlayer(p){
   const el=document.createElement('div');
-  el.className='token player '+p.color;
+  el.className='token';
+  if (p.color) {
+    el.classList.add('player', p.color);
+  }
   el.style.left=p.x+'%';
   el.style.top=p.y+'%';
   el.dataset.id=p.id;
@@ -87,59 +90,108 @@ function createPlayer(p){
       n.textContent=p.name;
       el.appendChild(n);
     }
+  } else {
+    // サッカーボールのSVGを追加 - 中央に黒い五角形
+    el.innerHTML = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+      '<circle cx="50" cy="50" r="48" fill="white" stroke="black" stroke-width="1"/>' +
+      '<path d="M50,20 L80,45 L65,85 L35,85 L20,45 Z" fill="black"/>' +
+      '<path d="M50,20 L20,45 L35,85 M50,20 L80,45 L65,85 M20,45 L80,45 M35,85 L65,85" stroke="black" stroke-width="1" fill="none"/>' +
+      '</svg>';
   }
   el.addEventListener('pointerdown',startDrag);
   el.addEventListener('dblclick',e=>{e.stopPropagation();openEdit(p.id);});
   field.appendChild(el);
 }
 
-function createBall(){
-  const b=document.createElement('div');
-  b.id='ball';
-  b.className='token ball';
-  b.style.left=state.ball.x+'%';
-  b.style.top=state.ball.y+'%';
-  b.addEventListener('pointerdown',startDrag);
-  field.appendChild(b);
-}
-
 field.addEventListener('dblclick',e=>{
-  if(e.target.closest('.player')) return;
+  if(e.target.closest('.token')) return;
   const rect=field.getBoundingClientRect();
   const x=(e.clientX-rect.left)/rect.width*100;
   const y=(e.clientY-rect.top)/rect.height*100;
   openNew(x,y);
 });
 
+// タッチデバイスのためのスクロール防止（フィールド内でのスクロールを防止）
+field.addEventListener('touchstart', e => {
+  if (e.target.closest('.token') || e.target.closest('#field')) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
+// ドラッグ中のコンテキストメニュー表示を防止
+field.addEventListener('contextmenu', e => {
+  if (dragTarget) {
+    e.preventDefault();
+    return false;
+  }
+});
+
 function startDrag(e){
-  dragTarget=e.target; dragTarget.setPointerCapture(e.pointerId);
-  const rect=field.getBoundingClientRect();
-  offsetX=(e.clientX-rect.left)/(rect.width)*100 - parseFloat(dragTarget.style.left);
-  offsetY=(e.clientY-rect.top)/(rect.height)*100 - parseFloat(dragTarget.style.top);
-  dragTarget.addEventListener('pointermove',onMove);
-  dragTarget.addEventListener('pointerup',endDrag);
+  // 親要素が.tokenクラスを持つ場合はその要素をドラッグ対象にする
+  dragTarget = e.target.closest('.token');
+  if (!dragTarget) return;
+  
+  // ドラッグ中の視覚的フィードバック
+  dragTarget.style.opacity = '0.8';
+  dragTarget.style.zIndex = '100';
+  
+  // キャプチャを設定
+  dragTarget.setPointerCapture(e.pointerId);
+  
+  // フィールドの位置を基準にドラッグオフセットを計算
+  const rect = field.getBoundingClientRect();
+  const targetLeft = parseFloat(dragTarget.style.left) || 0;
+  const targetTop = parseFloat(dragTarget.style.top) || 0;
+  
+  offsetX = (e.clientX - rect.left) / rect.width * 100 - targetLeft;
+  offsetY = (e.clientY - rect.top) / rect.height * 100 - targetTop;
+  
+  // イベントリスナーを追加
+  dragTarget.addEventListener('pointermove', onMove);
+  dragTarget.addEventListener('pointerup', endDrag);
+  dragTarget.addEventListener('pointercancel', endDrag);
+  
+  // タッチデバイスでのスクロール防止
+  e.preventDefault();
 }
 function onMove(e){
-  const rect=field.getBoundingClientRect();
-  const x=(e.clientX-rect.left)/(rect.width)*100 - offsetX;
-  const y=(e.clientY-rect.top)/(rect.height)*100 - offsetY;
-  dragTarget.style.left=Math.min(100,Math.max(0,x))+'%';
-  dragTarget.style.top=Math.min(100,Math.max(0,y))+'%';
+  if (!dragTarget) return;
+  
+  const rect = field.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width * 100 - offsetX;
+  const y = (e.clientY - rect.top) / rect.height * 100 - offsetY;
+  
+  // 移動を制限（フィールド内）
+  dragTarget.style.left = Math.min(100, Math.max(0, x)) + '%';
+  dragTarget.style.top = Math.min(100, Math.max(0, y)) + '%';
+  
+  e.preventDefault(); // タッチデバイスでのスクロール防止
 }
+
 function endDrag(e){
-  dragTarget.removeEventListener('pointermove',onMove);
-  dragTarget.removeEventListener('pointerup',endDrag);
-  const id=dragTarget.dataset.id;
-  if(id){
-    const p=state.players.find(pl=>pl.id==id);
-    p.x=parseFloat(dragTarget.style.left);
-    p.y=parseFloat(dragTarget.style.top);
-  }else{
-    state.ball.x=parseFloat(dragTarget.style.left);
-    state.ball.y=parseFloat(dragTarget.style.top);
+  if (!dragTarget) return;
+  
+  // ドラッグ終了時の視覚的フィードバックをリセット
+  dragTarget.style.opacity = '1';
+  dragTarget.style.zIndex = '';
+  
+  // イベントリスナーを削除
+  dragTarget.removeEventListener('pointermove', onMove);
+  dragTarget.removeEventListener('pointerup', endDrag);
+  dragTarget.removeEventListener('pointercancel', endDrag);
+  
+  // 位置を保存
+  const id = dragTarget.dataset.id;
+  if (id) {
+    const p = state.players.find(pl => pl.id == id);
+    if (p) {
+      p.x = parseFloat(dragTarget.style.left);
+      p.y = parseFloat(dragTarget.style.top);
+    }
   }
+  
   saveState();
-  dragTarget=null;
+  dragTarget = null;
 }
 
 function removePlayer(id){
@@ -152,31 +204,48 @@ function removePlayer(id){
 
 saveBtn.addEventListener('click',()=>{
   const color=colorOpts.find(o=>o.classList.contains('selected')).dataset.color;
+  
+  // 番号を3桁以内に制限（空文字はそのまま）
+  let num = numInput.value === '' ? '' : parseInt(numInput.value) || 0;
+  if (num !== '' && num > 999) num = 999;
+  
   if(editId){
     const p=state.players.find(pl=>pl.id==editId);
     if(p){
       p.name=nameInput.value;
-      p.num=numInput.value;
+      p.num=num;
       p.color=color;
-      const el=document.querySelector('.player[data-id="'+editId+'"]');
+      const el=document.querySelector('.token[data-id="'+editId+'"]');
       if(el){
-        el.className='token player '+p.color;
+        // クラスをリセットして再設定
+        el.className='token';
+        if (color) {
+          el.classList.add('player', color);
+        }
+        
         el.innerHTML='';
-        if(p.color!=='ball'){
-          const num=document.createElement('div');
-          num.textContent=p.num;
-          el.appendChild(num);
-          if(p.name){
-            const n=document.createElement('div');
-            n.className='name';
-            n.textContent=p.name;
-            el.appendChild(n);
+        if(color!=='ball'){
+          const numEl=document.createElement('div');
+          numEl.textContent=num;
+          el.appendChild(numEl);
+          if(nameInput.value){
+            const nameEl=document.createElement('div');
+            nameEl.className='name';
+            nameEl.textContent=nameInput.value;
+            el.appendChild(nameEl);
           }
+        } else {
+          // サッカーボールのSVGを再設定
+          el.innerHTML = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+            '<circle cx="50" cy="50" r="48" fill="white" stroke="black" stroke-width="1"/>' +
+            '<path d="M50,20 L80,45 L65,85 L35,85 L20,45 Z" fill="black"/>' +
+            '<path d="M50,20 L20,45 L35,85 M50,20 L80,45 L65,85 M20,45 L80,45 M35,85 L65,85" stroke="black" stroke-width="1" fill="none"/>' +
+            '</svg>';
         }
       }
     }
   }else if(newPos){
-    const p={id:Date.now().toString(),name:nameInput.value,num:numInput.value,color,x:newPos.x,y:newPos.y};
+    const p={id:Date.now().toString(),name:nameInput.value,num,color,x:newPos.x,y:newPos.y};
     state.players.push(p);
     createPlayer(p);
   }
@@ -217,7 +286,6 @@ async function loadState(){
     state.players=defaultPlayers();
   }
   state.players.forEach(createPlayer);
-  createBall();
   if(!params.has('d')) saveState();
 }
 
