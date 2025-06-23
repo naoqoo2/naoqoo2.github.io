@@ -39,7 +39,17 @@ function defaultPlayers(){
     {num:10,x:55,y:35},
     {num:11,x:55,y:65}
   ].map((p,i)=>({...p,color:'blue',id:'b'+(i+1)}));
-  return red.concat(blue);
+  
+  // ボールをフィールドの中央に配置（中央は x:50%, y:50%）
+  const ball = {
+    id: 'ball-1',
+    color: 'ball',
+    x: 50,
+    y: 50,
+    num: ''
+  };
+  
+  return red.concat(blue, [ball]);
 }
 
 function selectColor(color){
@@ -80,24 +90,17 @@ function createPlayer(p){
   el.style.left=p.x+'%';
   el.style.top=p.y+'%';
   el.dataset.id=p.id;
-  if(p.color!=='ball'){
-    const num=document.createElement('div');
-    num.textContent=p.num;
-    el.appendChild(num);
-    if(p.name){
-      const n=document.createElement('div');
-      n.className='name';
-      n.textContent=p.name;
-      el.appendChild(n);
-    }
-  } else {
-    // サッカーボールのSVGを追加 - 中央に黒い五角形
-    el.innerHTML = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
-      '<circle cx="50" cy="50" r="48" fill="white" stroke="black" stroke-width="1"/>' +
-      '<path d="M50,20 L80,45 L65,85 L35,85 L20,45 Z" fill="black"/>' +
-      '<path d="M50,20 L20,45 L35,85 M50,20 L80,45 L65,85 M20,45 L80,45 M35,85 L65,85" stroke="black" stroke-width="1" fill="none"/>' +
-      '</svg>';
+  
+  const num=document.createElement('div');
+  num.textContent=p.num;
+  el.appendChild(num);
+  if(p.name){
+    const n=document.createElement('div');
+    n.className='name';
+    n.textContent=p.name;
+    el.appendChild(n);
   }
+  
   el.addEventListener('pointerdown',startDrag);
   el.addEventListener('dblclick',e=>{e.stopPropagation();openEdit(p.id);});
   field.appendChild(el);
@@ -197,7 +200,7 @@ function endDrag(e){
 function removePlayer(id){
   const idx=state.players.findIndex(p=>p.id==id);
   if(idx>=0){state.players.splice(idx,1);}
-  const el=document.querySelector('.player[data-id="'+id+'"]');
+  const el=document.querySelector('.token[data-id="'+id+'"]');
   if(el) el.remove();
   saveState();
 }
@@ -224,23 +227,14 @@ saveBtn.addEventListener('click',()=>{
         }
         
         el.innerHTML='';
-        if(color!=='ball'){
-          const numEl=document.createElement('div');
-          numEl.textContent=num;
-          el.appendChild(numEl);
-          if(nameInput.value){
-            const nameEl=document.createElement('div');
-            nameEl.className='name';
-            nameEl.textContent=nameInput.value;
-            el.appendChild(nameEl);
-          }
-        } else {
-          // サッカーボールのSVGを再設定
-          el.innerHTML = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
-            '<circle cx="50" cy="50" r="48" fill="white" stroke="black" stroke-width="1"/>' +
-            '<path d="M50,20 L80,45 L65,85 L35,85 L20,45 Z" fill="black"/>' +
-            '<path d="M50,20 L20,45 L35,85 M50,20 L80,45 L65,85 M20,45 L80,45 M35,85 L65,85" stroke="black" stroke-width="1" fill="none"/>' +
-            '</svg>';
+        const numEl=document.createElement('div');
+        numEl.textContent=num;
+        el.appendChild(numEl);
+        if(nameInput.value){
+          const nameEl=document.createElement('div');
+          nameEl.className='name';
+          nameEl.textContent=nameInput.value;
+          el.appendChild(nameEl);
         }
       }
     }
@@ -313,8 +307,25 @@ async function decryptData(password,str){
   return new TextDecoder().decode(plain);
 }
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('service-worker.js');
+// PWAを無効化：サービスワーカーの登録を削除
+// if('serviceWorker' in navigator){
+//   navigator.serviceWorker.register('service-worker.js');
+// }
+
+// 既存のサービスワーカーを解除
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for(let registration of registrations) {
+      registration.unregister();
+    }
+  });
 }
+
+// ブラウザキャッシュをクリア
+caches.keys().then(keyList => {
+  return Promise.all(keyList.map(key => {
+    return caches.delete(key);
+  }));
+}).catch(e => console.warn('Cache clear error:', e));
 
 loadState();

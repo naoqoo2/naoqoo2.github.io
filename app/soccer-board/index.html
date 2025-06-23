@@ -7,7 +7,6 @@ layout: none
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Soccer Board</title>
-<link rel="manifest" href="manifest.json">
 <style>
 html,body{height:100%;margin:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#222;color:#eee;display:flex;flex-direction:column;align-items:center}
@@ -20,23 +19,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .player.blue{background:#36f}
 .player.yellow{background:#fc3;color:#000}
 .player.green{background:#3b3}
-.player.ball{
-  position: relative;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, white, #eee);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #000;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-.player svg {
-  width: 90%;
-  height: 90%;
-  pointer-events: none;
-}
+.player.ball{background:white;color:#000}
 .player .name{font-size:10px;margin-top:2px;white-space:nowrap}
 #modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px)}
 #modal.hidden{display:none}
@@ -45,17 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 #modal .color-option{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform 0.2s, border-color 0.2s}
 #modal .color-option:hover{transform:scale(1.1)}
 #modal .color-option.selected{border-color:#fff;transform:scale(1.1)}
-#modal .color-option.player.ball{
-  position: relative;
-  background: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#modal .color-option.player.ball svg {
-  width: 85%;
-  height: 85%;
-}
+#modal .color-option.player.ball{background:white;color:#000}
 #modal input{background:#444;border:none;padding:10px 12px;border-radius:6px;color:#fff;font-size:14px;outline:none;transition:box-shadow 0.2s}
 #modal input:focus{box-shadow:0 0 0 2px rgba(255,255,255,0.3)}
 #modal button{padding:10px 16px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:all 0.2s;font-size:14px;text-transform:uppercase}
@@ -100,13 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="color-option player blue" data-color="blue"></div>
       <div class="color-option player yellow" data-color="yellow"></div>
       <div class="color-option player green" data-color="green"></div>
-      <div class="color-option player ball" data-color="ball">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="48" fill="white" stroke="black" stroke-width="1"/>
-          <path d="M50,20 L80,45 L65,85 L35,85 L20,45 Z" fill="black"/>
-          <path d="M50,20 L20,45 L35,85 M50,20 L80,45 L65,85 M20,45 L80,45 M35,85 L65,85" stroke="black" stroke-width="1" fill="none"/>
-        </svg>
-      </div>
+      <div class="color-option player ball" data-color="ball"></div>
     </div>
     <div class="btn-group">
       <button id="delete-btn">Delete</button>
