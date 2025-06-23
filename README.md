@@ -16,6 +16,8 @@ Contains basic configuration to get you a site with:
 
 Replace sample content with your own and [configure as necessary](https://mmistakes.github.io/minimal-mistakes/docs/configuration/).
 
+This repository also hosts a soccer tactics board PWA under [`app/soccer-board`](app/soccer-board/). It lets you position players and a ball on a soccer field, edit player names and numbers, and share board states via encrypted URLs. The board works offline thanks to a service worker.
+
 ---
 
 ## Troubleshooting
