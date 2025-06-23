@@ -1,39 +1,73 @@
 const PASSWORD = 'soccer-secret';
 let state = {players:[], ball:{x:50,y:50}};
 const field = document.getElementById('field');
-const form = document.getElementById('controls');
-const nameInput = document.getElementById('name');
-const numInput = document.getElementById('number');
-const colorInput = document.getElementById('color');
+const modal = document.getElementById('modal');
+const nameInput = document.getElementById('m-name');
+const numInput = document.getElementById('m-number');
+const colorOpts = Array.from(document.querySelectorAll('#modal .color-option'));
+const saveBtn = document.getElementById('save-btn');
+const deleteBtn = document.getElementById('delete-btn');
+const cancelBtn = document.getElementById('cancel-btn');
 let editId = null;
+let newPos = null;
 let dragTarget = null, offsetX=0, offsetY=0;
 
 function defaultPlayers(){
-  const base=[
-    {num:1,x:5,y:50},
-    {num:2,x:20,y:15},
-    {num:3,x:20,y:35},
-    {num:4,x:20,y:65},
-    {num:5,x:20,y:85},
-    {num:6,x:40,y:25},
-    {num:7,x:40,y:45},
-    {num:8,x:40,y:55},
-    {num:9,x:40,y:75},
-    {num:10,x:60,y:35},
-    {num:11,x:60,y:65}
-  ];
-  const red=base.map((p,i)=>({...p,color:'red',id:'r'+(i+1)}));
-  const blue=base.map((p,i)=>({num:p.num,x:100-p.x,y:p.y,color:'blue',id:'b'+(i+1)}));
+  const red=[
+    {num:1,x:10,y:50},
+    {num:2,x:25,y:20},
+    {num:3,x:25,y:50},
+    {num:4,x:25,y:80},
+    {num:5,x:40,y:15},
+    {num:6,x:40,y:35},
+    {num:7,x:40,y:50},
+    {num:8,x:40,y:65},
+    {num:9,x:40,y:85},
+    {num:10,x:45,y:35},
+    {num:11,x:45,y:65}
+  ].map((p,i)=>({...p,color:'red',id:'r'+(i+1)}));
+  const blue=[
+    {num:1,x:90,y:50},
+    {num:2,x:75,y:20},
+    {num:3,x:75,y:40},
+    {num:4,x:75,y:60},
+    {num:5,x:75,y:80},
+    {num:6,x:60,y:20},
+    {num:7,x:60,y:40},
+    {num:8,x:60,y:60},
+    {num:9,x:60,y:80},
+    {num:10,x:55,y:35},
+    {num:11,x:55,y:65}
+  ].map((p,i)=>({...p,color:'blue',id:'b'+(i+1)}));
   return red.concat(blue);
 }
 
-function editPlayer(id){
+function selectColor(color){
+  colorOpts.forEach(o=>o.classList.toggle('selected',o.dataset.color===color));
+}
+colorOpts.forEach(o=>o.addEventListener('click',()=>selectColor(o.dataset.color)));
+
+function openEdit(id){
   const p=state.players.find(pl=>pl.id==id);
   if(!p)return;
   editId=id;
+  newPos=null;
   nameInput.value=p.name||'';
   numInput.value=p.num;
-  colorInput.value=p.color;
+  selectColor(p.color);
+  deleteBtn.style.display='block';
+  modal.classList.remove('hidden');
+  nameInput.focus();
+}
+
+function openNew(x,y){
+  editId=null;
+  newPos={x,y};
+  nameInput.value='';
+  numInput.value='';
+  selectColor(x>50?'blue':'red');
+  deleteBtn.style.display='none';
+  modal.classList.remove('hidden');
   nameInput.focus();
 }
 
@@ -43,31 +77,39 @@ function createPlayer(p){
   el.style.left=p.x+'%';
   el.style.top=p.y+'%';
   el.dataset.id=p.id;
-  const num=document.createElement('div');
-  num.textContent=p.num;
-  el.appendChild(num);
-  if(p.name){
-    const n=document.createElement('div');
-    n.className='name';
-    n.textContent=p.name;
-    el.appendChild(n);
+  if(p.color!=='ball'){
+    const num=document.createElement('div');
+    num.textContent=p.num;
+    el.appendChild(num);
+    if(p.name){
+      const n=document.createElement('div');
+      n.className='name';
+      n.textContent=p.name;
+      el.appendChild(n);
+    }
   }
   el.addEventListener('pointerdown',startDrag);
-  el.addEventListener('click',()=>editPlayer(p.id));
-  el.addEventListener('dblclick',()=>removePlayer(p.id));
+  el.addEventListener('dblclick',e=>{e.stopPropagation();openEdit(p.id);});
   field.appendChild(el);
 }
 
 function createBall(){
   const b=document.createElement('div');
   b.id='ball';
-  b.className='token';
-  b.textContent='\u26BD';
+  b.className='token ball';
   b.style.left=state.ball.x+'%';
   b.style.top=state.ball.y+'%';
   b.addEventListener('pointerdown',startDrag);
   field.appendChild(b);
 }
+
+field.addEventListener('dblclick',e=>{
+  if(e.target.closest('.player')) return;
+  const rect=field.getBoundingClientRect();
+  const x=(e.clientX-rect.left)/rect.width*100;
+  const y=(e.clientY-rect.top)/rect.height*100;
+  openNew(x,y);
+});
 
 function startDrag(e){
   dragTarget=e.target; dragTarget.setPointerCapture(e.pointerId);
@@ -108,35 +150,54 @@ function removePlayer(id){
   saveState();
 }
 
-form.addEventListener('submit',e=>{
-  e.preventDefault();
+saveBtn.addEventListener('click',()=>{
+  const color=colorOpts.find(o=>o.classList.contains('selected')).dataset.color;
   if(editId){
     const p=state.players.find(pl=>pl.id==editId);
     if(p){
       p.name=nameInput.value;
       p.num=numInput.value;
-      p.color=colorInput.value;
+      p.color=color;
       const el=document.querySelector('.player[data-id="'+editId+'"]');
       if(el){
         el.className='token player '+p.color;
-        el.firstChild.textContent=p.num;
-        let n=el.querySelector('.name');
-        if(p.name){
-          if(!n){n=document.createElement('div');n.className='name';el.appendChild(n);} 
-          n.textContent=p.name;
-        }else if(n){
-          n.remove();
+        el.innerHTML='';
+        if(p.color!=='ball'){
+          const num=document.createElement('div');
+          num.textContent=p.num;
+          el.appendChild(num);
+          if(p.name){
+            const n=document.createElement('div');
+            n.className='name';
+            n.textContent=p.name;
+            el.appendChild(n);
+          }
         }
       }
     }
-    editId=null;
-  }else{
-    const p={id:Date.now().toString(),name:nameInput.value,num:numInput.value,color:colorInput.value,x:50,y:50};
+  }else if(newPos){
+    const p={id:Date.now().toString(),name:nameInput.value,num:numInput.value,color,x:newPos.x,y:newPos.y};
     state.players.push(p);
     createPlayer(p);
   }
-  form.reset();
+  modal.classList.add('hidden');
+  editId=null;
+  newPos=null;
   saveState();
+});
+
+deleteBtn.addEventListener('click',()=>{
+  if(editId){
+    removePlayer(editId);
+    modal.classList.add('hidden');
+    editId=null;
+  }
+});
+
+cancelBtn.addEventListener('click',()=>{
+  modal.classList.add('hidden');
+  editId=null;
+  newPos=null;
 });
 
 async function saveState(){
