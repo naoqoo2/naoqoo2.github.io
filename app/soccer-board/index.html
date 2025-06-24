@@ -29,7 +29,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 #modal .color-option:hover{transform:scale(1.1)}
 #modal .color-option.selected{border-color:#fff;transform:scale(1.1)}
 #modal .color-option.player.ball{background:white;color:#000}
-#modal input{background:#444;border:none;padding:10px 12px;border-radius:6px;color:#fff;font-size:14px;outline:none;transition:box-shadow 0.2s}
+#modal input{background:#444;border:none;padding:10px 12px;border-radius:6px;color:#fff;font-size:16px;outline:none;transition:box-shadow 0.2s}
 #modal input:focus{box-shadow:0 0 0 2px rgba(255,255,255,0.3)}
 #modal button{padding:10px 16px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:all 0.2s;font-size:14px;text-transform:uppercase}
 #modal .btn-group{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
@@ -38,7 +38,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 #modal #cancel-btn{background:#555;color:white;}
 #modal #cancel-btn:hover{background:#666;box-shadow:0 4px 8px rgba(0, 0, 0, 0.2)}
 #modal #delete-btn{background:#f44336;color:white;}
-#modal #delete-btn:hover{background:#d32f2f;box-shadow:0 4px 8px rgba(244, 67, 54, 0.3)}
+  #modal #delete-btn:hover{background:#d32f2f;box-shadow:0 4px 8px rgba(244, 67, 54, 0.3)}
+  #toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px}
+  #toolbar button{padding:8px 12px;border:none;border-radius:6px;font-size:14px;font-weight:bold;cursor:pointer}
+  #info-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center}
+  #info-modal.hidden{display:none}
+  #info-modal .box{background:#333;padding:24px;border-radius:12px;max-width:300px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);display:flex;flex-direction:column;gap:12px;line-height:1.4}
 @media (orientation:landscape){
   #field{height:100%;width:auto}
 }
@@ -64,6 +69,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
 </div>
 
+<div id="toolbar">
+  <button id="share-btn">Share</button>
+  <button id="preset-btn">Preset</button>
+  <button id="help-btn">Help</button>
+</div>
+
 <div id="modal" class="hidden">
   <div class="box">
     <input id="m-number" type="number" placeholder="No" max="999" min="0">
@@ -79,6 +90,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <button id="delete-btn">Delete</button>
       <button id="cancel-btn" type="button">Cancel</button>
       <button id="save-btn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="info-modal" class="hidden">
+  <div class="box">
+    <div id="info-content"></div>
+    <div class="btn-group" style="justify-content:center;">
+      <button id="info-close">Close</button>
     </div>
   </div>
 </div>

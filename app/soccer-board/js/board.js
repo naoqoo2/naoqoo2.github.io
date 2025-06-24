@@ -11,6 +11,14 @@ const cancelBtn = document.getElementById('cancel-btn');
 let editId = null;
 let newPos = null;
 let dragTarget = null, offsetX=0, offsetY=0;
+let pointerMoved = false, pressStart = 0, lastTap = 0, startX = 0, startY = 0;
+let fieldMoved = false, fieldPress = 0, fieldStartX = 0, fieldStartY = 0, fieldLastTap = 0;
+const shareBtn = document.getElementById('share-btn');
+const presetBtn = document.getElementById('preset-btn');
+const helpBtn = document.getElementById('help-btn');
+const infoModal = document.getElementById('info-modal');
+const infoContent = document.getElementById('info-content');
+const infoClose = document.getElementById('info-close');
 
 function defaultPlayers(){
   const red=[
@@ -114,6 +122,47 @@ field.addEventListener('dblclick',e=>{
   openNew(x,y);
 });
 
+field.addEventListener('pointerdown',e=>{
+  if(e.target.closest('.token')) return;
+  fieldMoved=false;
+  fieldPress=Date.now();
+  fieldStartX=e.clientX;
+  fieldStartY=e.clientY;
+  field.setPointerCapture(e.pointerId);
+  field.addEventListener('pointermove',onFieldMove);
+  field.addEventListener('pointerup',onFieldEnd);
+  field.addEventListener('pointercancel',onFieldEnd);
+});
+
+function onFieldMove(e){
+  if(!fieldMoved){
+    const dx=Math.abs(e.clientX-fieldStartX);
+    const dy=Math.abs(e.clientY-fieldStartY);
+    if(dx>5||dy>5) fieldMoved=true;
+  }
+}
+
+function onFieldEnd(e){
+  field.removeEventListener('pointermove',onFieldMove);
+  field.removeEventListener('pointerup',onFieldEnd);
+  field.removeEventListener('pointercancel',onFieldEnd);
+  const now=Date.now();
+  const duration=now-fieldPress;
+  if(!fieldMoved){
+    const rect=field.getBoundingClientRect();
+    const x=(e.clientX-rect.left)/rect.width*100;
+    const y=(e.clientY-rect.top)/rect.height*100;
+    if(duration>600){
+      openNew(x,y);
+    }else{
+      if(now-fieldLastTap<300){
+        openNew(x,y);
+      }
+      fieldLastTap=now;
+    }
+  }
+}
+
 // タッチデバイスのためのスクロール防止（フィールド内でのスクロールを防止）
 field.addEventListener('touchstart', e => {
   if (e.target.closest('.token') || e.target.closest('#field')) {
@@ -133,6 +182,11 @@ function startDrag(e){
   // 親要素が.tokenクラスを持つ場合はその要素をドラッグ対象にする
   dragTarget = e.target.closest('.token');
   if (!dragTarget) return;
+
+  pointerMoved = false;
+  pressStart = Date.now();
+  startX = e.clientX;
+  startY = e.clientY;
   
   // ドラッグ中の視覚的フィードバック
   dragTarget.style.opacity = '0.8';
@@ -159,6 +213,12 @@ function startDrag(e){
 }
 function onMove(e){
   if (!dragTarget) return;
+
+  if(!pointerMoved){
+    const dx=Math.abs(e.clientX-startX);
+    const dy=Math.abs(e.clientY-startY);
+    if(dx>5||dy>5) pointerMoved=true;
+  }
   
   const rect = field.getBoundingClientRect();
   const x = (e.clientX - rect.left) / rect.width * 100 - offsetX;
@@ -173,7 +233,10 @@ function onMove(e){
 
 function endDrag(e){
   if (!dragTarget) return;
-  
+
+  const now = Date.now();
+  const duration = now - pressStart;
+
   // ドラッグ終了時の視覚的フィードバックをリセット
   dragTarget.style.opacity = '1';
   dragTarget.style.zIndex = '';
@@ -183,17 +246,27 @@ function endDrag(e){
   dragTarget.removeEventListener('pointerup', endDrag);
   dragTarget.removeEventListener('pointercancel', endDrag);
   
-  // 位置を保存
   const id = dragTarget.dataset.id;
-  if (id) {
+
+  if(!pointerMoved){
+    if(duration > 600){
+      openEdit(id);
+      dragTarget = null;
+      return;
+    }else{
+      if(now - lastTap < 300){
+        openEdit(id);
+      }
+      lastTap = now;
+    }
+  }else if(id){
     const p = state.players.find(pl => pl.id == id);
     if (p) {
       p.x = parseFloat(dragTarget.style.left);
       p.y = parseFloat(dragTarget.style.top);
     }
+    saveState();
   }
-  
-  saveState();
   dragTarget = null;
 }
 
@@ -202,6 +275,22 @@ function removePlayer(id){
   if(idx>=0){state.players.splice(idx,1);}
   const el=document.querySelector('.token[data-id="'+id+'"]');
   if(el) el.remove();
+  saveState();
+}
+
+function applyPreset(type){
+  if(type==='clear'){
+    state.players=[];
+  }else if(type==='red11'){
+    state.players=defaultPlayers().filter(p=>p.color==='red');
+  }else if(type==='red8'){
+    state.players=defaultPlayers().filter(p=>p.color==='red').slice(0,8);
+  }else if(type==='full'){
+    state.players=defaultPlayers();
+  }
+
+  field.querySelectorAll('.token').forEach(el=>el.remove());
+  state.players.forEach(createPlayer);
   saveState();
 }
 
@@ -327,5 +416,56 @@ caches.keys().then(keyList => {
     return caches.delete(key);
   }));
 }).catch(e => console.warn('Cache clear error:', e));
+
+function showShare(){
+  infoContent.innerHTML='';
+  const line=document.createElement('button');
+  line.textContent='LINE';
+  line.addEventListener('click',()=>{
+    const url=location.href;
+    window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(url),'_blank');
+  });
+  const x=document.createElement('button');
+  x.textContent='X';
+  x.addEventListener('click',()=>{
+    const url=location.href;
+    window.open('https://twitter.com/intent/tweet?url='+encodeURIComponent(url),'_blank');
+  });
+  const copy=document.createElement('button');
+  copy.textContent='Copy URL';
+  copy.addEventListener('click',async ()=>{
+    try{await navigator.clipboard.writeText(location.href);alert('Copied');}catch(e){alert('Failed');}
+  });
+  infoContent.append(line,x,copy);
+  infoModal.classList.remove('hidden');
+}
+
+function showPreset(){
+  infoContent.innerHTML='';
+  const clear=document.createElement('button');
+  clear.textContent='Clear';
+  clear.addEventListener('click',()=>{applyPreset('clear');infoModal.classList.add('hidden');});
+  const r11=document.createElement('button');
+  r11.textContent='Red 11';
+  r11.addEventListener('click',()=>{applyPreset('red11');infoModal.classList.add('hidden');});
+  const r8=document.createElement('button');
+  r8.textContent='Red 8';
+  r8.addEventListener('click',()=>{applyPreset('red8');infoModal.classList.add('hidden');});
+  const full=document.createElement('button');
+  full.textContent='Red & Blue';
+  full.addEventListener('click',()=>{applyPreset('full');infoModal.classList.add('hidden');});
+  infoContent.append(clear,r11,r8,full);
+  infoModal.classList.remove('hidden');
+}
+
+function showHelp(){
+  infoContent.innerHTML='<p>Soccer tactics board. Double-click to edit or add players. Drag to move. Share via URL.</p>';
+  infoModal.classList.remove('hidden');
+}
+
+shareBtn.addEventListener('click',showShare);
+presetBtn.addEventListener('click',showPreset);
+helpBtn.addEventListener('click',showHelp);
+infoClose.addEventListener('click',()=>infoModal.classList.add('hidden'));
 
 loadState();
