@@ -11,6 +11,14 @@ const cancelBtn = document.getElementById('cancel-btn');
 let editId = null;
 let newPos = null;
 let dragTarget = null, offsetX=0, offsetY=0;
+let pointerMoved = false, pressStart = 0, lastTap = 0;
+const shareLineBtn = document.getElementById('share-line');
+const shareXBtn = document.getElementById('share-x');
+const shareCopyBtn = document.getElementById('share-copy');
+const presetBtns = document.querySelectorAll('#preset-options button');
+const helpBtn = document.getElementById('help-btn');
+const helpModal = document.getElementById('help-modal');
+const helpClose = document.getElementById('help-close');
 
 function defaultPlayers(){
   const red=[
@@ -133,6 +141,9 @@ function startDrag(e){
   // 親要素が.tokenクラスを持つ場合はその要素をドラッグ対象にする
   dragTarget = e.target.closest('.token');
   if (!dragTarget) return;
+
+  pointerMoved = false;
+  pressStart = Date.now();
   
   // ドラッグ中の視覚的フィードバック
   dragTarget.style.opacity = '0.8';
@@ -159,6 +170,8 @@ function startDrag(e){
 }
 function onMove(e){
   if (!dragTarget) return;
+
+  pointerMoved = true;
   
   const rect = field.getBoundingClientRect();
   const x = (e.clientX - rect.left) / rect.width * 100 - offsetX;
@@ -173,7 +186,10 @@ function onMove(e){
 
 function endDrag(e){
   if (!dragTarget) return;
-  
+
+  const now = Date.now();
+  const duration = now - pressStart;
+
   // ドラッグ終了時の視覚的フィードバックをリセット
   dragTarget.style.opacity = '1';
   dragTarget.style.zIndex = '';
@@ -183,17 +199,27 @@ function endDrag(e){
   dragTarget.removeEventListener('pointerup', endDrag);
   dragTarget.removeEventListener('pointercancel', endDrag);
   
-  // 位置を保存
   const id = dragTarget.dataset.id;
-  if (id) {
+
+  if(!pointerMoved){
+    if(duration > 600){
+      openEdit(id);
+      dragTarget = null;
+      return;
+    }else{
+      if(now - lastTap < 300){
+        openEdit(id);
+      }
+      lastTap = now;
+    }
+  }else if(id){
     const p = state.players.find(pl => pl.id == id);
     if (p) {
       p.x = parseFloat(dragTarget.style.left);
       p.y = parseFloat(dragTarget.style.top);
     }
+    saveState();
   }
-  
-  saveState();
   dragTarget = null;
 }
 
@@ -202,6 +228,22 @@ function removePlayer(id){
   if(idx>=0){state.players.splice(idx,1);}
   const el=document.querySelector('.token[data-id="'+id+'"]');
   if(el) el.remove();
+  saveState();
+}
+
+function applyPreset(type){
+  if(type==='clear'){
+    state.players=[];
+  }else if(type==='red11'){
+    state.players=defaultPlayers().filter(p=>p.color==='red');
+  }else if(type==='red8'){
+    state.players=defaultPlayers().filter(p=>p.color==='red').slice(0,8);
+  }else if(type==='full'){
+    state.players=defaultPlayers();
+  }
+
+  field.querySelectorAll('.token').forEach(el=>el.remove());
+  state.players.forEach(createPlayer);
   saveState();
 }
 
@@ -327,5 +369,20 @@ caches.keys().then(keyList => {
     return caches.delete(key);
   }));
 }).catch(e => console.warn('Cache clear error:', e));
+
+shareLineBtn.addEventListener('click',()=>{
+  const url=location.href;
+  window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(url),'_blank');
+});
+shareXBtn.addEventListener('click',()=>{
+  const url=location.href;
+  window.open('https://twitter.com/intent/tweet?url='+encodeURIComponent(url),'_blank');
+});
+shareCopyBtn.addEventListener('click',async ()=>{
+  try{await navigator.clipboard.writeText(location.href);alert('Copied');}catch(e){alert('Failed');}
+});
+presetBtns.forEach(btn=>btn.addEventListener('click',()=>applyPreset(btn.dataset.preset)));
+helpBtn.addEventListener('click',()=>helpModal.classList.remove('hidden'));
+helpClose.addEventListener('click',()=>helpModal.classList.add('hidden'));
 
 loadState();
