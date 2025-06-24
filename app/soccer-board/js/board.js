@@ -12,13 +12,19 @@ let editId = null;
 let newPos = null;
 let dragTarget = null, offsetX=0, offsetY=0;
 let pointerMoved = false, pressStart = 0, lastTap = 0;
-const shareLineBtn = document.getElementById('share-line');
-const shareXBtn = document.getElementById('share-x');
-const shareCopyBtn = document.getElementById('share-copy');
-const presetBtns = document.querySelectorAll('#preset-options button');
+let fieldLastTap = 0;
+const shareBtn = document.getElementById('share-btn');
+const presetBtn = document.getElementById('preset-btn');
 const helpBtn = document.getElementById('help-btn');
+const shareModal = document.getElementById('share-modal');
+const presetModal = document.getElementById('preset-modal');
 const helpModal = document.getElementById('help-modal');
+const shareNativeBtn = document.getElementById('share-native');
+const shareCopyBtn = document.getElementById('share-copy');
+const shareCloseBtn = document.getElementById('share-close');
+const presetCloseBtn = document.getElementById('preset-close');
 const helpClose = document.getElementById('help-close');
+const presetBtns = document.querySelectorAll('#preset-modal button[data-preset]');
 
 function defaultPlayers(){
   const red=[
@@ -120,6 +126,21 @@ field.addEventListener('dblclick',e=>{
   const x=(e.clientX-rect.left)/rect.width*100;
   const y=(e.clientY-rect.top)/rect.height*100;
   openNew(x,y);
+});
+
+field.addEventListener('pointerup',e=>{
+  if(e.pointerType!=='touch') return;
+  if(e.target.closest('.token')) return;
+  const rect=field.getBoundingClientRect();
+  const now=Date.now();
+  if(now-fieldLastTap<300){
+    const x=(e.clientX-rect.left)/rect.width*100;
+    const y=(e.clientY-rect.top)/rect.height*100;
+    openNew(x,y);
+    fieldLastTap=0;
+  }else{
+    fieldLastTap=now;
+  }
 });
 
 // タッチデバイスのためのスクロール防止（フィールド内でのスクロールを防止）
@@ -365,23 +386,27 @@ if('serviceWorker' in navigator) {
 
 // ブラウザキャッシュをクリア
 caches.keys().then(keyList => {
-  return Promise.all(keyList.map(key => {
-    return caches.delete(key);
-  }));
+  return Promise.all(keyList.map(key => caches.delete(key)));
 }).catch(e => console.warn('Cache clear error:', e));
 
-shareLineBtn.addEventListener('click',()=>{
+shareBtn.addEventListener('click',()=>shareModal.classList.remove('hidden'));
+shareCloseBtn.addEventListener('click',()=>shareModal.classList.add('hidden'));
+shareNativeBtn.addEventListener('click',()=>{
   const url=location.href;
-  window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(url),'_blank');
-});
-shareXBtn.addEventListener('click',()=>{
-  const url=location.href;
-  window.open('https://twitter.com/intent/tweet?url='+encodeURIComponent(url),'_blank');
+  if(navigator.share){
+    navigator.share({title:'Soccer Board',url}).catch(()=>{});
+  }else{
+    navigator.clipboard.writeText(url).then(()=>alert('Copied')).catch(()=>alert('Failed'));
+  }
 });
 shareCopyBtn.addEventListener('click',async ()=>{
   try{await navigator.clipboard.writeText(location.href);alert('Copied');}catch(e){alert('Failed');}
 });
-presetBtns.forEach(btn=>btn.addEventListener('click',()=>applyPreset(btn.dataset.preset)));
+
+presetBtn.addEventListener('click',()=>presetModal.classList.remove('hidden'));
+presetCloseBtn.addEventListener('click',()=>presetModal.classList.add('hidden'));
+presetBtns.forEach(btn=>btn.addEventListener('click',()=>{applyPreset(btn.dataset.preset);presetModal.classList.add('hidden');}));
+
 helpBtn.addEventListener('click',()=>helpModal.classList.remove('hidden'));
 helpClose.addEventListener('click',()=>helpModal.classList.add('hidden'));
 

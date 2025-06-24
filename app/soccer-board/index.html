@@ -37,21 +37,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 #modal #save-btn:hover{background:#45a049;box-shadow:0 4px 8px rgba(76, 175, 80, 0.3)}
 #modal #cancel-btn{background:#555;color:white;}
 #modal #cancel-btn:hover{background:#666;box-shadow:0 4px 8px rgba(0, 0, 0, 0.2)}
-#modal #delete-btn{background:#f44336;color:white;}
+  #modal #delete-btn{background:#f44336;color:white;}
   #modal #delete-btn:hover{background:#d32f2f;box-shadow:0 4px 8px rgba(244, 67, 54, 0.3)}
   #toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px}
-  #toolbar button{padding:8px 12px;border:none;border-radius:6px;font-size:14px;font-weight:bold;cursor:pointer}
-  #toolbar .group{display:flex;gap:8px}
-  #help-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center}
-  #help-modal.hidden{display:none}
-  #help-modal .box{background:#333;padding:24px;border-radius:12px;max-width:300px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4}
-  #help-modal button{margin-top:12px;padding:8px 12px;border:none;border-radius:6px;background:#555;color:#fff;font-weight:bold;cursor:pointer}
-@media (orientation:landscape){
-  #field{height:100%;width:auto}
-}
-@media (orientation:portrait){
-  #field{width:100%;height:auto}
-}
+  #toolbar button{padding:10px 16px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;background:#4a90e2;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.3);transition:background 0.2s,transform 0.2s}
+  #toolbar button:hover{background:#3977c8;transform:translateY(-2px)}
+  #help-modal,#share-modal,#preset-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px)}
+  #help-modal.hidden,#share-modal.hidden,#preset-modal.hidden{display:none}
+  #help-modal .box,#share-modal .box,#preset-modal .box{background:#333;padding:24px;border-radius:12px;max-width:300px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px}
+  #help-modal button,#share-modal button,#preset-modal button{padding:8px 12px;border:none;border-radius:6px;background:#555;color:#fff;font-weight:bold;cursor:pointer}
+  @media (orientation:landscape){
+    #field{height:100%;width:auto}
+  }
+  @media (orientation:portrait){
+    #field{width:100%;height:auto}
+  }
+  @media (max-width:600px){
+    #modal .box{align-self:flex-start;margin-top:20px}
+  }
 </style>
 </head>
 <body>
@@ -72,17 +75,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div id="toolbar">
-  <div class="group" id="share-options">
-    <button id="share-line">LINE</button>
-    <button id="share-x">X</button>
-    <button id="share-copy">Copy URL</button>
-  </div>
-  <div class="group" id="preset-options">
-    <button data-preset="clear">Clear</button>
-    <button data-preset="red11">Red11</button>
-    <button data-preset="red8">Red8</button>
-    <button data-preset="full">Red&Blue</button>
-  </div>
+  <button id="share-btn">Share</button>
+  <button id="preset-btn">Preset</button>
   <button id="help-btn">Help</button>
 </div>
 
@@ -105,9 +99,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
 </div>
 
+<div id="share-modal" class="hidden">
+  <div class="box">
+    <button id="share-native">Share</button>
+    <button id="share-copy">Copy URL</button>
+    <button id="share-close">Close</button>
+  </div>
+</div>
+
+<div id="preset-modal" class="hidden">
+  <div class="box">
+    <button data-preset="clear">Clear</button>
+    <button data-preset="red11">Red11</button>
+    <button data-preset="red8">Red8</button>
+    <button data-preset="full">Red&Blue</button>
+    <button id="preset-close">Close</button>
+  </div>
+</div>
+
 <div id="help-modal" class="hidden">
   <div class="box">
-    <p>トークンをドラッグして移動します。PCではダブルクリック、スマホではダブルタップまたは長押しで編集できます。フィールドの空き部分をダブルクリック/ダブルタップすると新規追加できます。</p>
+    <p>It is a soccer tactics board. Double click to edit or add new tokens. Tokens can be dragged. You can share via URL.</p>
     <button id="help-close">Close</button>
   </div>
 </div>
