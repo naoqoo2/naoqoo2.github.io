@@ -27,32 +27,77 @@ const helpClose = document.getElementById('help-close');
 const presetBtns = document.querySelectorAll('#preset-modal button[data-preset]');
 
 function defaultPlayers(){
+  // 赤チーム - 4-4-2フォーメーション
   const red=[
-    {num:1,x:15,y:50},
-    {num:2,x:25,y:25},
-    {num:3,x:25,y:50},
-    {num:4,x:25,y:75},
-    {num:5,x:40,y:20},
-    {num:6,x:40,y:35},
-    {num:7,x:40,y:50},
-    {num:8,x:40,y:65},
-    {num:9,x:40,y:80},
-    {num:10,x:45,y:35},
-    {num:11,x:45,y:65}
+    {num:1,x:10,y:50},  // GK
+    {num:2,x:20,y:20},  // DF右
+    {num:3,x:20,y:40},  // DF中央右
+    {num:4,x:20,y:60},  // DF中央左
+    {num:5,x:20,y:80},  // DF左
+    {num:6,x:30,y:20},  // MF右
+    {num:7,x:30,y:40},  // MF中央右
+    {num:8,x:30,y:60},  // MF中央左
+    {num:9,x:30,y:80},  // MF左
+    {num:10,x:40,y:35}, // FW右
+    {num:11,x:40,y:65}  // FW左
   ].map((p,i)=>({...p,color:'red',id:'r'+(i+1)}));
+  
+  // 青チーム - 4-4-2フォーメーション
   const blue=[
-    {num:1,x:85,y:50},
-    {num:2,x:75,y:25},
-    {num:3,x:75,y:40},
-    {num:4,x:75,y:60},
-    {num:5,x:75,y:75},
-    {num:6,x:60,y:25},
-    {num:7,x:60,y:40},
-    {num:8,x:60,y:60},
-    {num:9,x:60,y:75},
-    {num:10,x:55,y:35},
-    {num:11,x:55,y:65}
+    {num:1,x:90,y:50},  // GK
+    {num:2,x:80,y:20},  // DF右
+    {num:3,x:80,y:40},  // DF中央右
+    {num:4,x:80,y:60},  // DF中央左
+    {num:5,x:80,y:80},  // DF左
+    {num:6,x:70,y:20},  // MF右
+    {num:7,x:70,y:40},  // MF中央右
+    {num:8,x:70,y:60},  // MF中央左
+    {num:9,x:70,y:80},  // MF左
+    {num:10,x:60,y:35}, // FW右
+    {num:11,x:60,y:65}  // FW左
   ].map((p,i)=>({...p,color:'blue',id:'b'+(i+1)}));
+  
+  // 8人制用の選手配置 - 3-1-2-1ダイヤモンドフォーメーション
+  const red8 = [
+    {num:1,x:10,y:50},  // GK
+    {num:2,x:20,y:25},  // DF右
+    {num:3,x:20,y:50},  // DF中央
+    {num:4,x:20,y:75},  // DF左
+    {num:5,x:30,y:50},  // 守備的MF（アンカー）
+    {num:6,x:35,y:25},  // MF右
+    {num:7,x:35,y:75},  // MF左
+    {num:8,x:40,y:50}   // FW（トップ）
+  ].map((p,i)=>({...p,color:'red',id:'r8'+(i+1)}));
+  
+  // 8人制用の青チーム
+  const blue8 = [
+    {num:1,x:90,y:50},  // GK
+    {num:2,x:80,y:25},  // DF右
+    {num:3,x:80,y:50},  // DF中央
+    {num:4,x:80,y:75},  // DF左
+    {num:5,x:70,y:50},  // 守備的MF（アンカー）
+    {num:6,x:65,y:25},  // MF右
+    {num:7,x:65,y:75},  // MF左
+    {num:8,x:60,y:50}   // FW（トップ）
+  ].map((p,i)=>({...p,color:'blue',id:'b8'+(i+1)}));
+  
+  // 5人制用の選手配置 - 1-2-1ダイヤモンドフォーメーション
+  const red5 = [
+    {num:1,x:10,y:50},  // GK
+    {num:2,x:20,y:50},  // DF
+    {num:3,x:30,y:25},  // MF右
+    {num:4,x:30,y:75},  // MF左
+    {num:5,x:40,y:50}   // FW
+  ].map((p,i)=>({...p,color:'red',id:'r5'+(i+1)}));
+  
+  // 5人制用の青チーム
+  const blue5 = [
+    {num:1,x:90,y:50},  // GK
+    {num:2,x:80,y:50},  // DF
+    {num:3,x:70,y:25},  // MF右
+    {num:4,x:70,y:75},  // MF左
+    {num:5,x:60,y:50}   // FW
+  ].map((p,i)=>({...p,color:'blue',id:'b5'+(i+1)}));
   
   // ボールをフィールドの中央に配置
   const ball = {
@@ -62,6 +107,14 @@ function defaultPlayers(){
     y: 50,
     num: ''
   };
+  
+  // 全ての選手データを保持
+  state.redFull = red;
+  state.blueFull = blue;
+  state.red8 = red8;
+  state.blue8 = blue8;
+  state.red5 = red5;
+  state.blue5 = blue5;
   
   return red.concat(blue, [ball]);
 }
@@ -254,18 +307,49 @@ function removePlayer(id){
 }
 
 function applyPreset(type){
-  if(type==='clear'){
-    state.players=[];
-  }else if(type==='red11'){
-    state.players=defaultPlayers().filter(p=>p.color==='red');
-  }else if(type==='red8'){
-    state.players=defaultPlayers().filter(p=>p.color==='red').slice(0,8);
-  }else if(type==='full'){
-    state.players=defaultPlayers();
+  // 初期化するためにまずdefaultPlayersを実行して全ての選手配置を読み込む
+  defaultPlayers();
+  
+  // ボールは常に中央に配置
+  const ball = {
+    id: 'ball-1',
+    color: 'ball',
+    x: 50,
+    y: 50,
+    num: ''
+  };
+  
+  switch(type){
+    case 'clear':
+      state.players = [];
+      break;
+    case 'red11':
+      state.players = [...state.redFull, ball];
+      break;
+    case 'full':
+      state.players = [...state.redFull, ...state.blueFull, ball];
+      break;
+    case 'red8':
+      state.players = [...state.red8, ball];
+      break;
+    case 'full8':
+      state.players = [...state.red8, ...state.blue8, ball];
+      break;
+    case 'red5':
+      state.players = [...state.red5, ball];
+      break;
+    case 'full5':
+      state.players = [...state.red5, ...state.blue5, ball];
+      break;
+    default:
+      return; // 何も変更しない
   }
 
+  // 現在表示中の選手を全て削除
   field.querySelectorAll('.piece').forEach(el=>el.remove());
+  // 新しい選手を表示
   state.players.forEach(createPlayer);
+  // 状態を保存
   saveState();
 }
 
