@@ -8,27 +8,29 @@ layout: none
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Soccer Board</title>
 <style>
-html,body{height:100%;margin:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#222;color:#eee;display:flex;flex-direction:column;align-items:center}
-#board{flex:1;width:100%;display:flex;justify-content:center;align-items:center;position:relative}
-#field{position:relative;background:#060;aspect-ratio:105/68;width:100%;max-height:100%;border:4px solid #fff;box-sizing:border-box;padding:32px;overflow:hidden}
-#field svg{position:absolute;top:32px;left:32px;width:calc(100% - 64px);height:calc(100% - 64px)}
-.token{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;touch-action:none;user-select:none;cursor:move}
-.player{width:32px;height:32px;border-radius:50%;color:#fff;font-weight:bold;display:flex;justify-content:center;align-items:center;font-size:12px}
+html,body{height:100%;margin:0;overflow-x:hidden;overflow-y:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#222;color:#eee;display:flex;flex-direction:column;align-items:center;height:auto;overflow-y:auto}
+.app-container{display:flex;flex-direction:column;width:100%;max-width:900px;min-height:100vh;padding:20px;box-sizing:border-box;align-items:center;justify-content:space-between}
+#board{width:100%;display:flex;justify-content:center;align-items:center;position:relative;padding:0;box-sizing:border-box;min-height:200px;flex:1;overflow:visible;margin:0}
+#field{position:relative;background:#060;aspect-ratio:105/68;width:calc(100% - 20px);max-width:900px;margin:0 auto;border:4px solid #fff;box-sizing:border-box;overflow:visible;min-height:100px}
+#field svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.piece{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;touch-action:none;user-select:none;cursor:move;z-index:10}
+.player{width:32px;height:32px;border-radius:50%;color:#fff;font-weight:bold;display:flex;justify-content:center;align-items:center;font-size:12px;z-index:5}
 .player.red{background:#e44}
 .player.blue{background:#36f}
 .player.yellow{background:#fc3;color:#000}
 .player.green{background:#3b3}
 .player.ball{background:white;color:#000}
 .player .name{font-size:10px;margin-top:2px;white-space:nowrap}
-#modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px)}
+#modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000}
 #modal.hidden{display:none}
-#modal .box{background:#333;padding:24px;border-radius:12px;display:flex;flex-direction:column;gap:12px;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,0.4);position:relative}
+#modal .box{background:#333;padding:24px;border-radius:12px;display:flex;flex-direction:column;gap:12px;width:320px;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,0.4);position:relative}
+#player-form{display:flex;flex-direction:column;gap:12px;}
 #modal .close-btn,#help-modal .close-btn,#share-modal .close-btn,#preset-modal .close-btn{
-  position:absolute;top:-12px;right:-12px;width:24px;height:24px;background:#444;border:none;
+  position:absolute;top:-14px;right:-14px;width:28px;height:28px;background:#444;border:none;
   color:#fff;font-size:16px;cursor:pointer;display:flex;justify-content:center;align-items:center;
   border-radius:50%;transition:background 0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.3);
-  padding:0;line-height:1;
+  padding:0;line-height:1;z-index:10;
 }
 #modal .close-btn:hover,#help-modal .close-btn:hover,#share-modal .close-btn:hover,#preset-modal .close-btn:hover{background:#666}
 #modal .colors{display:flex;gap:12px;justify-content:center;padding:8px 0}
@@ -39,28 +41,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 #modal input{background:#444;border:none;padding:10px 12px;border-radius:6px;color:#fff;font-size:16px;outline:none;transition:box-shadow 0.2s}
 #modal input:focus{box-shadow:0 0 0 2px rgba(255,255,255,0.3)}
 #modal button{padding:10px 16px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:all 0.2s;font-size:14px;text-transform:uppercase}
-#modal .btn-group{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
-#modal #save-btn{background:#4CAF50;color:white;}
+#modal .btn-group{display:flex;gap:12px;justify-content:space-between;margin-top:8px}
+#modal #save-btn{background:#4CAF50;color:white;margin-left:auto;}
 #modal #save-btn:hover{background:#45a049;box-shadow:0 4px 8px rgba(76, 175, 80, 0.3)}
 #modal #cancel-btn{background:#555;color:white;}
 #modal #cancel-btn:hover{background:#666;box-shadow:0 4px 8px rgba(0, 0, 0, 0.2)}
   #modal #delete-btn{background:#f44336;color:white;}
   #modal #delete-btn:hover{background:#d32f2f;box-shadow:0 4px 8px rgba(244, 67, 54, 0.3)}
-  #toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px}
+  #toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 16px;position:relative;z-index:50;padding:10px 0;width:100%;max-width:900px;box-sizing:border-box}
   #toolbar button{padding:10px 16px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;background:#4a90e2;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.3);transition:background 0.2s,transform 0.2s}
   #toolbar button:hover{background:#3977c8;transform:translateY(-2px)}
-  #help-modal,#share-modal,#preset-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px)}
+  #help-modal,#share-modal,#preset-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000}
   #help-modal.hidden,#share-modal.hidden,#preset-modal.hidden{display:none}
-  #help-modal .box,#share-modal .box,#preset-modal .box{background:#333;padding:24px;border-radius:12px;max-width:300px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px;position:relative;margin:20px}
+  #help-modal .box,#share-modal .box,#preset-modal .box{background:#333;padding:24px;border-radius:12px;width:320px;max-width:320px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px;position:relative}
   #help-modal button,#share-modal button,#preset-modal button{padding:8px 12px;border:none;border-radius:6px;background:#555;color:#fff;font-weight:bold;cursor:pointer}
-  @media (orientation:landscape){
-    #field{height:100%;width:auto}
-  }
-  @media (orientation:portrait){
-    #field{width:100%;height:auto}
-  }
   @media (max-width:600px){
-    #modal .box{align-self:flex-start;margin-top:20px}
+    #modal,#help-modal,#share-modal,#preset-modal{
+      align-items:flex-start;
+      padding-top:60px;
+    }
   }
   /* トースト通知のスタイル */
   #toast{
@@ -85,18 +84,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </style>
 </head>
 <body>
+<div class="app-container">
 <div id="board">
   <div id="field">
     <svg viewBox="0 0 105 68" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="0" width="105" height="68" fill="none" stroke="#fff" stroke-width="0.5"/>
-      <line x1="52.5" y1="0" x2="52.5" y2="68" stroke="#fff" stroke-width="0.5"/>
+      <!-- 余白を含めた新しいフィールド表現 -->
+      <!-- メインフィールド（中央部分） -->
+      <rect x="5" y="5" width="95" height="58" fill="none" stroke="#fff" stroke-width="0.5"/>
+      <!-- センターライン -->
+      <line x1="52.5" y1="5" x2="52.5" y2="63" stroke="#fff" stroke-width="0.5"/>
+      <!-- センターサークル -->
       <circle cx="52.5" cy="34" r="9.15" fill="none" stroke="#fff" stroke-width="0.5"/>
-      <rect x="0" y="13.84" width="16.5" height="40.32" fill="none" stroke="#fff" stroke-width="0.5"/>
-      <rect x="88.5" y="13.84" width="16.5" height="40.32" fill="none" stroke="#fff" stroke-width="0.5"/>
-      <rect x="0" y="24.1" width="5.5" height="19.8" fill="none" stroke="#fff" stroke-width="0.5"/>
-      <rect x="99.5" y="24.1" width="5.5" height="19.8" fill="none" stroke="#fff" stroke-width="0.5"/>
-      <circle cx="11" cy="34" r="0.5" fill="#fff"/>
-      <circle cx="94" cy="34" r="0.5" fill="#fff"/>
+      <!-- ペナルティエリア（左） -->
+      <rect x="5" y="18.84" width="16.5" height="30.32" fill="none" stroke="#fff" stroke-width="0.5"/>
+      <!-- ペナルティエリア（右） -->
+      <rect x="83.5" y="18.84" width="16.5" height="30.32" fill="none" stroke="#fff" stroke-width="0.5"/>
+      <!-- ゴールエリア（左） -->
+      <rect x="5" y="24.1" width="5.5" height="19.8" fill="none" stroke="#fff" stroke-width="0.5"/>
+      <!-- ゴールエリア（右） -->
+      <rect x="94.5" y="24.1" width="5.5" height="19.8" fill="none" stroke="#fff" stroke-width="0.5"/>
+      <!-- ペナルティマーク（左） -->
+      <circle cx="16" cy="34" r="0.5" fill="#fff"/>
+      <!-- ペナルティマーク（右） -->
+      <circle cx="89" cy="34" r="0.5" fill="#fff"/>
     </svg>
   </div>
 </div>
@@ -110,19 +120,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="modal" class="hidden">
   <div class="box">
     <button class="close-btn">✕</button>
-    <input id="m-number" type="number" placeholder="No" max="999" min="0">
-    <input id="m-name" type="text" placeholder="Name">
-    <div class="colors">
-      <div class="color-option player red" data-color="red"></div>
-      <div class="color-option player blue" data-color="blue"></div>
-      <div class="color-option player yellow" data-color="yellow"></div>
-      <div class="color-option player green" data-color="green"></div>
-      <div class="color-option player ball" data-color="ball"></div>
-    </div>
-    <div class="btn-group">
-      <button id="delete-btn">Delete</button>
-      <button id="save-btn" type="button">Save</button>
-    </div>
+    <form id="player-form">
+      <input id="m-number" type="number" placeholder="No" max="999" min="0">
+      <input id="m-name" type="text" placeholder="Name">
+      <div class="colors">
+        <div class="color-option player red" data-color="red"></div>
+        <div class="color-option player blue" data-color="blue"></div>
+        <div class="color-option player yellow" data-color="yellow"></div>
+        <div class="color-option player green" data-color="green"></div>
+        <div class="color-option player ball" data-color="ball"></div>
+      </div>
+      <div class="btn-group">
+        <button id="delete-btn" type="button">Delete</button>
+        <button id="save-btn" type="submit">Save</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -147,12 +159,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="help-modal" class="hidden">
   <div class="box">
     <button class="close-btn">✕</button>
-    <p>It is a soccer tactics board. Double click to edit or add new tokens. Tokens can be dragged. You can share via URL.</p>
+    <p>余白をダブルクリックで選手を追加。選手をダブルクリックで編集。選手はドラッグで移動できます。作成したボードはURLで共有できます。</p>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script src="js/board.js"></script>
+</div><!-- .app-container -->
 </body>
 </html>

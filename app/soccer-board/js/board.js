@@ -28,33 +28,33 @@ const presetBtns = document.querySelectorAll('#preset-modal button[data-preset]'
 
 function defaultPlayers(){
   const red=[
-    {num:1,x:10,y:50},
-    {num:2,x:25,y:20},
+    {num:1,x:15,y:50},
+    {num:2,x:25,y:25},
     {num:3,x:25,y:50},
-    {num:4,x:25,y:80},
-    {num:5,x:40,y:15},
+    {num:4,x:25,y:75},
+    {num:5,x:40,y:20},
     {num:6,x:40,y:35},
     {num:7,x:40,y:50},
     {num:8,x:40,y:65},
-    {num:9,x:40,y:85},
+    {num:9,x:40,y:80},
     {num:10,x:45,y:35},
     {num:11,x:45,y:65}
   ].map((p,i)=>({...p,color:'red',id:'r'+(i+1)}));
   const blue=[
-    {num:1,x:90,y:50},
-    {num:2,x:75,y:20},
+    {num:1,x:85,y:50},
+    {num:2,x:75,y:25},
     {num:3,x:75,y:40},
     {num:4,x:75,y:60},
-    {num:5,x:75,y:80},
-    {num:6,x:60,y:20},
+    {num:5,x:75,y:75},
+    {num:6,x:60,y:25},
     {num:7,x:60,y:40},
     {num:8,x:60,y:60},
-    {num:9,x:60,y:80},
+    {num:9,x:60,y:75},
     {num:10,x:55,y:35},
     {num:11,x:55,y:65}
   ].map((p,i)=>({...p,color:'blue',id:'b'+(i+1)}));
   
-  // ボールをフィールドの中央に配置（中央は x:50%, y:50%）
+  // ボールをフィールドの中央に配置
   const ball = {
     id: 'ball-1',
     color: 'ball',
@@ -97,13 +97,14 @@ function openNew(x,y){
 
 function createPlayer(p){
   const el=document.createElement('div');
-  el.className='token';
+  el.className='piece';
   if (p.color) {
     el.classList.add('player', p.color);
   }
   el.style.left=p.x+'%';
   el.style.top=p.y+'%';
   el.dataset.id=p.id;
+  el.style.zIndex = '10'; // 明示的にz-indexを設定
   
   const num=document.createElement('div');
   num.textContent=p.num;
@@ -121,7 +122,7 @@ function createPlayer(p){
 }
 
 field.addEventListener('dblclick',e=>{
-  if(e.target.closest('.token')) return;
+  if(e.target.closest('.piece')) return;
   const rect=field.getBoundingClientRect();
   const x=(e.clientX-rect.left)/rect.width*100;
   const y=(e.clientY-rect.top)/rect.height*100;
@@ -130,7 +131,7 @@ field.addEventListener('dblclick',e=>{
 
 field.addEventListener('pointerup',e=>{
   if(e.pointerType!=='touch') return;
-  if(e.target.closest('.token')) return;
+  if(e.target.closest('.piece')) return;
   const rect=field.getBoundingClientRect();
   const now=Date.now();
   if(now-fieldLastTap<300){
@@ -145,7 +146,7 @@ field.addEventListener('pointerup',e=>{
 
 // タッチデバイスのためのスクロール防止（フィールド内でのスクロールを防止）
 field.addEventListener('touchstart', e => {
-  if (e.target.closest('.token') || e.target.closest('#field')) {
+  if (e.target.closest('.piece') || e.target.closest('#field')) {
     e.preventDefault();
   }
 }, { passive: false });
@@ -159,8 +160,8 @@ field.addEventListener('contextmenu', e => {
 });
 
 function startDrag(e){
-  // 親要素が.tokenクラスを持つ場合はその要素をドラッグ対象にする
-  dragTarget = e.target.closest('.token');
+  // 親要素が.pieceクラスを持つ場合はその要素をドラッグ対象にする
+  dragTarget = e.target.closest('.piece');
   if (!dragTarget) return;
 
   pointerMoved = false;
@@ -213,7 +214,7 @@ function endDrag(e){
 
   // ドラッグ終了時の視覚的フィードバックをリセット
   dragTarget.style.opacity = '1';
-  dragTarget.style.zIndex = '';
+  dragTarget.style.zIndex = '10'; // 明示的に元のz-indexに戻す
   
   // イベントリスナーを削除
   dragTarget.removeEventListener('pointermove', onMove);
@@ -247,7 +248,7 @@ function endDrag(e){
 function removePlayer(id){
   const idx=state.players.findIndex(p=>p.id==id);
   if(idx>=0){state.players.splice(idx,1);}
-  const el=document.querySelector('.token[data-id="'+id+'"]');
+  const el=document.querySelector('.piece[data-id="'+id+'"]');
   if(el) el.remove();
   saveState();
 }
@@ -263,12 +264,29 @@ function applyPreset(type){
     state.players=defaultPlayers();
   }
 
-  field.querySelectorAll('.token').forEach(el=>el.remove());
+  field.querySelectorAll('.piece').forEach(el=>el.remove());
   state.players.forEach(createPlayer);
   saveState();
 }
 
-saveBtn.addEventListener('click',()=>{
+// フォームのサブミットイベントを処理
+const playerForm = document.getElementById('player-form');
+playerForm.addEventListener('submit', (e) => {
+  e.preventDefault(); // フォームのデフォルト送信を防止
+  savePlayer();
+});
+
+// キーボードイベントをグローバルに監視し、Deleteキーで削除
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Delete' && editId && !modal.classList.contains('hidden')) {
+    removePlayer(editId);
+    modal.classList.add('hidden');
+    editId = null;
+  }
+});
+
+// 選手情報を保存する関数
+function savePlayer() {
   const color=colorOpts.find(o=>o.classList.contains('selected')).dataset.color;
   
   // 番号を3桁以内に制限（空文字はそのまま）
@@ -281,10 +299,10 @@ saveBtn.addEventListener('click',()=>{
       p.name=nameInput.value;
       p.num=num;
       p.color=color;
-      const el=document.querySelector('.token[data-id="'+editId+'"]');
+      const el=document.querySelector('.piece[data-id="'+editId+'"]');
       if(el){
         // クラスをリセットして再設定
-        el.className='token';
+        el.className='piece';
         if (color) {
           el.classList.add('player', color);
         }
@@ -310,6 +328,14 @@ saveBtn.addEventListener('click',()=>{
   editId=null;
   newPos=null;
   saveState();
+}
+
+// Save button も click イベントで savePlayer を呼び出す
+saveBtn.addEventListener('click', function(e) {
+  if (!e.target.form) { // フォームから呼ばれなかった場合のみ
+    e.preventDefault();
+    savePlayer();
+  }
 });
 
 deleteBtn.addEventListener('click',()=>{
