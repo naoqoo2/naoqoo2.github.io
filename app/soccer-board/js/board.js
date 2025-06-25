@@ -320,10 +320,34 @@ deleteBtn.addEventListener('click',()=>{
   }
 });
 
-cancelBtn.addEventListener('click',()=>{
-  modal.classList.add('hidden');
-  editId=null;
-  newPos=null;
+// cancelボタンのイベントリスナーを削除
+// 代わりにモーダルの閉じるボタンと外側クリックのイベントリスナーを追加
+const closeModalBtns = document.querySelectorAll('.close-btn');
+closeModalBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const modalEl = btn.closest('[id$="modal"]');
+    if (modalEl) {
+      modalEl.classList.add('hidden');
+      if (modalEl.id === 'modal') {
+        editId = null;
+        newPos = null;
+      }
+    }
+  });
+});
+
+// モーダル外をクリックしたときに閉じる
+const modals = document.querySelectorAll('[id$="modal"]');
+modals.forEach(modal => {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+      if (modal.id === 'modal') {
+        editId = null;
+        newPos = null;
+      }
+    }
+  });
 });
 
 async function saveState(){
@@ -389,25 +413,48 @@ caches.keys().then(keyList => {
   return Promise.all(keyList.map(key => caches.delete(key)));
 }).catch(e => console.warn('Cache clear error:', e));
 
+// トースト通知を表示する関数
+function showToast(message, duration = 2000) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, duration);
+}
+
 shareBtn.addEventListener('click',()=>shareModal.classList.remove('hidden'));
-shareCloseBtn.addEventListener('click',()=>shareModal.classList.add('hidden'));
 shareNativeBtn.addEventListener('click',()=>{
   const url=location.href;
   if(navigator.share){
     navigator.share({title:'Soccer Board',url}).catch(()=>{});
   }else{
-    navigator.clipboard.writeText(url).then(()=>alert('Copied')).catch(()=>alert('Failed'));
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        shareModal.classList.add('hidden');
+        showToast('URL Copied');
+      })
+      .catch(() => {
+        shareModal.classList.add('hidden');
+        showToast('Copy failed');
+      });
   }
 });
 shareCopyBtn.addEventListener('click',async ()=>{
-  try{await navigator.clipboard.writeText(location.href);alert('Copied');}catch(e){alert('Failed');}
+  try{
+    await navigator.clipboard.writeText(location.href);
+    shareModal.classList.add('hidden');
+    showToast('URL Copied');
+  }catch(e){
+    shareModal.classList.add('hidden');
+    showToast('Copy failed');
+  }
 });
 
 presetBtn.addEventListener('click',()=>presetModal.classList.remove('hidden'));
-presetCloseBtn.addEventListener('click',()=>presetModal.classList.add('hidden'));
 presetBtns.forEach(btn=>btn.addEventListener('click',()=>{applyPreset(btn.dataset.preset);presetModal.classList.add('hidden');}));
 
 helpBtn.addEventListener('click',()=>helpModal.classList.remove('hidden'));
-helpClose.addEventListener('click',()=>helpModal.classList.add('hidden'));
 
 loadState();
