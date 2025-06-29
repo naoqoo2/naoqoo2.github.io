@@ -15,6 +15,7 @@ let fieldLastTap = 0;
 const shareBtn = document.getElementById('share-btn');
 const presetBtn = document.getElementById('preset-btn');
 const helpBtn = document.getElementById('help-btn');
+const rotateBtn = document.getElementById('rotate-btn');
 const shareModal = document.getElementById('share-modal');
 const presetModal = document.getElementById('preset-modal');
 const helpModal = document.getElementById('help-modal');
@@ -24,6 +25,8 @@ const shareCloseBtn = document.getElementById('share-close');
 const presetCloseBtn = document.getElementById('preset-close');
 const helpClose = document.getElementById('help-close');
 const presetBtns = document.querySelectorAll('#preset-modal button[data-preset]');
+// localStorageから縦横表示の設定を読み込む（デフォルトは横向き）
+let isVertical = localStorage.getItem('soccerBoardVertical') === 'true' || false;
 
 function defaultPlayers(){
   // 赤チーム - 4-4-2フォーメーション
@@ -360,6 +363,17 @@ function applyPreset(type){
 
   // 現在表示中の選手を全て削除
   field.querySelectorAll('.piece').forEach(el=>el.remove());
+  
+  // 縦表示モードの場合、プレイヤー座標を変換
+  if (isVertical) {
+    state.players.forEach(player => {
+      const oldX = player.x;
+      const oldY = player.y;
+      player.x = oldY;
+      player.y = 100 - oldX;
+    });
+  }
+  
   // 新しい選手を表示
   state.players.forEach(createPlayer);
   // 状態を保存
@@ -490,9 +504,19 @@ function saveState(){
   let customStr = '';
   
   state.players.forEach((p, index) => {
+    // 縦表示中の場合は、保存前に座標を横表示に変換（一時的な変換）
+    let xPos = p.x;
+    let yPos = p.y;
+    
+    if (isVertical) {
+      // 縦向きの座標を横向きに変換（表示には影響しない一時的な変換）
+      xPos = 100 - p.y;
+      yPos = p.x;
+    }
+    
     // 座標（10倍して整数化）
-    const x = Math.round(p.x * 10);
-    const y = Math.round(p.y * 10);
+    const x = Math.round(xPos * 10);
+    const y = Math.round(yPos * 10);
     
     // 色のコード（先頭1文字、ただしボールは'l'を使用）
     let colorCode = p.color.charAt(0);
@@ -640,6 +664,8 @@ function loadState(){
   }
   
   field.querySelectorAll('.piece').forEach(el => el.remove());
+  
+  
   state.players.forEach(createPlayer);
   
   if (!params.has('d')) saveState();
@@ -691,4 +717,111 @@ presetBtns.forEach(btn=>btn.addEventListener('click',()=>{applyPreset(btn.datase
 
 helpBtn.addEventListener('click',()=>helpModal.classList.remove('hidden'));
 
+// 縦横切り替え機能
+rotateBtn.addEventListener('click', toggleFieldOrientation);
+
+// フィールドの向きを切り替える関数
+function toggleFieldOrientation() {
+  isVertical = !isVertical;
+  
+  // フィールドのクラスを切り替え
+  field.classList.toggle('vertical', isVertical);
+  
+  // SVG要素の表示切り替え
+  const horizontalSvg = field.querySelector('.horizontal-field');
+  const verticalSvg = field.querySelector('.vertical-field');
+  
+  if (isVertical) {
+    horizontalSvg.style.display = 'none';
+    verticalSvg.style.display = 'block';
+  } else {
+    horizontalSvg.style.display = 'block';
+    verticalSvg.style.display = 'none';
+  }
+  
+  // 既存プレイヤーの座標を変換
+  convertPlayerPositions();
+  
+  // localStorageに設定を保存
+  localStorage.setItem('soccerBoardVertical', isVertical);
+}
+
+// プレイヤーの座標を変換する関数
+function convertPlayerPositions() {
+  // 全プレイヤーの座標を変換
+  state.players.forEach(player => {
+    // 現在の座標を取得
+    const oldX = player.x;
+    const oldY = player.y;
+    
+    if (isVertical) {
+      // 横向き → 縦向きへの変換
+      player.x = oldY;
+      player.y = 100 - oldX;
+    } else {
+      // 縦向き → 横向きへの変換
+      player.x = 100 - player.y;
+      player.y = oldX;
+    }
+    
+    // DOM要素の位置を更新
+    const el = document.querySelector(`.piece[data-id="${player.id}"]`);
+    if (el) {
+      el.style.left = parseFloat(player.x).toFixed(1) + '%';
+      el.style.top = parseFloat(player.y).toFixed(1) + '%';
+    }
+  });
+}
+
+// モーダルの閉じるボタンのイベントハンドラを統一
+closeModalBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const modalEl = btn.closest('[id$="modal"]');
+    if (modalEl) {
+      modalEl.classList.add('hidden');
+      if (modalEl.id === 'modal') {
+        editId = null;
+        newPos = null;
+      }
+    }
+  });
+});
+
+// モーダル外をクリックしたときに閉じる
+modals.forEach(modal => {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+      if (modal.id === 'modal') {
+        editId = null;
+        newPos = null;
+      }
+    }
+  });
+});
+
+// 初期状態の設定
+// SVG要素を取得
+const horizontalSvg = field.querySelector('.horizontal-field');
+const verticalSvg = field.querySelector('.vertical-field');
+
+// 保存された向き設定を先に適用（loadStateの前に設定）
+if (isVertical) {
+  field.classList.add('vertical');
+  horizontalSvg.style.display = 'none';
+  verticalSvg.style.display = 'block';
+} else {
+  field.classList.remove('vertical');
+  horizontalSvg.style.display = 'block';
+  verticalSvg.style.display = 'none';
+}
+
+// 初期状態の読み込み
 loadState();
+
+// loadStateの後、改めて向き設定を適用
+// URLパラメータの有無に関わらず、isVerticalがtrueなら座標変換を行う
+if (isVertical) {
+  // 縦向きの場合は座標変換を必ず行う
+  convertPlayerPositions();
+}
