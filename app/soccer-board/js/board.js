@@ -494,8 +494,11 @@ function saveState(){
     const x = Math.round(p.x * 10);
     const y = Math.round(p.y * 10);
     
-    // 色のコード（先頭1文字）
-    const colorCode = p.color.charAt(0);
+    // 色のコード（先頭1文字、ただしボールは'l'を使用）
+    let colorCode = p.color.charAt(0);
+    if (p.color === 'ball') {
+      colorCode = 'l'; // 'bal[l]'の末尾の文字を使用（'b'は青と重複するため）
+    }
     
     // 基本情報
     customStr += `${x}${colorCode}${y}`;
@@ -555,7 +558,7 @@ function loadState(){
           const baseInfo = parts[0];
           
           // 位置情報と色を抽出（例: "100r50"から x=10.0, color="red", y=5.0）
-          // 色は1文字のコード: r=red, b=blue, y=yellow, g=green, ball=ball
+          // 色は1文字のコード: r=red, b=blue, y=yellow, g=green, l=ball
           let colorFullName;
           let x, y;
           
@@ -572,14 +575,12 @@ function loadState(){
           } else if (baseInfo.includes('g')) {
             colorFullName = 'green';
             [x, y] = baseInfo.split('g');
-          } else if (baseInfo.includes('a')) {
+          } else if (baseInfo.includes('l')) {
             colorFullName = 'ball';
-            [x, y] = baseInfo.split('a');
+            [x, y] = baseInfo.split('l');
           } else {
-            // 不明な色コードの場合はデフォルト値を設定
-            colorFullName = 'red';
-            x = 50;
-            y = 50;
+            // 不明な色コードの場合はスキップ
+            return null;
           }
           
           // 基本プレイヤーオブジェクトを作成
