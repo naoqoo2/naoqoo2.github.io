@@ -486,28 +486,44 @@ modals.forEach(modal => {
 });
 
 function saveState(){
-  // カスタムフォーマットを作成
-  const customFormat = {
-    v: 1, // バージョン番号
-    p: state.players.map(p => {
-      // 必要なデータのみを保存して文字数を削減
-      const player = {
-        c: p.color,
-        // 座標を10倍して整数化（小数点1桁までの精度を保持）
-        x: Math.round(p.x * 10),
-        y: Math.round(p.y * 10)
-      };
-      
-      if (p.num !== undefined && p.num !== '') player.n = p.num;
-      if (p.name) player.m = p.name;
-      
-      return player;
-    })
-  };
+  // カスタムの短い形式を作成: x色y-背番号-名前, 形式
+  let customStr = '';
   
-  // カスタムフォーマットをJSON文字列に変換し、LZStringで圧縮
-  const json = JSON.stringify(customFormat);
-  const compressed = LZString.compressToEncodedURIComponent(json);
+  state.players.forEach((p, index) => {
+    // 座標（10倍して整数化）
+    const x = Math.round(p.x * 10);
+    const y = Math.round(p.y * 10);
+    
+    // 色のコード（先頭1文字）
+    const colorCode = p.color.charAt(0);
+    
+    // 基本情報
+    customStr += `${x}${colorCode}${y}`;
+    
+    // 背番号と名前がある場合は追加
+    if (p.num !== undefined && p.num !== '') {
+      customStr += `-${p.num}`;
+      
+      // 名前もある場合
+      if (p.name) {
+        customStr += `-${p.name}`;
+      }
+    } else if (p.name) {
+      // 背番号なしで名前のみの場合
+      customStr += `--${p.name}`;
+    }
+    
+    // 最後の選手でなければカンマを追加
+    if (index < state.players.length - 1) {
+      customStr += ',';
+    }
+  });
+  
+  // バージョン番号を追加（将来の互換性のため）
+  customStr = 'v2:' + customStr;
+  
+  // LZStringで圧縮
+  const compressed = LZString.compressToEncodedURIComponent(customStr);
   
   // URLに設定
   history.replaceState(null, '', '?d=' + compressed);
@@ -519,32 +535,100 @@ function loadState(){
     try {
       const compressed = params.get('d');
       // LZStringで解凍
-      const json = LZString.decompressFromEncodedURIComponent(compressed);
-      if (!json) throw new Error('Invalid compressed data');
+      const dataStr = LZString.decompressFromEncodedURIComponent(compressed);
+      if (!dataStr) throw new Error('Invalid compressed data');
       
-      const customFormat = JSON.parse(json);
-      
-      // バージョン1のフォーマットを処理
-      if (customFormat.v === 1) {
-        // 読み込み時に連番でIDを割り当てる
-        state.players = customFormat.p.map((p, index) => {
-          // 元のフォーマットに戻す
+      // フォーマットバージョンをチェック
+      if (dataStr.startsWith('v2:')) {
+        // v2形式: x色y-背番号-名前, 形式
+        const playerDataStr = dataStr.substring(3); // 'v2:'の後ろから
+        
+        // カンマで分割して各選手データを取得
+        const playerStrings = playerDataStr.split(',');
+        
+        // 各選手データを解析
+        state.players = playerStrings.map((playerStr, index) => {
+          // 空文字列の場合はスキップ
+          if (!playerStr.trim()) return null;
+          
+          const parts = playerStr.split('-');
+          const baseInfo = parts[0];
+          
+          // 位置情報と色を抽出（例: "100r50"から x=10.0, color="red", y=5.0）
+          // 色は1文字のコード: r=red, b=blue, y=yellow, g=green, ball=ball
+          let colorFullName;
+          let x, y;
+          
+          // 色コードを検出してフルネームに変換
+          if (baseInfo.includes('r')) {
+            colorFullName = 'red';
+            [x, y] = baseInfo.split('r');
+          } else if (baseInfo.includes('b')) {
+            colorFullName = 'blue';
+            [x, y] = baseInfo.split('b');
+          } else if (baseInfo.includes('y')) {
+            colorFullName = 'yellow';
+            [x, y] = baseInfo.split('y');
+          } else if (baseInfo.includes('g')) {
+            colorFullName = 'green';
+            [x, y] = baseInfo.split('g');
+          } else if (baseInfo.includes('a')) {
+            colorFullName = 'ball';
+            [x, y] = baseInfo.split('a');
+          } else {
+            // 不明な色コードの場合はデフォルト値を設定
+            colorFullName = 'red';
+            x = 50;
+            y = 50;
+          }
+          
+          // 基本プレイヤーオブジェクトを作成
           const player = {
-            // 単純な連番IDを割り当て
             id: (index + 1).toString(),
-            color: p.c,
-            // 整数化された座標を10で割って小数点に戻す
-            x: p.x / 10,
-            y: p.y / 10,
-            num: p.n !== undefined ? p.n : ''
+            color: colorFullName,
+            x: parseInt(x) / 10,
+            y: parseInt(y) / 10,
+            num: ''
           };
           
-          if (p.m) player.name = p.m;
+          // 背番号が指定されている場合は追加
+          if (parts.length > 1 && parts[1] !== '') {
+            player.num = parts[1];
+          }
+          
+          // 名前が指定されている場合は追加
+          if (parts.length > 2) {
+            player.name = parts[2];
+          }
           
           return player;
-        });
+        }).filter(p => p !== null); // nullを除外
+        
       } else {
-        throw new Error('Unsupported format version');
+        // v1形式（JSON）のままサポート
+        const customFormat = JSON.parse(dataStr);
+        
+        if (customFormat.v === 1) {
+          // 読み込み時に連番でIDを割り当てる
+          state.players = customFormat.p.map((p, index) => {
+            // 元のフォーマットに戻す
+            const player = {
+              // 単純な連番IDを割り当て
+              id: (index + 1).toString(),
+              color: p.c,
+              // 整数化された座標を10で割って小数点に戻す
+              x: p.x / 10,
+              y: p.y / 10,
+              num: p.n !== undefined ? p.n : ''
+            };
+            
+            if (p.m) player.name = p.m;
+            
+            return player;
+          });
+        } else {
+          throw new Error('Unsupported format version');
+        }
       }
     } catch(e) {
       console.error('Failed to load state:', e);
