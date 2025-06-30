@@ -25,8 +25,22 @@ const shareCloseBtn = document.getElementById('share-close');
 const presetCloseBtn = document.getElementById('preset-close');
 const helpClose = document.getElementById('help-close');
 const presetBtns = document.querySelectorAll('#preset-modal button[data-preset]');
-// localStorageから縦横表示の設定を読み込む（デフォルトは横向き）
-let isVertical = localStorage.getItem('soccerBoardVertical') === 'true' || false;
+// localStorageから縦横表示の設定を読み込む
+// モバイルデバイスはデフォルトで縦向き、それ以外は横向き
+function isMobileDevice() {
+  return (window.innerWidth <= 768) || 
+         (navigator.maxTouchPoints > 0 && /Mobi|Android/i.test(navigator.userAgent));
+}
+
+let isVertical;
+// localStorageに保存された設定がある場合はそれを優先
+if (localStorage.getItem('soccerBoardVertical') !== null) {
+  isVertical = localStorage.getItem('soccerBoardVertical') === 'true';
+} else {
+  // 初回または設定がない場合はデバイスタイプに基づいて決定
+  isVertical = isMobileDevice();
+  localStorage.setItem('soccerBoardVertical', isVertical);
+}
 
 function defaultPlayers(){
   // 赤チーム - 4-4-2フォーメーション
@@ -743,12 +757,39 @@ presetBtns.forEach(btn=>btn.addEventListener('click',()=>{applyPreset(btn.datase
 
 helpBtn.addEventListener('click',()=>helpModal.classList.remove('hidden'));
 
-// 縦横切り替え機能
-rotateBtn.addEventListener('click', toggleFieldOrientation);
+// 画面回転やリサイズ時の処理
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  // 連続したリサイズイベントを抑制
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    // ユーザーが手動で設定を変更していない場合のみ自動調整
+    const savedSetting = localStorage.getItem('soccerBoardVertical');
+    const userManuallyChanged = savedSetting !== null;
+    
+    // ユーザーが手動で変更していない場合のみ自動調整
+    if (!userManuallyChanged) {
+      const shouldBeVertical = isMobileDevice();
+      if (shouldBeVertical !== isVertical) {
+        toggleFieldOrientation(shouldBeVertical);
+      }
+    }
+  }, 300);
+});
+
+// 縦横切り替えボタンのイベントリスナー
+rotateBtn.addEventListener('click', () => {
+  // ユーザーによる手動切り替え
+  toggleFieldOrientation();
+  
+  // ユーザーが手動で変更したことをマーク
+  localStorage.setItem('userChangedOrientation', 'true');
+});
 
 // フィールドの向きを切り替える関数
-function toggleFieldOrientation() {
-  isVertical = !isVertical;
+function toggleFieldOrientation(forceVertical = null) {
+  // forceVerticalが指定されている場合はその値を使用、そうでなければ現在の値を反転
+  isVertical = forceVertical !== null ? forceVertical : !isVertical;
   
   // フィールドのクラスを切り替え
   field.classList.toggle('vertical', isVertical);
@@ -827,27 +868,31 @@ modals.forEach(modal => {
 });
 
 // 初期状態の設定
-// SVG要素を取得
-const horizontalSvg = field.querySelector('.horizontal-field');
-const verticalSvg = field.querySelector('.vertical-field');
+function initializeFieldOrientation() {
+  // SVG要素を取得
+  const horizontalSvg = field.querySelector('.horizontal-field');
+  const verticalSvg = field.querySelector('.vertical-field');
 
-// 保存された向き設定を先に適用（loadStateの前に設定）
-if (isVertical) {
-  field.classList.add('vertical');
-  horizontalSvg.style.display = 'none';
-  verticalSvg.style.display = 'block';
-} else {
-  field.classList.remove('vertical');
-  horizontalSvg.style.display = 'block';
-  verticalSvg.style.display = 'none';
+  // 向き設定を適用
+  if (isVertical) {
+    field.classList.add('vertical');
+    horizontalSvg.style.display = 'none';
+    verticalSvg.style.display = 'block';
+  } else {
+    field.classList.remove('vertical');
+    horizontalSvg.style.display = 'block';
+    verticalSvg.style.display = 'none';
+  }
 }
+
+// 初期化時に向き設定を適用
+initializeFieldOrientation();
 
 // 初期状態の読み込み
 loadState();
 
-// loadStateの後、改めて向き設定を適用
-// URLパラメータの有無に関わらず、isVerticalがtrueなら座標変換を行う
+// loadStateの後、向き設定が縦向きなら座標変換を行う
 if (isVertical) {
-  // 縦向きの場合は座標変換を必ず行う
+  // 縦向きの場合は座標変換を確実に行う
   convertPlayerPositions();
 }
