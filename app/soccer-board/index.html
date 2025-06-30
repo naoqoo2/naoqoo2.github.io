@@ -5,14 +5,14 @@ layout: none
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
 <title>Soccer Board</title>
 <style>
-html,body{height:100%;margin:0;overflow-x:hidden;overflow-y:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+html,body{height:100%;margin:0;overflow-x:hidden;overflow-y:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:manipulation}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#222;color:#eee;display:flex;flex-direction:column;align-items:center;height:auto;overflow-y:auto}
 .app-container{display:flex;flex-direction:column;width:100%;max-width:900px;min-height:100vh;padding:20px;box-sizing:border-box;align-items:center;justify-content:space-between}
-#board{width:100%;display:flex;justify-content:center;align-items:center;position:relative;padding:0;box-sizing:border-box;min-height:200px;flex:1;overflow:visible;margin:0}
-#field{position:relative;background:#060;aspect-ratio:105/68;width:calc(100% - 20px);max-width:900px;margin:0 auto;border:4px solid #fff;box-sizing:border-box;overflow:visible;min-height:100px}
+#board{width:100%;display:flex;justify-content:center;align-items:center;position:relative;padding:0;box-sizing:border-box;min-height:200px;flex:1;overflow:visible;margin:0;touch-action:manipulation}
+#field{position:relative;background:#060;aspect-ratio:105/68;width:calc(100% - 20px);max-width:900px;margin:0 auto;border:4px solid #fff;box-sizing:border-box;overflow:visible;min-height:100px;touch-action:manipulation}
 #field.vertical{aspect-ratio:68/105;max-width:600px}
 #field svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
 .piece{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;touch-action:none;user-select:none;cursor:move;z-index:10}
@@ -27,9 +27,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   color:transparent
 }
 .player .name{font-size:10px;margin-top:2px;white-space:nowrap}
-#modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000}
+#modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000;box-sizing:border-box}
 #modal.hidden{display:none}
-#modal .box{background:#333;padding:24px;border-radius:12px;display:flex;flex-direction:column;gap:12px;width:320px;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,0.4);position:relative}
+#modal .box{background:#333;padding:24px;border-radius:12px;display:flex;flex-direction:column;gap:12px;width:320px;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,0.4);position:relative;box-sizing:border-box}
 #player-form{display:flex;flex-direction:column;gap:12px;}
 #modal .close-btn,#help-modal .close-btn,#share-modal .close-btn,#preset-modal .close-btn{
   position:absolute;top:-14px;right:-14px;width:28px;height:28px;background:#444;border:none;
@@ -47,10 +47,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   background-size:contain;
   color:transparent
 }
-#modal input{background:#444;border:none;padding:10px 12px;border-radius:6px;color:#fff;font-size:16px;outline:none;transition:box-shadow 0.2s}
+#modal input{background:#444;border:none;padding:10px 12px;border-radius:6px;color:#fff;font-size:16px;outline:none;transition:box-shadow 0.2s;width:100%;box-sizing:border-box}
 #modal input:focus{box-shadow:0 0 0 2px rgba(255,255,255,0.3)}
 #modal button{padding:10px 16px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:all 0.2s;font-size:14px;text-transform:uppercase}
-#modal .btn-group{display:flex;gap:12px;justify-content:space-between;margin-top:8px}
+#modal .btn-group{display:flex;gap:12px;justify-content:space-between;margin-top:8px;flex-wrap:wrap}
 #modal #save-btn{background:#4CAF50;color:white;margin-left:auto;}
 #modal #save-btn:hover{background:#45a049;box-shadow:0 4px 8px rgba(76, 175, 80, 0.3)}
 #modal #cancel-btn{background:#555;color:white;}
@@ -60,14 +60,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   #toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 16px;position:relative;z-index:50;padding:10px 0;width:100%;max-width:900px;box-sizing:border-box}
   #toolbar button{padding:10px 16px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;background:#4a90e2;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.3);transition:background 0.2s,transform 0.2s}
   #toolbar button:hover{background:#3977c8;transform:translateY(-2px)}
-  #help-modal,#share-modal,#preset-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000}
+  #help-modal,#share-modal,#preset-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000;box-sizing:border-box}
   #help-modal.hidden,#share-modal.hidden,#preset-modal.hidden{display:none}
-  #help-modal .box,#share-modal .box,#preset-modal .box{background:#333;padding:24px;border-radius:12px;width:320px;max-width:320px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px;position:relative}
+  #help-modal .box,#share-modal .box,#preset-modal .box{background:#333;padding:24px;border-radius:12px;width:320px;max-width:320px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px;position:relative;box-sizing:border-box}
   #help-modal button,#share-modal button,#preset-modal button{padding:8px 12px;border:none;border-radius:6px;background:#555;color:#fff;font-weight:bold;cursor:pointer}
   @media (max-width:600px){
     #modal,#help-modal,#share-modal,#preset-modal{
       align-items:flex-start;
       padding-top:60px;
+    }
+    #modal .box,#help-modal .box,#share-modal .box,#preset-modal .box{
+      width:85%;
+      min-width:unset;
+      max-width:320px;
+      padding:20px 16px;
+      margin:0 auto;
+    }
+    #modal .close-btn,#help-modal .close-btn,#share-modal .close-btn,#preset-modal .close-btn{
+      top:-12px;
+      right:-12px;
     }
   }
   /* トースト通知のスタイル */

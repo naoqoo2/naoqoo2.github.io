@@ -205,8 +205,10 @@ field.addEventListener('pointerup',e=>{
 });
 
 // タッチデバイスのためのスクロール防止（フィールド内でのスクロールを防止）
+// ただし、ピンチズームなどのマルチタッチジェスチャーは許可する
 field.addEventListener('touchstart', e => {
-  if (e.target.closest('.piece') || e.target.closest('#field')) {
+  // タッチポイントが1つの場合のみドラッグ操作を優先
+  if (e.touches.length === 1 && (e.target.closest('.piece') || e.target.closest('#field'))) {
     e.preventDefault();
   }
 }, { passive: false });
@@ -220,6 +222,11 @@ field.addEventListener('contextmenu', e => {
 });
 
 function startDrag(e){
+  // タッチイベントの場合、マルチタッチ時はドラッグを開始しない（ピンチズームを許可）
+  if (e.touches && e.touches.length > 1) {
+    return;
+  }
+  
   // 親要素が.pieceクラスを持つ場合はその要素をドラッグ対象にする
   dragTarget = e.target.closest('.piece');
   if (!dragTarget) return;
@@ -251,6 +258,11 @@ function startDrag(e){
   e.preventDefault();
 }
 function onMove(e){
+  // タッチイベントの場合、マルチタッチ時は処理しない（ピンチズームを許可）
+  if (e.touches && e.touches.length > 1) {
+    return;
+  }
+  
   if (!dragTarget) return;
 
   pointerMoved = true;
