@@ -61,44 +61,44 @@ function defaultPlayers(){
   
   // 8人制用の選手配置 - 3-1-2-1ダイヤモンドフォーメーション
   const red8 = [
-    {num:1,x:10,y:50},  // GK
-    {num:2,x:20,y:25},  // DF右
-    {num:3,x:20,y:50},  // DF中央
-    {num:4,x:20,y:75},  // DF左
-    {num:5,x:30,y:50},  // 守備的MF（アンカー）
-    {num:6,x:35,y:25},  // MF右
-    {num:7,x:35,y:75},  // MF左
-    {num:8,x:40,y:50}   // FW（トップ）
+    {num:'',x:10,y:50},  // GK
+    {num:'',x:20,y:25},  // DF右
+    {num:'',x:20,y:50},  // DF中央
+    {num:'',x:20,y:75},  // DF左
+    {num:'',x:30,y:50},  // 守備的MF（アンカー）
+    {num:'',x:35,y:25},  // MF右
+    {num:'',x:35,y:75},  // MF左
+    {num:'',x:40,y:50}   // FW（トップ）
   ].map(p=>({...p,color:'red'}));
   
   // 8人制用の青チーム
   const blue8 = [
-    {num:1,x:90,y:50},  // GK
-    {num:2,x:80,y:25},  // DF右
-    {num:3,x:80,y:50},  // DF中央
-    {num:4,x:80,y:75},  // DF左
-    {num:5,x:70,y:50},  // 守備的MF（アンカー）
-    {num:6,x:65,y:25},  // MF右
-    {num:7,x:65,y:75},  // MF左
-    {num:8,x:60,y:50}   // FW（トップ）
+    {num:'',x:90,y:50},  // GK
+    {num:'',x:80,y:25},  // DF右
+    {num:'',x:80,y:50},  // DF中央
+    {num:'',x:80,y:75},  // DF左
+    {num:'',x:70,y:50},  // 守備的MF（アンカー）
+    {num:'',x:65,y:25},  // MF右
+    {num:'',x:65,y:75},  // MF左
+    {num:'',x:60,y:50}   // FW（トップ）
   ].map(p=>({...p,color:'blue'}));
   
   // 5人制用の選手配置 - 1-2-1ダイヤモンドフォーメーション
   const red5 = [
-    {num:1,x:10,y:50},  // GK
-    {num:2,x:20,y:50},  // DF
-    {num:3,x:30,y:25},  // MF右
-    {num:4,x:30,y:75},  // MF左
-    {num:5,x:40,y:50}   // FW
+    {num:'',x:10,y:50},  // GK
+    {num:'',x:20,y:50},  // DF
+    {num:'',x:30,y:25},  // MF右
+    {num:'',x:30,y:75},  // MF左
+    {num:'',x:40,y:50}   // FW
   ].map(p=>({...p,color:'red'}));
   
   // 5人制用の青チーム
   const blue5 = [
-    {num:1,x:90,y:50},  // GK
-    {num:2,x:80,y:50},  // DF
-    {num:3,x:70,y:25},  // MF右
-    {num:4,x:70,y:75},  // MF左
-    {num:5,x:60,y:50}   // FW
+    {num:'',x:90,y:50},  // GK
+    {num:'',x:80,y:50},  // DF
+    {num:'',x:70,y:25},  // MF右
+    {num:'',x:70,y:75},  // MF左
+    {num:'',x:60,y:50}   // FW
   ].map(p=>({...p,color:'blue'}));
   
   // ボールをフィールドの中央に配置
@@ -326,6 +326,20 @@ function applyPreset(type){
     y: 50,
     num: ''
   };
+
+  // ベンチプレイヤー - 赤チーム
+  const redBench = [
+    {color: 'red', num: '', x: 2, y: 96.5},
+    {color: 'red', num: '', x: 6, y: 96.5},
+    {color: 'red', num: '', x: 10, y: 96.5}
+  ];
+
+  // ベンチプレイヤー - 青チーム
+  const blueBench = [
+    {color: 'blue', num: '', x: 90, y: 96.5},
+    {color: 'blue', num: '', x: 94, y: 96.5},
+    {color: 'blue', num: '', x: 98, y: 96.5}
+  ];
   
   let players = [];
   
@@ -340,16 +354,16 @@ function applyPreset(type){
       players = [...state.redFull, ...state.blueFull, ball];
       break;
     case 'red8':
-      players = [...state.red8, ball];
+      players = [...state.red8, ...redBench, ball];
       break;
     case 'full8':
-      players = [...state.red8, ...state.blue8, ball];
+      players = [...state.red8, ...state.blue8, ...redBench, ...blueBench, ball];
       break;
     case 'red5':
-      players = [...state.red5, ball];
+      players = [...state.red5, ...redBench, ball];
       break;
     case 'full5':
-      players = [...state.red5, ...state.blue5, ball];
+      players = [...state.red5, ...state.blue5, ...redBench, ...blueBench, ball];
       break;
     default:
       return; // 何も変更しない
