@@ -204,27 +204,35 @@ field.addEventListener('dblclick',e=>{
 });
 
 field.addEventListener('pointerup',e=>{
+  // タッチイベントの場合のみ特殊処理
   if(e.pointerType!=='touch') return;
+  // 要素上でのタップは無視
   if(e.target.closest('.piece')) return;
+  // ピンチズーム操作後のタップは無視
+  if(e.touches && e.touches.length > 1) return;
+  
   const rect=field.getBoundingClientRect();
   const now=Date.now();
+  // 300ms以内の2回目のタップはダブルタップとして扱う
   if(now-fieldLastTap<300){
     const x=parseFloat(((e.clientX-rect.left)/rect.width*100).toFixed(1));
     const y=parseFloat(((e.clientY-rect.top)/rect.height*100).toFixed(1));
     openNew(x,y);
-    fieldLastTap=0;
+    fieldLastTap=0; // リセット
   }else{
     fieldLastTap=now;
   }
 });
 
-// タッチデバイスのためのスクロール防止（フィールド内でのスクロールを防止）
-// ただし、ピンチズームなどのマルチタッチジェスチャーは許可する
+// タッチデバイスのタッチイベント処理
+// ピンチズームなどのマルチタッチジェスチャーを許可する
 field.addEventListener('touchstart', e => {
   // タッチポイントが1つの場合のみドラッグ操作を優先
-  if (e.touches.length === 1 && (e.target.closest('.piece') || e.target.closest('#field'))) {
+  if (e.touches.length === 1 && e.target.closest('.piece')) {
+    // 駒要素のドラッグ時のみpreventDefaultを実行
     e.preventDefault();
   }
+  // マルチタッチの場合やフィールド自体へのタッチはデフォルト動作を許可する
 }, { passive: false });
 
 // ドラッグ中のコンテキストメニュー表示を防止
@@ -268,12 +276,15 @@ function startDrag(e){
   dragTarget.addEventListener('pointerup', endDrag);
   dragTarget.addEventListener('pointercancel', endDrag);
   
-  // タッチデバイスでのスクロール防止
-  e.preventDefault();
+  // タッチデバイスでのスクロール防止（駒のドラッグ時のみ）
+  if (e.cancelable) {
+    e.preventDefault();
+  }
 }
 function onMove(e){
   // タッチイベントの場合、マルチタッチ時は処理しない（ピンチズームを許可）
   if (e.touches && e.touches.length > 1) {
+    endDrag(e); // マルチタッチを検出したらドラッグを終了
     return;
   }
   
@@ -290,7 +301,10 @@ function onMove(e){
   dragTarget.style.left = Math.min(100, Math.max(0, x)) + '%';
   dragTarget.style.top = Math.min(100, Math.max(0, y)) + '%';
   
-  e.preventDefault(); // タッチデバイスでのスクロール防止
+  // タッチデバイスでのスクロール防止（駒の移動中のみ）
+  if (e.cancelable) {
+    e.preventDefault();
+  }
 }
 
 function endDrag(e){
