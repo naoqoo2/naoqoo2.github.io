@@ -208,8 +208,6 @@ field.addEventListener('pointerup',e=>{
   if(e.pointerType!=='touch') return;
   // 要素上でのタップは無視
   if(e.target.closest('.piece')) return;
-  // ピンチズーム操作後のタップは無視
-  if(e.touches && e.touches.length > 1) return;
   
   const rect=field.getBoundingClientRect();
   const now=Date.now();
@@ -224,16 +222,12 @@ field.addEventListener('pointerup',e=>{
   }
 });
 
-// タッチデバイスのタッチイベント処理
-// ピンチズームなどのマルチタッチジェスチャーを許可する
+// タッチイベント関連のデフォルト動作を妨げない
+// イベントをそのまま通過させることでピンチズームなどを許可する
 field.addEventListener('touchstart', e => {
-  // タッチポイントが1つの場合のみドラッグ操作を優先
-  if (e.touches.length === 1 && e.target.closest('.piece')) {
-    // 駒要素のドラッグ時のみpreventDefaultを実行
-    e.preventDefault();
-  }
-  // マルチタッチの場合やフィールド自体へのタッチはデフォルト動作を許可する
-}, { passive: false });
+  // タッチイベントに対して何もしない（デフォルト動作を許可）
+  // 駒の移動は pointerdown イベントで処理されるため、ここでは何もしない
+}, { passive: true });
 
 // ドラッグ中のコンテキストメニュー表示を防止
 field.addEventListener('contextmenu', e => {
@@ -244,7 +238,7 @@ field.addEventListener('contextmenu', e => {
 });
 
 function startDrag(e){
-  // タッチイベントの場合、マルチタッチ時はドラッグを開始しない（ピンチズームを許可）
+  // マルチタッチの場合はドラッグを開始しない
   if (e.touches && e.touches.length > 1) {
     return;
   }
@@ -260,8 +254,14 @@ function startDrag(e){
   dragTarget.style.opacity = '0.8';
   dragTarget.style.zIndex = '100';
   
-  // キャプチャを設定
-  dragTarget.setPointerCapture(e.pointerId);
+  // タッチイベントとマウスイベントで処理を分ける
+  if (e.pointerType === 'touch') {
+    // タッチイベントの場合はポインターキャプチャを設定しない
+    // これによりピンチズームなどのジェスチャーが動作可能に
+  } else {
+    // マウスイベントの場合はポインターキャプチャを設定
+    dragTarget.setPointerCapture(e.pointerId);
+  }
   
   // フィールドの位置を基準にドラッグオフセットを計算
   const rect = field.getBoundingClientRect();
@@ -276,13 +276,11 @@ function startDrag(e){
   dragTarget.addEventListener('pointerup', endDrag);
   dragTarget.addEventListener('pointercancel', endDrag);
   
-  // タッチデバイスでのスクロール防止（駒のドラッグ時のみ）
-  if (e.cancelable) {
-    e.preventDefault();
-  }
+  // preventDefault はタッチイベントでは呼び出さない
+  // これによりピンチズームなどが動作可能に
 }
 function onMove(e){
-  // タッチイベントの場合、マルチタッチ時は処理しない（ピンチズームを許可）
+  // マルチタッチ検出時は処理しない
   if (e.touches && e.touches.length > 1) {
     endDrag(e); // マルチタッチを検出したらドラッグを終了
     return;
@@ -301,8 +299,9 @@ function onMove(e){
   dragTarget.style.left = Math.min(100, Math.max(0, x)) + '%';
   dragTarget.style.top = Math.min(100, Math.max(0, y)) + '%';
   
-  // タッチデバイスでのスクロール防止（駒の移動中のみ）
-  if (e.cancelable) {
+  // マウスイベントの場合のみpreventDefaultを実行
+  // タッチイベントでは実行しない（ピンチズームなどを許可するため）
+  if (e.pointerType !== 'touch' && e.cancelable) {
     e.preventDefault();
   }
 }
