@@ -162,7 +162,14 @@ function openNew(x,y){
   newPos={x,y};
   nameInput.value='';
   numInput.value='';
-  selectColor(x>50?'blue':'red');
+  
+  // 縦表示モードと横表示モードで色のデフォルト値を切り替える
+  if (isVertical) {
+    selectColor(y<50?'blue':'red');
+  } else {
+    selectColor(x>50?'blue':'red');
+  }
+  
   deleteBtn.style.display='none';
   modal.classList.remove('hidden');
   numInput.focus();
