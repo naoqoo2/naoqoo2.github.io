@@ -16,6 +16,11 @@
       "number": "No",
       "name": "名前"
     },
+    "footer": {
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー",
+      "contact": "お問い合わせ"
+    },
     "presets": {
       "clear": "クリア",
       "red11": "11人のみ",
@@ -47,6 +52,11 @@
     "inputs": {
       "number": "No",
       "name": "Name"
+    },
+    "footer": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "contact": "Contact"
     },
     "presets": {
       "clear": "Clear",
@@ -80,6 +90,11 @@
       "number": "号码",
       "name": "姓名"
     },
+    "footer": {
+      "terms": "服务条款",
+      "privacy": "隐私政策",
+      "contact": "联系我们"
+    },
     "presets": {
       "clear": "清空",
       "red11": "仅11人",
@@ -111,6 +126,11 @@
     "inputs": {
       "number": "Número",
       "name": "Nombre"
+    },
+    "footer": {
+      "terms": "Términos de servicio",
+      "privacy": "Política de privacidad",
+      "contact": "Contacto"
     },
     "presets": {
       "clear": "Limpiar",
@@ -144,6 +164,11 @@
       "number": "Numero",
       "name": "Nome"
     },
+    "footer": {
+      "terms": "Termini di servizio",
+      "privacy": "Politica sulla privacy",
+      "contact": "Contatto"
+    },
     "presets": {
       "clear": "Cancella",
       "red11": "Solo 11",
@@ -176,6 +201,11 @@
       "number": "Número",
       "name": "Nome"
     },
+    "footer": {
+      "terms": "Termos de serviço",
+      "privacy": "Política de privacidade",
+      "contact": "Contato"
+    },
     "presets": {
       "clear": "Limpar",
       "red11": "Apenas 11",
@@ -207,6 +237,11 @@
     "inputs": {
       "number": "Nummer",
       "name": "Name"
+    },
+    "footer": {
+      "terms": "Nutzungsbedingungen",
+      "privacy": "Datenschutzrichtlinie",
+      "contact": "Kontakt"
     },
     "presets": {
       "clear": "Löschen",

@@ -114,6 +114,58 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     box-sizing: border-box;
   }
   
+  /* Footer styles */
+  .app-footer {
+    width: 100%;
+    background: #222;
+    padding: 16px 20px;
+    margin-top: auto;
+    box-sizing: border-box;
+  }
+  
+  .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+    gap: 16px;
+  }
+  
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .footer-logo-img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .footer-copyright {
+    color: #aaa;
+    font-size: 14px;
+  }
+  
+  .footer-links {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .footer-links a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+  
+  .footer-links a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+  
   .header-left {
     display: flex;
     align-items: center;
@@ -166,6 +218,79 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       justify-content: center;
     }
   }
+  
+  /* Footer styles */
+.app-footer {
+  width: 100%;
+  background: #222;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-copyright {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+}
+
+.footer-copyright a {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-copyright a:hover {
+  color: #aaa;
+  text-decoration: underline;
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+}
+
+.footer-links a {
+  color: #888;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #aaa;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .footer-copyright {
+    text-align: center;
+  }
+}
 </style>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -324,6 +449,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button data-lang="de">Deutsch</button>
   </div>
 </div>
+
+<footer class="app-footer">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
+      <a href="terms.html" data-i18n="footer.terms">Terms of Service</a>
+      <a href="https://x.com/naoqoo2" data-i18n="footer.contact" target="_blank" rel="noopener">Contact</a>
+    </div>
+    <div class="footer-copyright">
+      <a href="https://x.com/naoqoo2" target="_blank" rel="noopener">© naoqoo2</a>
+    </div>
+  </div>
+</footer>
 
 <script src="js/lz-string.min.js?v=20250702"></script>
 <script src="js/board.js?v=20250702"></script>
