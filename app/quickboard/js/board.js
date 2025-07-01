@@ -1,7 +1,7 @@
 // Constants for localStorage keys
-const STORAGE_KEY_LANG = 'QuickBoardSoccer_lang';
-const STORAGE_KEY_VERTICAL = 'QuickBoardSoccer_vertical';
-const STORAGE_KEY_USER_ORIENTATION = 'QuickBoardSoccer_orientation';
+const STORAGE_KEY_LANG = 'QuickBoard_lang';
+const STORAGE_KEY_VERTICAL = 'QuickBoard_vertical';
+const STORAGE_KEY_USER_ORIENTATION = 'QuickBoard_orientation';
 
 let state = {players:[]};
 const field = document.getElementById('field');
