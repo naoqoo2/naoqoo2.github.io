@@ -14,8 +14,8 @@ layout: none
 <style>
 html,body{height:100%;margin:0;overflow-x:hidden;overflow-y:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:manipulation}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#222;color:#eee;display:flex;flex-direction:column;align-items:center;height:auto;overflow-y:auto}
-.app-container{display:flex;flex-direction:column;width:100%;max-width:900px;min-height:100vh;padding:20px;box-sizing:border-box;align-items:center;justify-content:space-between}
-#board{width:100%;display:flex;justify-content:center;align-items:center;position:relative;padding:0;box-sizing:border-box;min-height:200px;flex:1;overflow:visible;margin:0;touch-action:manipulation}
+.app-container{display:flex;flex-direction:column;width:100%;max-width:900px;min-height:100vh;padding:0;box-sizing:border-box;align-items:center;justify-content:space-between}
+#board{width:100%;display:flex;justify-content:center;align-items:center;position:relative;padding:20px;box-sizing:border-box;min-height:200px;flex:1;overflow:visible;margin:0;touch-action:manipulation}
 #field{position:relative;background:#060;aspect-ratio:105/68;width:calc(100% - 20px);max-width:900px;margin:0 auto;border:4px solid #fff;box-sizing:border-box;overflow:visible;min-height:100px;touch-action:manipulation}
 #field.vertical{aspect-ratio:68/105;max-width:600px}
 #field svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
@@ -61,9 +61,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 #modal #cancel-btn:hover{background:#666;box-shadow:0 4px 8px rgba(0, 0, 0, 0.2)}
   #modal #delete-btn{background:#f44336;color:white;}
   #modal #delete-btn:hover{background:#d32f2f;box-shadow:0 4px 8px rgba(244, 67, 54, 0.3)}
-  #toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 16px;position:relative;z-index:50;padding:10px 0;width:100%;max-width:900px;box-sizing:border-box}
-  #toolbar button{padding:10px 16px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;background:#4a90e2;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.3);transition:background 0.2s,transform 0.2s}
-  #toolbar button:hover{background:#3977c8;transform:translateY(-2px)}
   #help-modal,#share-modal,#preset-modal,#lang-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000;box-sizing:border-box}
   #help-modal.hidden,#share-modal.hidden,#preset-modal.hidden,#lang-modal.hidden{display:none}
   #help-modal .box,#share-modal .box,#preset-modal .box,#lang-modal .box{background:#333;padding:24px;border-radius:12px;width:320px;max-width:320px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px;position:relative;box-sizing:border-box}
@@ -105,10 +102,88 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     opacity:1;
     visibility:visible;
   }
+  
+  /* Header styles */
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: #222;
+    padding: 12px 20px;
+    box-sizing: border-box;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .header-logo {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .header-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+  }
+  
+  .header-menu {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .header-menu button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #4a90e2;
+    color: #fff;
+    transition: background 0.2s;
+  }
+  
+  .header-menu button:hover {
+    background: #3977c8;
+  }
+  
+  @media (max-width: 600px) {
+    .app-header {
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+    }
+    
+    .header-menu {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 </style>
 </head>
 <body>
 <div class="app-container">
+<header class="app-header">
+  <div class="header-left">
+    <img src="images/quickboard.png" alt="QuickBoard Logo" class="header-logo">
+    <h1 class="header-title">QuickBoard</h1>
+  </div>
+  <div class="header-menu">
+    <button id="share-btn" data-i18n="buttons.share">Share</button>
+    <button id="preset-btn" data-i18n="buttons.preset">Preset</button>
+    <button id="rotate-btn" data-i18n="buttons.rotate">Rotate</button>
+    <button id="help-btn" data-i18n="buttons.help">Help</button>
+    <button id="lang-btn" data-i18n="buttons.language">Language</button>
+  </div>
+</header>
+
 <div id="board">
   <div id="field">
     <svg class="horizontal-field" viewBox="0 0 105 68" xmlns="http://www.w3.org/2000/svg">
@@ -171,14 +246,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <line x1="27" y1="104" x2="41" y2="104" stroke="#fff" stroke-width="0.5"/>
     </svg>
   </div>
-</div>
-
-<div id="toolbar">
-  <button id="share-btn" data-i18n="buttons.share">Share</button>
-  <button id="preset-btn" data-i18n="buttons.preset">Preset</button>
-  <button id="rotate-btn" data-i18n="buttons.rotate">Rotate</button>
-  <button id="help-btn" data-i18n="buttons.help">Help</button>
-  <button id="lang-btn" data-i18n="buttons.language">Language</button>
 </div>
 
 <div id="modal" class="hidden">
