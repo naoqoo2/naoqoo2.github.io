@@ -1,3 +1,8 @@
+// Constants for localStorage keys
+const STORAGE_KEY_LANG = 'QuickBoardSoccer_lang';
+const STORAGE_KEY_VERTICAL = 'QuickBoardSoccer_vertical';
+const STORAGE_KEY_USER_ORIENTATION = 'QuickBoardSoccer_orientation';
+
 let state = {players:[]};
 const field = document.getElementById('field');
 const modal = document.getElementById('modal');
@@ -25,7 +30,7 @@ const shareNativeBtn = document.getElementById('share-native');
 const shareCopyBtn = document.getElementById('share-copy');
 const presetBtns = document.querySelectorAll('#preset-modal button[data-preset]');
 
-// 多言語対応
+// Multilingual support
 let translations = {};
 let currentLang = 'en';
 
@@ -33,8 +38,8 @@ let currentLang = 'en';
 function detectLanguage() {
   const supportedLangs = ['en', 'ja', 'zh', 'es', 'it', 'pt', 'de'];
   
-  // ローカルストレージから言語設定を取得
-  const storedLang = localStorage.getItem('soccerBoardLang');
+  // Get language setting from localStorage
+  const storedLang = localStorage.getItem(STORAGE_KEY_LANG);
   if (storedLang && supportedLangs.includes(storedLang)) {
     return storedLang;
   }
@@ -78,8 +83,8 @@ function applyTranslations() {
     if (value) el.placeholder = value;
   });
   
-  // タイトルを更新
-  document.title = translations[currentLang]?.title || 'Soccer Board';
+  // Update document title
+  document.title = translations[currentLang]?.title || 'QuickBoard';
 }
 
 // ネストされた翻訳キーから値を取得
@@ -92,7 +97,7 @@ function setLanguage(lang) {
   if (translations[lang]) {
     currentLang = lang;
     applyTranslations();
-    localStorage.setItem('soccerBoardLang', lang);
+    localStorage.setItem(STORAGE_KEY_LANG, lang);
   }
 }
 
@@ -184,12 +189,12 @@ function isMobileDevice() {
 
 let isVertical;
 // localStorageに保存された設定がある場合はそれを優先
-if (localStorage.getItem('soccerBoardVertical') !== null) {
-  isVertical = localStorage.getItem('soccerBoardVertical') === 'true';
+if (localStorage.getItem(STORAGE_KEY_VERTICAL) !== null) {
+  isVertical = localStorage.getItem(STORAGE_KEY_VERTICAL) === 'true';
 } else {
   // 初回または設定がない場合はデバイスタイプに基づいて決定
   isVertical = isMobileDevice();
-  localStorage.setItem('soccerBoardVertical', isVertical);
+  localStorage.setItem(STORAGE_KEY_VERTICAL, isVertical);
 }
 
 function defaultPlayers(){
@@ -911,7 +916,7 @@ window.addEventListener('resize', () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
     // ユーザーが手動で設定を変更していない場合のみ自動調整
-    const savedSetting = localStorage.getItem('soccerBoardVertical');
+    const savedSetting = localStorage.getItem(STORAGE_KEY_VERTICAL);
     const userManuallyChanged = savedSetting !== null;
     
     // ユーザーが手動で変更していない場合のみ自動調整
@@ -930,7 +935,7 @@ rotateBtn.addEventListener('click', () => {
   toggleFieldOrientation();
   
   // ユーザーが手動で変更したことをマーク
-  localStorage.setItem('userChangedOrientation', 'true');
+  localStorage.setItem(STORAGE_KEY_USER_ORIENTATION, 'true');
 });
 
 // フィールドの向きを切り替える関数
@@ -957,7 +962,7 @@ function toggleFieldOrientation(forceVertical = null) {
   convertPlayerPositions();
   
   // localStorageに設定を保存
-  localStorage.setItem('soccerBoardVertical', isVertical);
+  localStorage.setItem(STORAGE_KEY_VERTICAL, isVertical);
 }
 
 // プレイヤーの座標を変換する関数

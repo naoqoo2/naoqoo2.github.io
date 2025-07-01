@@ -1,6 +1,6 @@
 {
   "ja": {
-    "title": "Soccer Board",
+    "title": "QuickBoard",
     "buttons": {
       "share": "共有",
       "preset": "プリセット",
@@ -32,7 +32,7 @@
     }
   },
   "en": {
-    "title": "Soccer Board",
+    "title": "QuickBoard",
     "buttons": {
       "share": "Share",
       "preset": "Preset",
@@ -64,7 +64,7 @@
     }
   },
   "zh": {
-    "title": "足球板",
+    "title": "QuickBoard",
     "buttons": {
       "share": "分享",
       "preset": "预设",
@@ -96,7 +96,7 @@
     }
   },
   "es": {
-    "title": "Tablero de Fútbol",
+    "title": "QuickBoard",
     "buttons": {
       "share": "Compartir",
       "preset": "Preajuste",
@@ -128,7 +128,7 @@
     }
   },
   "it": {
-    "title": "Tabellone Calcio",
+    "title": "QuickBoard",
     "buttons": {
       "share": "Condividi",
       "preset": "Preimpostazione",
@@ -160,7 +160,7 @@
     }
   },
   "pt": {
-    "title": "Quadro Tático de Futebol",
+    "title": "QuickBoard",
     "buttons": {
       "share": "Compartilhar",
       "preset": "Predefinição",
@@ -192,7 +192,7 @@
     }
   },
   "de": {
-    "title": "Fußball-Taktiktafel",
+    "title": "QuickBoard",
     "buttons": {
       "share": "Teilen",
       "preset": "Vorlage",
