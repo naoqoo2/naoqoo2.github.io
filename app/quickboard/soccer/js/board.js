@@ -103,9 +103,9 @@ function setLanguage(lang) {
 
 // URLを更新する
 function updateURL() {
-  // URLからdパラメータのみを保持し、langパラメータは削除
+  // URLからqパラメータのみを保持し、langパラメータは削除
   const url = new URL(window.location);
-  const hasData = url.searchParams.has('d');
+  const hasData = url.searchParams.has('q');
   
   if (!hasData) {
     // データがない場合は何もしない
@@ -741,14 +741,14 @@ function saveState(){
   
   // URLに設定（言語パラメータを削除）
   const url = new URL(window.location);
-  history.replaceState(null, '', `?d=${compressed}`);
+  history.replaceState(null, '', `?q=${compressed}`);
 }
 
 function loadState(){
   const params = new URLSearchParams(location.search);
-  if(params.has('d')){
+  if(params.has('q')){
     try {
-      const compressed = params.get('d');
+      const compressed = params.get('q');
       // LZStringで解凍
       const dataStr = LZString.decompressFromEncodedURIComponent(compressed);
       if (!dataStr) throw new Error('Invalid compressed data');
