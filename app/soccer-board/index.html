@@ -2,7 +2,7 @@
 layout: none
 ---
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -10,6 +10,7 @@ layout: none
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Soccer Board</title>
+<meta name="description" content="Soccer tactics board for creating and sharing formations">
 <style>
 html,body{height:100%;margin:0;overflow-x:hidden;overflow-y:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:manipulation}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#222;color:#eee;display:flex;flex-direction:column;align-items:center;height:auto;overflow-y:auto}
@@ -34,13 +35,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 #modal.hidden{display:none}
 #modal .box{background:#333;padding:24px;border-radius:12px;display:flex;flex-direction:column;gap:12px;width:320px;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,0.4);position:relative;box-sizing:border-box}
 #player-form{display:flex;flex-direction:column;gap:12px;}
-#modal .close-btn,#help-modal .close-btn,#share-modal .close-btn,#preset-modal .close-btn{
+#modal .close-btn,#help-modal .close-btn,#share-modal .close-btn,#preset-modal .close-btn,#lang-modal .close-btn{
   position:absolute;top:-14px;right:-14px;width:28px;height:28px;background:#444;border:none;
   color:#fff;font-size:16px;cursor:pointer;display:flex;justify-content:center;align-items:center;
   border-radius:50%;transition:background 0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.3);
   padding:0;line-height:1;z-index:10;
 }
-#modal .close-btn:hover,#help-modal .close-btn:hover,#share-modal .close-btn:hover,#preset-modal .close-btn:hover{background:#666}
+#modal .close-btn:hover,#help-modal .close-btn:hover,#share-modal .close-btn:hover,#preset-modal .close-btn:hover,#lang-modal .close-btn:hover{background:#666}
 #modal .colors{display:flex;gap:12px;justify-content:center;padding:8px 0}
 #modal .color-option{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform 0.2s, border-color 0.2s}
 #modal .color-option:hover{transform:scale(1.1)}
@@ -63,23 +64,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   #toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 16px;position:relative;z-index:50;padding:10px 0;width:100%;max-width:900px;box-sizing:border-box}
   #toolbar button{padding:10px 16px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;background:#4a90e2;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.3);transition:background 0.2s,transform 0.2s}
   #toolbar button:hover{background:#3977c8;transform:translateY(-2px)}
-  #help-modal,#share-modal,#preset-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000;box-sizing:border-box}
-  #help-modal.hidden,#share-modal.hidden,#preset-modal.hidden{display:none}
-  #help-modal .box,#share-modal .box,#preset-modal .box{background:#333;padding:24px;border-radius:12px;width:320px;max-width:320px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px;position:relative;box-sizing:border-box}
-  #help-modal button,#share-modal button,#preset-modal button{padding:8px 12px;border:none;border-radius:6px;background:#555;color:#fff;font-weight:bold;cursor:pointer}
+  #help-modal,#share-modal,#preset-modal,#lang-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;backdrop-filter:blur(3px);z-index:1000;box-sizing:border-box}
+  #help-modal.hidden,#share-modal.hidden,#preset-modal.hidden,#lang-modal.hidden{display:none}
+  #help-modal .box,#share-modal .box,#preset-modal .box,#lang-modal .box{background:#333;padding:24px;border-radius:12px;width:320px;max-width:320px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px;position:relative;box-sizing:border-box}
+  #help-modal button,#share-modal button,#preset-modal button,#lang-modal button{padding:8px 12px;border:none;border-radius:6px;background:#555;color:#fff;font-weight:bold;cursor:pointer}
   @media (max-width:600px){
-    #modal,#help-modal,#share-modal,#preset-modal{
+    #modal,#help-modal,#share-modal,#preset-modal,#lang-modal{
       align-items:flex-start;
       padding-top:60px;
     }
-    #modal .box,#help-modal .box,#share-modal .box,#preset-modal .box{
+    #modal .box,#help-modal .box,#share-modal .box,#preset-modal .box,#lang-modal .box{
       width:85%;
       min-width:unset;
       max-width:320px;
       padding:20px 16px;
       margin:0 auto;
     }
-    #modal .close-btn,#help-modal .close-btn,#share-modal .close-btn,#preset-modal .close-btn{
+    #modal .close-btn,#help-modal .close-btn,#share-modal .close-btn,#preset-modal .close-btn,#lang-modal .close-btn{
       top:-12px;
       right:-12px;
     }
@@ -157,10 +158,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div id="toolbar">
-  <button id="share-btn">Share</button>
-  <button id="preset-btn">Preset</button>
-  <button id="rotate-btn">Rotate</button>
-  <button id="help-btn">Help</button>
+  <button id="share-btn" data-i18n="buttons.share">Share</button>
+  <button id="preset-btn" data-i18n="buttons.preset">Preset</button>
+  <button id="rotate-btn" data-i18n="buttons.rotate">Rotate</button>
+  <button id="help-btn" data-i18n="buttons.help">Help</button>
+  <button id="lang-btn" data-i18n="buttons.language">Language</button>
 </div>
 
 <div id="modal" class="hidden">
@@ -174,11 +176,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <div class="color-option player green" data-color="green"></div>
         <div class="color-option player ball" data-color="ball"></div>
       </div>
-      <input id="m-number" type="number" placeholder="No" max="999" min="0">
-      <input id="m-name" type="text" placeholder="Name">
+      <input id="m-number" type="number" placeholder="No" data-i18n-placeholder="inputs.number" max="999" min="0">
+      <input id="m-name" type="text" placeholder="Name" data-i18n-placeholder="inputs.name">
       <div class="btn-group">
-        <button id="delete-btn" type="button">Delete</button>
-        <button id="save-btn" type="submit">Save</button>
+        <button id="delete-btn" type="button" data-i18n="buttons.delete">Delete</button>
+        <button id="save-btn" type="submit" data-i18n="buttons.save">Save</button>
       </div>
     </form>
   </div>
@@ -187,34 +189,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="share-modal" class="hidden">
   <div class="box">
     <button class="close-btn">✕</button>
-    <button id="share-native">Send URL</button>
-    <button id="share-copy">Copy URL</button>
+    <button id="share-native" data-i18n="buttons.send_url">Send URL</button>
+    <button id="share-copy" data-i18n="buttons.copy_url">Copy URL</button>
   </div>
 </div>
 
 <div id="preset-modal" class="hidden">
   <div class="box">
     <button class="close-btn">✕</button>
-    <button data-preset="clear">Clear</button>
-    <button data-preset="red11">11 Only</button>
-    <button data-preset="full">11 vs 11</button>
-    <button data-preset="red8">8 Only</button>
-    <button data-preset="full8">8 vs 8</button>
-    <button data-preset="red5">5 Only</button>
-    <button data-preset="full5">5 vs 5</button>
+    <button data-preset="clear" data-i18n="presets.clear">Clear</button>
+    <button data-preset="red11" data-i18n="presets.red11">11 Only</button>
+    <button data-preset="full" data-i18n="presets.full">11 vs 11</button>
+    <button data-preset="red8" data-i18n="presets.red8">8 Only</button>
+    <button data-preset="full8" data-i18n="presets.full8">8 vs 8</button>
+    <button data-preset="red5" data-i18n="presets.red5">5 Only</button>
+    <button data-preset="full5" data-i18n="presets.full5">5 vs 5</button>
   </div>
 </div>
 
 <div id="help-modal" class="hidden">
   <div class="box">
     <button class="close-btn">✕</button>
-    <p>余白をダブルクリックで選手を追加。<br>
-    選手はドラッグで移動、ダブルクリックで編集できます。<br>
-    作成したボードはURLで共有できます。</p>
+    <p data-i18n="help">Double-click on the blank area to add a player.<br>
+    Drag players to move them, double-click to edit.<br>
+    Share your board with URL.</p>
   </div>
 </div>
 
 <div id="toast"></div>
+
+<div id="lang-modal" class="hidden">
+  <div class="box">
+    <button class="close-btn">✕</button>
+    <button data-lang="en">English</button>
+    <button data-lang="ja">日本語</button>
+    <button data-lang="zh">中文</button>
+    <button data-lang="es">Español</button>
+    <button data-lang="it">Italiano</button>
+    <button data-lang="pt">Português</button>
+    <button data-lang="de">Deutsch</button>
+  </div>
+</div>
 
 <script src="js/lz-string.min.js?v=20250701"></script>
 <script src="js/board.js?v=20250701"></script>

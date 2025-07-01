@@ -1,0 +1,226 @@
+{
+  "ja": {
+    "title": "Soccer Board",
+    "buttons": {
+      "share": "共有",
+      "preset": "プリセット",
+      "rotate": "回転",
+      "help": "ヘルプ",
+      "language": "言語",
+      "delete": "削除",
+      "save": "保存",
+      "send_url": "URLを送信",
+      "copy_url": "URLをコピー"
+    },
+    "inputs": {
+      "number": "No",
+      "name": "名前"
+    },
+    "presets": {
+      "clear": "クリア",
+      "red11": "11人のみ",
+      "full": "11 vs 11",
+      "red8": "8人のみ",
+      "full8": "8 vs 8",
+      "red5": "5人のみ",
+      "full5": "5 vs 5"
+    },
+    "help": "余白をダブルクリックで選手を追加。<br>選手はドラッグで移動、ダブルクリックで編集できます。<br>作成したボードはURLで共有できます。",
+    "toast": {
+      "copied": "コピーしました",
+      "shared": "共有しました"
+    }
+  },
+  "en": {
+    "title": "Soccer Board",
+    "buttons": {
+      "share": "Share",
+      "preset": "Preset",
+      "rotate": "Rotate",
+      "help": "Help",
+      "language": "Language",
+      "delete": "Delete",
+      "save": "Save",
+      "send_url": "Send URL",
+      "copy_url": "Copy URL"
+    },
+    "inputs": {
+      "number": "No",
+      "name": "Name"
+    },
+    "presets": {
+      "clear": "Clear",
+      "red11": "11 Only",
+      "full": "11 vs 11",
+      "red8": "8 Only",
+      "full8": "8 vs 8",
+      "red5": "5 Only",
+      "full5": "5 vs 5"
+    },
+    "help": "Double-click on the blank area to add a player.<br>Drag players to move them, double-click to edit.<br>Share your board with URL.",
+    "toast": {
+      "copied": "Copied",
+      "shared": "Shared"
+    }
+  },
+  "zh": {
+    "title": "足球板",
+    "buttons": {
+      "share": "分享",
+      "preset": "预设",
+      "rotate": "旋转",
+      "help": "帮助",
+      "language": "语言",
+      "delete": "删除",
+      "save": "保存",
+      "send_url": "发送链接",
+      "copy_url": "复制链接"
+    },
+    "inputs": {
+      "number": "号码",
+      "name": "姓名"
+    },
+    "presets": {
+      "clear": "清空",
+      "red11": "仅11人",
+      "full": "11 vs 11",
+      "red8": "仅8人",
+      "full8": "8 vs 8",
+      "red5": "仅5人",
+      "full5": "5 vs 5"
+    },
+    "help": "双击空白区域添加球员。<br>拖动球员移动位置，双击编辑球员信息。<br>通过URL分享您的战术板。",
+    "toast": {
+      "copied": "已复制",
+      "shared": "已分享"
+    }
+  },
+  "es": {
+    "title": "Tablero de Fútbol",
+    "buttons": {
+      "share": "Compartir",
+      "preset": "Preajuste",
+      "rotate": "Rotar",
+      "help": "Ayuda",
+      "language": "Idioma",
+      "delete": "Eliminar",
+      "save": "Guardar",
+      "send_url": "Enviar URL",
+      "copy_url": "Copiar URL"
+    },
+    "inputs": {
+      "number": "Número",
+      "name": "Nombre"
+    },
+    "presets": {
+      "clear": "Limpiar",
+      "red11": "Solo 11",
+      "full": "11 vs 11",
+      "red8": "Solo 8",
+      "full8": "8 vs 8",
+      "red5": "Solo 5",
+      "full5": "5 vs 5"
+    },
+    "help": "Haga doble clic en el área en blanco para añadir un jugador.<br>Arrastre los jugadores para moverlos, haga doble clic para editar.<br>Comparta su tablero con URL.",
+    "toast": {
+      "copied": "Copiado",
+      "shared": "Compartido"
+    }
+  },
+  "it": {
+    "title": "Tabellone Calcio",
+    "buttons": {
+      "share": "Condividi",
+      "preset": "Preimpostazione",
+      "rotate": "Ruota",
+      "help": "Aiuto",
+      "language": "Lingua",
+      "delete": "Elimina",
+      "save": "Salva",
+      "send_url": "Invia URL",
+      "copy_url": "Copia URL"
+    },
+    "inputs": {
+      "number": "Numero",
+      "name": "Nome"
+    },
+    "presets": {
+      "clear": "Cancella",
+      "red11": "Solo 11",
+      "full": "11 vs 11",
+      "red8": "Solo 8",
+      "full8": "8 vs 8",
+      "red5": "Solo 5",
+      "full5": "5 vs 5"
+    },
+    "help": "Fai doppio clic sull'area vuota per aggiungere un giocatore.<br>Trascina i giocatori per spostarli, doppio clic per modificare.<br>Condividi il tuo tabellone con URL.",
+    "toast": {
+      "copied": "Copiato",
+      "shared": "Condiviso"
+    }
+  },
+  "pt": {
+    "title": "Quadro Tático de Futebol",
+    "buttons": {
+      "share": "Compartilhar",
+      "preset": "Predefinição",
+      "rotate": "Girar",
+      "help": "Ajuda",
+      "language": "Idioma",
+      "delete": "Excluir",
+      "save": "Salvar",
+      "send_url": "Enviar URL",
+      "copy_url": "Copiar URL"
+    },
+    "inputs": {
+      "number": "Número",
+      "name": "Nome"
+    },
+    "presets": {
+      "clear": "Limpar",
+      "red11": "Apenas 11",
+      "full": "11 vs 11",
+      "red8": "Apenas 8",
+      "full8": "8 vs 8",
+      "red5": "Apenas 5",
+      "full5": "5 vs 5"
+    },
+    "help": "Clique duas vezes na área em branco para adicionar um jogador.<br>Arraste os jogadores para movê-los, clique duas vezes para editar.<br>Compartilhe seu quadro tático via URL.",
+    "toast": {
+      "copied": "Copiado",
+      "shared": "Compartilhado"
+    }
+  },
+  "de": {
+    "title": "Fußball-Taktiktafel",
+    "buttons": {
+      "share": "Teilen",
+      "preset": "Vorlage",
+      "rotate": "Drehen",
+      "help": "Hilfe",
+      "language": "Sprache",
+      "delete": "Löschen",
+      "save": "Speichern",
+      "send_url": "URL senden",
+      "copy_url": "URL kopieren"
+    },
+    "inputs": {
+      "number": "Nummer",
+      "name": "Name"
+    },
+    "presets": {
+      "clear": "Löschen",
+      "red11": "Nur 11",
+      "full": "11 vs 11",
+      "red8": "Nur 8",
+      "full8": "8 vs 8",
+      "red5": "Nur 5",
+      "full5": "5 vs 5"
+    },
+    "help": "Doppelklicken Sie auf den leeren Bereich, um einen Spieler hinzuzufügen.<br>Ziehen Sie die Spieler, um sie zu bewegen, Doppelklick zum Bearbeiten.<br>Teilen Sie Ihre Taktiktafel mit URL.",
+    "toast": {
+      "copied": "Kopiert",
+      "shared": "Geteilt"
+    }
+  }
+}

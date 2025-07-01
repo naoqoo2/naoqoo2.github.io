@@ -16,15 +16,165 @@ const shareBtn = document.getElementById('share-btn');
 const presetBtn = document.getElementById('preset-btn');
 const helpBtn = document.getElementById('help-btn');
 const rotateBtn = document.getElementById('rotate-btn');
+const langBtn = document.getElementById('lang-btn');
+const langModal = document.getElementById('lang-modal');
 const shareModal = document.getElementById('share-modal');
 const presetModal = document.getElementById('preset-modal');
 const helpModal = document.getElementById('help-modal');
 const shareNativeBtn = document.getElementById('share-native');
 const shareCopyBtn = document.getElementById('share-copy');
-const shareCloseBtn = document.getElementById('share-close');
-const presetCloseBtn = document.getElementById('preset-close');
-const helpClose = document.getElementById('help-close');
 const presetBtns = document.querySelectorAll('#preset-modal button[data-preset]');
+
+// 多言語対応
+let translations = {};
+let currentLang = 'en';
+
+// URLパラメータから言語設定を取得するか、ブラウザ設定から言語を検出
+function detectLanguage() {
+  const supportedLangs = ['en', 'ja', 'zh', 'es', 'it', 'pt', 'de'];
+  
+  // ローカルストレージから言語設定を取得
+  const storedLang = localStorage.getItem('soccerBoardLang');
+  if (storedLang && supportedLangs.includes(storedLang)) {
+    return storedLang;
+  }
+  
+  // ブラウザの言語設定を確認
+  const browserLang = navigator.language.split('-')[0];
+  return supportedLangs.includes(browserLang) ? browserLang : 'en';
+}
+
+// 言語ファイルを読み込む
+async function loadTranslations() {
+  try {
+    const response = await fetch('js/languages.json');
+    translations = await response.json();
+    currentLang = detectLanguage();
+    applyTranslations();
+  } catch (error) {
+    console.error('Failed to load translations:', error);
+  }
+}
+
+// 言語を適用する
+function applyTranslations() {
+  // テキストを持つ要素に翻訳を適用
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const value = getNestedTranslation(key);
+    
+    // helpテキストなど、HTMLタグを含む可能性のあるテキストは innerHTML を使用
+    if (key === 'help') {
+      if (value) el.innerHTML = value;
+    } else {
+      if (value) el.textContent = value;
+    }
+  });
+  
+  // プレースホルダーを持つ要素に翻訳を適用
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const value = getNestedTranslation(key);
+    if (value) el.placeholder = value;
+  });
+  
+  // タイトルを更新
+  document.title = translations[currentLang]?.title || 'Soccer Board';
+}
+
+// ネストされた翻訳キーから値を取得
+function getNestedTranslation(key) {
+  return key.split('.').reduce((obj, i) => obj && obj[i], translations[currentLang]);
+}
+
+// 言語を切り替える
+function setLanguage(lang) {
+  if (translations[lang]) {
+    currentLang = lang;
+    applyTranslations();
+    localStorage.setItem('soccerBoardLang', lang);
+  }
+}
+
+// URLを更新する
+function updateURL() {
+  // URLからdパラメータのみを保持し、langパラメータは削除
+  const url = new URL(window.location);
+  const hasData = url.searchParams.has('d');
+  
+  if (!hasData) {
+    // データがない場合は何もしない
+    return;
+  }
+  
+  // 既存のlangパラメータがあれば削除
+  if (url.searchParams.has('lang')) {
+    url.searchParams.delete('lang');
+  }
+  
+  window.history.replaceState({}, '', url);
+}
+
+// 言語ボタンのイベントリスナー
+langBtn.addEventListener('click', () => {
+  langModal.classList.remove('hidden');
+});
+
+// 言語選択のイベントリスナー
+document.querySelectorAll('#lang-modal button[data-lang]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const lang = btn.getAttribute('data-lang');
+    setLanguage(lang);
+    langModal.classList.add('hidden');
+  });
+});
+
+// 言語メニュー以外をクリックしたらメニューを閉じる
+document.addEventListener('click', (e) => {
+  // 非表示のモーダル用処理は不要になったため削除
+});
+
+// ページ読み込み時に言語設定を読み込む
+document.addEventListener('DOMContentLoaded', () => {
+  loadTranslations();
+  
+  // モーダルの閉じるボタンのイベントリスナーを設定
+  document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modalEl = btn.closest('[id$="modal"]');
+      if (modalEl) {
+        modalEl.classList.add('hidden');
+        if (modalEl.id === 'modal') {
+          editId = null;
+          newPos = null;
+        }
+      }
+    });
+  });
+  
+  // モーダル外をクリックしたときに閉じる
+  document.querySelectorAll('[id$="modal"]').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+        if (modal.id === 'modal') {
+          editId = null;
+          newPos = null;
+        }
+      }
+    });
+  });
+  
+  // 他の初期化処理
+  initializeFieldOrientation();
+  loadState();
+  
+  // 縦向きの場合は座標変換を確実に行う
+  if (isVertical) {
+    convertPlayerPositions();
+  }
+});
+
 // localStorageから縦横表示の設定を読み込む
 // モバイルデバイスはデフォルトで縦向き、それ以外は横向き
 function isMobileDevice() {
@@ -529,35 +679,7 @@ deleteBtn.addEventListener('click',()=>{
   }
 });
 
-// cancelボタンのイベントリスナーを削除
-// 代わりにモーダルの閉じるボタンと外側クリックのイベントリスナーを追加
-const closeModalBtns = document.querySelectorAll('.close-btn');
-closeModalBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const modalEl = btn.closest('[id$="modal"]');
-    if (modalEl) {
-      modalEl.classList.add('hidden');
-      if (modalEl.id === 'modal') {
-        editId = null;
-        newPos = null;
-      }
-    }
-  });
-});
-
-// モーダル外をクリックしたときに閉じる
-const modals = document.querySelectorAll('[id$="modal"]');
-modals.forEach(modal => {
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.classList.add('hidden');
-      if (modal.id === 'modal') {
-        editId = null;
-        newPos = null;
-      }
-    }
-  });
-});
+// cancelボタンのイベントリスナーは、閉じるボタンで代替
 
 function saveState(){
   // カスタムの短い形式を作成: x色y-背番号-名前, 形式
@@ -612,8 +734,9 @@ function saveState(){
   // LZStringで圧縮
   const compressed = LZString.compressToEncodedURIComponent(customStr);
   
-  // URLに設定
-  history.replaceState(null, '', '?d=' + compressed);
+  // URLに設定（言語パラメータを削除）
+  const url = new URL(window.location);
+  history.replaceState(null, '', `?d=${compressed}`);
 }
 
 function loadState(){
@@ -743,14 +866,21 @@ function showToast(message, duration = 2000) {
 
 shareBtn.addEventListener('click',()=>shareModal.classList.remove('hidden'));
 shareNativeBtn.addEventListener('click',()=>{
-  const url=location.href;
+  const shareUrl = location.href;
   if(navigator.share){
-    navigator.share({title:'Soccer Board',url}).catch(()=>{});
-  }else{
-    navigator.clipboard.writeText(url)
+    navigator.share({
+            title: document.title,
+            url: shareUrl
+        }).then(() => {
+            showToast(getNestedTranslation('toast.shared') || 'Shared');
+        }).catch((error) => {
+            console.error('Sharing failed', error);
+        });
+  } else {
+    navigator.clipboard.writeText(shareUrl)
       .then(() => {
         shareModal.classList.add('hidden');
-        showToast('URL Copied');
+        showToast(getNestedTranslation('toast.copied') || 'URL Copied');
       })
       .catch(() => {
         shareModal.classList.add('hidden');
@@ -762,7 +892,7 @@ shareCopyBtn.addEventListener('click',async ()=>{
   try{
     await navigator.clipboard.writeText(location.href);
     shareModal.classList.add('hidden');
-    showToast('URL Copied');
+    showToast(getNestedTranslation('toast.copied') || 'URL Copied');
   }catch(e){
     shareModal.classList.add('hidden');
     showToast('Copy failed');
@@ -857,32 +987,7 @@ function convertPlayerPositions() {
   });
 }
 
-// モーダルの閉じるボタンのイベントハンドラを統一
-closeModalBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const modalEl = btn.closest('[id$="modal"]');
-    if (modalEl) {
-      modalEl.classList.add('hidden');
-      if (modalEl.id === 'modal') {
-        editId = null;
-        newPos = null;
-      }
-    }
-  });
-});
-
-// モーダル外をクリックしたときに閉じる
-modals.forEach(modal => {
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.classList.add('hidden');
-      if (modal.id === 'modal') {
-        editId = null;
-        newPos = null;
-      }
-    }
-  });
-});
+// モーダルの閉じるボタンのイベントハンドラは DOMContentLoaded で設定するように変更
 
 // 初期状態の設定
 function initializeFieldOrientation() {
