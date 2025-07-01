@@ -725,10 +725,7 @@ function loadState(){
   
   field.querySelectorAll('.piece').forEach(el => el.remove());
   
-  
   state.players.forEach(createPlayer);
-  
-  if (!params.has('d')) saveState();
 }
 
 
