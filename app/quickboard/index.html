@@ -262,14 +262,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   gap: 16px;
 }
 
-.footer-links a {
+.footer-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
   color: #888;
-  text-decoration: none;
   font-size: 14px;
   transition: color 0.2s;
 }
 
-.footer-links a:hover {
+.footer-btn:hover {
+  color: #aaa;
+  text-decoration: underline;
+}
+
+.footer-copyright-btn {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-copyright-btn:hover {
   color: #aaa;
   text-decoration: underline;
 }
@@ -315,8 +332,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button id="share-btn" data-i18n="buttons.share">Share</button>
     <button id="preset-btn" data-i18n="buttons.preset">Preset</button>
     <button id="rotate-btn" data-i18n="buttons.rotate">Rotate</button>
-    <button id="help-btn" data-i18n="buttons.help">Help</button>
-    <button id="lang-btn" data-i18n="buttons.language">Language</button>
   </div>
 </header>
 
@@ -453,12 +468,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <footer class="app-footer">
   <div class="footer-content">
     <div class="footer-links">
-      <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
-      <a href="terms.html" data-i18n="footer.terms">Terms of Service</a>
-      <a href="https://x.com/naoqoo2" data-i18n="footer.contact" target="_blank" rel="noopener">Contact</a>
+      <button id="help-btn" class="footer-btn" data-i18n="buttons.help">Help</button>
+      <button onclick="window.location.href='privacy.html'" class="footer-btn" data-i18n="footer.privacy">Privacy Policy</button>
+      <button onclick="window.location.href='terms.html'" class="footer-btn" data-i18n="footer.terms">Terms of Service</button>
+      <button onclick="window.open('https://x.com/naoqoo2', '_blank', 'noopener')" class="footer-btn" data-i18n="footer.contact">Contact</button>
+      <button id="lang-btn" class="footer-btn" data-i18n="buttons.language">Language</button>
     </div>
     <div class="footer-copyright">
-      <a href="https://x.com/naoqoo2" target="_blank" rel="noopener">© naoqoo2</a>
+      <button onclick="window.open('https://x.com/naoqoo2', '_blank', 'noopener')" class="footer-btn footer-copyright-btn">© naoqoo2</button>
     </div>
   </div>
 </footer>
