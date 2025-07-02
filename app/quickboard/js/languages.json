@@ -10,7 +10,10 @@
       "delete": "削除",
       "save": "保存",
       "send_url": "URLを送信",
-      "copy_url": "URLをコピー"
+      "copy_url": "URLをコピー",
+      "share_twitter": "𝕏",
+      "share_facebook": "Facebook",
+      "share_line": "LINE"
     },
     "inputs": {
       "number": "No",
@@ -47,7 +50,10 @@
       "delete": "Delete",
       "save": "Save",
       "send_url": "Send URL",
-      "copy_url": "Copy URL"
+      "copy_url": "Copy URL",
+      "share_twitter": "𝕏",
+      "share_facebook": "Facebook",
+      "share_line": "LINE"
     },
     "inputs": {
       "number": "No",

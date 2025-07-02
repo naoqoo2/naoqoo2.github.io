@@ -28,6 +28,9 @@ const presetModal = document.getElementById('preset-modal');
 const helpModal = document.getElementById('help-modal');
 const shareNativeBtn = document.getElementById('share-native');
 const shareCopyBtn = document.getElementById('share-copy');
+const shareTwitterBtn = document.getElementById('share-twitter');
+const shareFacebookBtn = document.getElementById('share-facebook');
+const shareLineBtn = document.getElementById('share-line');
 const presetBtns = document.querySelectorAll('#preset-modal button[data-preset]');
 
 // Multilingual support
@@ -869,9 +872,39 @@ function showToast(message, duration = 2000) {
   }, duration);
 }
 
+// Get share URL with current board state
+function getShareUrl() {
+  return location.href;
+}
+
+// Share to Twitter/X
+shareTwitterBtn.addEventListener('click', () => {
+  const shareUrl = getShareUrl();
+  const text = "\n#quickboard";
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+  window.open(twitterUrl, '_blank');
+  shareModal.classList.add('hidden');
+});
+
+// Share to Facebook
+shareFacebookBtn.addEventListener('click', () => {
+  const shareUrl = getShareUrl();
+  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+  window.open(facebookUrl, '_blank');
+  shareModal.classList.add('hidden');
+});
+
+// Share to LINE
+shareLineBtn.addEventListener('click', () => {
+  const shareUrl = getShareUrl();
+  const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}`;
+  window.open(lineUrl, '_blank');
+  shareModal.classList.add('hidden');
+});
+
 shareBtn.addEventListener('click',()=>shareModal.classList.remove('hidden'));
 shareNativeBtn.addEventListener('click',()=>{
-  const shareUrl = location.href;
+  const shareUrl = getShareUrl();
   if(navigator.share){
     navigator.share({
             title: document.title,
@@ -895,7 +928,7 @@ shareNativeBtn.addEventListener('click',()=>{
 });
 shareCopyBtn.addEventListener('click',async ()=>{
   try{
-    await navigator.clipboard.writeText(location.href);
+    await navigator.clipboard.writeText(getShareUrl());
     shareModal.classList.add('hidden');
     showToast(getNestedTranslation('toast.copied') || 'URL Copied');
   }catch(e){

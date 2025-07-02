@@ -11,6 +11,20 @@ layout: none
 <meta http-equiv="Expires" content="0">
 <title>QuickBoard</title>
 <meta name="description" content="Interactive tactics board for creating and sharing soccer formations">
+
+<!-- OGP Tags for SNS Sharing -->
+<meta property="og:title" content="QuickBoard - Soccer Tactics Board">
+<meta property="og:description" content="Interactive tactics board for creating and sharing soccer formations">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://naoqoo2.github.io/app/quickboard/">
+<meta property="og:image" content="https://naoqoo2.github.io/app/quickboard/images/quickboard-og.png">
+<meta property="og:site_name" content="QuickBoard">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@naoqoo2">
+<meta name="twitter:title" content="QuickBoard - Soccer Tactics Board">
+<meta name="twitter:description" content="Interactive tactics board for creating and sharing soccer formations">
+<meta name="twitter:image" content="https://naoqoo2.github.io/app/quickboard/images/quickboard-og.png">
+
 <style>
 html,body{height:100%;margin:0;overflow-x:hidden;overflow-y:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:manipulation}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#222;color:#eee;display:flex;flex-direction:column;align-items:center;height:auto;overflow-y:auto}
@@ -65,6 +79,73 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   #help-modal.hidden,#share-modal.hidden,#preset-modal.hidden,#lang-modal.hidden{display:none}
   #help-modal .box,#share-modal .box,#preset-modal .box,#lang-modal .box{background:#333;padding:24px;border-radius:12px;width:320px;max-width:320px;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);line-height:1.4;display:flex;flex-direction:column;gap:12px;position:relative;box-sizing:border-box}
   #help-modal button,#share-modal button,#preset-modal button,#lang-modal button{padding:8px 12px;border:none;border-radius:6px;background:#555;color:#fff;font-weight:bold;cursor:pointer}
+  
+  /* Share button styles */
+  .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    margin: 0 auto 4px auto;
+    border-radius: 6px;
+  }
+  
+  .share-btn:before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  .twitter-btn {
+    background: #1da1f2;
+  }
+  
+  .twitter-btn:before {
+    display: none;
+  }
+  
+  .twitter-btn:hover {
+    background: #0c85d0;
+  }
+  
+  .facebook-btn {
+    background: #4267b2;
+  }
+  
+  .facebook-btn:before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>');
+  }
+  
+  .facebook-btn:hover {
+    background: #3b5998;
+  }
+  
+  .line-btn {
+    background: #06c755;
+  }
+  
+  .line-btn:before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.817 4.269 8.857 10.035 9.622.391.084.923.258 1.058.592.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975 1.724-1.897 2.548-3.821 2.548-5.984z"></path></svg>');
+  }
+  
+  .line-btn:hover {
+    background: #05b04b;
+  }
+  
+  /* URLコピー・送信ボタン用スタイル */
+  .share-btn:not(.twitter-btn):not(.facebook-btn):not(.line-btn):before {
+    display: none;
+  }
+  
+  .share-btn:not(.twitter-btn):not(.facebook-btn):not(.line-btn):before {
+    display: none;
+  }
+  
   @media (max-width:600px){
     #modal,#help-modal,#share-modal,#preset-modal,#lang-modal{
       align-items:flex-start;
@@ -424,8 +505,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div id="share-modal" class="hidden">
   <div class="box">
     <button class="close-btn">✕</button>
-    <button id="share-native" data-i18n="buttons.send_url">Send URL</button>
-    <button id="share-copy" data-i18n="buttons.copy_url">Copy URL</button>
+    <button id="share-twitter" class="share-btn twitter-btn" data-i18n="buttons.share_twitter">𝕏</button>
+    <button id="share-facebook" class="share-btn facebook-btn" data-i18n="buttons.share_facebook">Facebook</button>
+    <button id="share-line" class="share-btn line-btn" data-i18n="buttons.share_line">LINE</button>
+    <button id="share-native" class="share-btn" data-i18n="buttons.send_url">URLを送信</button>
+    <button id="share-copy" class="share-btn" data-i18n="buttons.copy_url">Copy URL</button>
   </div>
 </div>
 
