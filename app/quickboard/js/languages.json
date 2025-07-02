@@ -26,11 +26,11 @@
     },
     "presets": {
       "clear": "クリア",
-      "red11": "11人のみ",
+      "teammate11": "11人のみ",
       "full": "11 vs 11",
-      "red8": "8人のみ",
+      "teammate8": "8人のみ",
       "full8": "8 vs 8",
-      "red5": "5人のみ",
+      "teammate5": "5人のみ",
       "full5": "5 vs 5"
     },
     "help": "余白をダブルクリックで選手を追加。<br>選手はドラッグで移動、ダブルクリックで編集できます。<br>作成したボードはURLで共有できます。",
@@ -66,11 +66,11 @@
     },
     "presets": {
       "clear": "Clear",
-      "red11": "11 Only",
+      "teammate11": "11",
       "full": "11 vs 11",
-      "red8": "8 Only",
+      "teammate8": "8",
       "full8": "8 vs 8",
-      "red5": "5 Only",
+      "teammate5": "5",
       "full5": "5 vs 5"
     },
     "help": "Double-click on the blank area to add a player.<br>Drag players to move them, double-click to edit.<br>Share your board with URL.",
@@ -103,11 +103,11 @@
     },
     "presets": {
       "clear": "清空",
-      "red11": "仅11人",
+      "teammate11": "仅11人",
       "full": "11 vs 11",
-      "red8": "仅8人",
+      "teammate8": "仅8人",
       "full8": "8 vs 8",
-      "red5": "仅5人",
+      "teammate5": "仅5人",
       "full5": "5 vs 5"
     },
     "help": "双击空白区域添加球员。<br>拖动球员移动位置，双击编辑球员信息。<br>通过URL分享您的战术板。",
@@ -140,11 +140,11 @@
     },
     "presets": {
       "clear": "Limpiar",
-      "red11": "Solo 11",
+      "teammate11": "Solo 11",
       "full": "11 vs 11",
-      "red8": "Solo 8",
+      "teammate8": "Solo 8",
       "full8": "8 vs 8",
-      "red5": "Solo 5",
+      "teammate5": "Solo 5",
       "full5": "5 vs 5"
     },
     "help": "Haga doble clic en el área en blanco para añadir un jugador.<br>Arrastre los jugadores para moverlos, haga doble clic para editar.<br>Comparta su tablero con URL.",
@@ -177,11 +177,11 @@
     },
     "presets": {
       "clear": "Cancella",
-      "red11": "Solo 11",
+      "teammate11": "Solo 11",
       "full": "11 vs 11",
-      "red8": "Solo 8",
+      "teammate8": "Solo 8",
       "full8": "8 vs 8",
-      "red5": "Solo 5",
+      "teammate5": "Solo 5",
       "full5": "5 vs 5"
     },
     "help": "Fai doppio clic sull'area vuota per aggiungere un giocatore.<br>Trascina i giocatori per spostarli, doppio clic per modificare.<br>Condividi il tuo tabellone con URL.",
@@ -214,11 +214,11 @@
     },
     "presets": {
       "clear": "Limpar",
-      "red11": "Apenas 11",
+      "teammate11": "Apenas 11",
       "full": "11 vs 11",
-      "red8": "Apenas 8",
+      "teammate8": "Apenas 8",
       "full8": "8 vs 8",
-      "red5": "Apenas 5",
+      "teammate5": "Apenas 5",
       "full5": "5 vs 5"
     },
     "help": "Clique duas vezes na área em branco para adicionar um jogador.<br>Arraste os jogadores para movê-los, clique duas vezes para editar.<br>Compartilhe seu quadro tático via URL.",
@@ -251,11 +251,11 @@
     },
     "presets": {
       "clear": "Löschen",
-      "red11": "Nur 11",
+      "teammate11": "Nur 11",
       "full": "11 vs 11",
-      "red8": "Nur 8",
+      "teammate8": "Nur 8",
       "full8": "8 vs 8",
-      "red5": "Nur 5",
+      "teammate5": "Nur 5",
       "full5": "5 vs 5"
     },
     "help": "Doppelklicken Sie auf den leeren Bereich, um einen Spieler hinzuzufügen.<br>Ziehen Sie die Spieler, um sie zu bewegen, Doppelklick zum Bearbeiten.<br>Teilen Sie Ihre Taktiktafel mit URL.",

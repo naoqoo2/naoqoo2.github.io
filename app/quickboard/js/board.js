@@ -201,8 +201,8 @@ if (localStorage.getItem(STORAGE_KEY_VERTICAL) !== null) {
 }
 
 function defaultPlayers(){
-  // 赤チーム - 4-4-2フォーメーション
-  const red=[
+  // 味方チーム - 4-4-2フォーメーション
+  const teammate11=[
     {num:1,x:10,y:50},  // GK
     {num:2,x:20,y:20},  // DF右
     {num:3,x:20,y:40},  // DF中央右
@@ -214,10 +214,10 @@ function defaultPlayers(){
     {num:9,x:30,y:80},  // MF左
     {num:10,x:40,y:35}, // FW右
     {num:11,x:40,y:65}  // FW左
-  ].map(p=>({...p,color:'red'}));
+  ].map(p=>({...p,color:'blue'}));
   
-  // 青チーム - 4-4-2フォーメーション
-  const blue=[
+  // 相手チーム - 4-4-2フォーメーション
+  const opponent11 =[
     {num:1,x:90,y:50},  // GK
     {num:2,x:80,y:20},  // DF右
     {num:3,x:80,y:40},  // DF中央右
@@ -229,10 +229,10 @@ function defaultPlayers(){
     {num:9,x:70,y:80},  // MF左
     {num:10,x:60,y:35}, // FW右
     {num:11,x:60,y:65}  // FW左
-  ].map(p=>({...p,color:'blue'}));
+  ].map(p=>({...p,color:'red'}));
   
   // 8人制用の選手配置 - 3-1-2-1ダイヤモンドフォーメーション
-  const red8 = [
+  const teammate8 = [
     {num:'',x:10,y:50},  // GK
     {num:'',x:20,y:25},  // DF右
     {num:'',x:20,y:50},  // DF中央
@@ -241,10 +241,10 @@ function defaultPlayers(){
     {num:'',x:35,y:25},  // MF右
     {num:'',x:35,y:75},  // MF左
     {num:'',x:40,y:50}   // FW（トップ）
-  ].map(p=>({...p,color:'red'}));
+  ].map(p=>({...p,color:'blue'}));
   
-  // 8人制用の青チーム
-  const blue8 = [
+  // 8人制用の相手チーム
+  const opponent8 = [
     {num:'',x:90,y:50},  // GK
     {num:'',x:80,y:25},  // DF右
     {num:'',x:80,y:50},  // DF中央
@@ -253,25 +253,25 @@ function defaultPlayers(){
     {num:'',x:65,y:25},  // MF右
     {num:'',x:65,y:75},  // MF左
     {num:'',x:60,y:50}   // FW（トップ）
-  ].map(p=>({...p,color:'blue'}));
+  ].map(p=>({...p,color:'red'}));
   
   // 5人制用の選手配置 - 1-2-1ダイヤモンドフォーメーション
-  const red5 = [
+  const teammate5 = [
     {num:'',x:10,y:50},  // GK
     {num:'',x:20,y:50},  // DF
     {num:'',x:30,y:25},  // MF右
     {num:'',x:30,y:75},  // MF左
     {num:'',x:40,y:50}   // FW
-  ].map(p=>({...p,color:'red'}));
+  ].map(p=>({...p,color:'blue'}));
   
-  // 5人制用の青チーム
-  const blue5 = [
+  // 5人制用の相手チーム
+  const opponent5 = [
     {num:'',x:90,y:50},  // GK
     {num:'',x:80,y:50},  // DF
     {num:'',x:70,y:25},  // MF右
     {num:'',x:70,y:75},  // MF左
     {num:'',x:60,y:50}   // FW
-  ].map(p=>({...p,color:'blue'}));
+  ].map(p=>({...p,color:'red'}));
   
   // ボールをフィールドの中央に配置
   const ball = {
@@ -282,15 +282,15 @@ function defaultPlayers(){
   };
   
   // 全ての選手データを保持
-  state.redFull = red;
-  state.blueFull = blue;
-  state.red8 = red8;
-  state.blue8 = blue8;
-  state.red5 = red5;
-  state.blue5 = blue5;
+  state.teammate11 = teammate11;
+  state.opponent11 = opponent11;
+  state.teammate8 = teammate8;
+  state.opponent8 = opponent8;
+  state.teammate5 = teammate5;
+  state.opponent5 = opponent5;
   
   // 初期プレイヤーに連番IDを割り当てて返す
-  const allPlayers = red.concat(blue, [ball]);
+  const allPlayers = teammate11.concat(opponent11, [ball]);
   return allPlayers.map((p, index) => ({
     ...p,
     id: (index + 1).toString()
@@ -323,9 +323,9 @@ function openNew(x,y){
   
   // 縦表示モードと横表示モードで色のデフォルト値を切り替える
   if (isVertical) {
-    selectColor(y<50?'blue':'red');
+    selectColor(y<50?'red':'blue');
   } else {
-    selectColor(x>50?'blue':'red');
+    selectColor(x>50?'red':'blue');
   }
   
   deleteBtn.style.display='none';
@@ -531,18 +531,18 @@ function applyPreset(type){
     num: ''
   };
 
-  // ベンチプレイヤー - 赤チーム
-  const redBench = [
-    {color: 'red', num: '', x: 2, y: 96.5},
-    {color: 'red', num: '', x: 6, y: 96.5},
-    {color: 'red', num: '', x: 10, y: 96.5}
+  // ベンチプレイヤー - 味方チーム
+  const teammateBench = [
+    {color: 'blue', num: '', x: 2, y: 96.5},
+    {color: 'blue', num: '', x: 6, y: 96.5},
+    {color: 'blue', num: '', x: 10, y: 96.5}
   ];
 
-  // ベンチプレイヤー - 青チーム
-  const blueBench = [
-    {color: 'blue', num: '', x: 90, y: 96.5},
-    {color: 'blue', num: '', x: 94, y: 96.5},
-    {color: 'blue', num: '', x: 98, y: 96.5}
+  // ベンチプレイヤー - 相手チーム
+  const opponentBench = [
+    {color: 'red', num: '', x: 90, y: 96.5},
+    {color: 'red', num: '', x: 94, y: 96.5},
+    {color: 'red', num: '', x: 98, y: 96.5}
   ];
   
   let players = [];
@@ -551,23 +551,23 @@ function applyPreset(type){
     case 'clear':
       players = [];
       break;
-    case 'red11':
-      players = [...state.redFull, ball];
+    case 'teammate11':
+      players = [...state.teammate11, ball];
       break;
     case 'full':
-      players = [...state.redFull, ...state.blueFull, ball];
+      players = [...state.teammate11, ...state.opponent11, ball];
       break;
-    case 'red8':
-      players = [...state.red8, ...redBench, ball];
+    case 'teammate8':
+      players = [...state.teammate8, ...teammateBench, ball];
       break;
     case 'full8':
-      players = [...state.red8, ...state.blue8, ...redBench, ...blueBench, ball];
+      players = [...state.teammate8, ...state.opponent8, ...teammateBench, ...opponentBench, ball];
       break;
-    case 'red5':
-      players = [...state.red5, ...redBench, ball];
+    case 'teammate5':
+      players = [...state.teammate5, ...teammateBench, ball];
       break;
     case 'full5':
-      players = [...state.red5, ...state.blue5, ...redBench, ...blueBench, ball];
+      players = [...state.teammate5, ...state.opponent5, ...teammateBench, ...opponentBench, ball];
       break;
     default:
       return; // 何も変更しない
