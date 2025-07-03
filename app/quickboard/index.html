@@ -295,7 +295,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   }
   
   /* ボタンのアイコン */
-  #share-btn:before, #preset-btn:before, #rotate-btn:before {
+  #share-btn:before, #preset-btn:before, #rotate-btn:before, #help-btn:before {
     content: "";
     display: inline-block;
     width: 16px;
@@ -317,6 +317,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   
   #rotate-btn:before {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M7.11 8.53L5.7 7.11C4.8 8.27 4.24 9.61 4.07 11h2.02c.14-.87.49-1.72 1.02-2.47zM6.09 13H4.07c.17 1.39.72 2.73 1.62 3.89l1.41-1.42c-.52-.75-.87-1.59-1.01-2.47zm1.01 5.32c1.16.9 2.51 1.44 3.9 1.61V17.9c-.87-.15-1.71-.49-2.46-1.03L7.1 18.32zM13 4.07V1L8.45 5.55 13 10V6.09c2.84.48 5 2.94 5 5.91s-2.16 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93s-3.05-7.44-7-7.93z"></path></svg>');
+  }
+  
+  #help-btn:before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"></path></svg>');
   }
   
   @media (max-width: 600px) {
@@ -495,6 +499,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button id="share-btn" data-i18n="buttons.share_icon"><span data-i18n="buttons.share">Share</span></button>
     <button id="preset-btn" data-i18n="buttons.preset_icon"><span data-i18n="buttons.preset">Preset</span></button>
     <button id="rotate-btn" data-i18n="buttons.rotate_icon"><span data-i18n="buttons.rotate">Rotate</span></button>
+    <button id="help-btn" data-i18n="buttons.help_icon"><span data-i18n="buttons.help">Help</span></button>
   </div>
 </header>
 
@@ -634,7 +639,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <footer class="app-footer">
   <div class="footer-content">
     <div class="footer-links">
-      <button id="help-btn" class="footer-btn" data-i18n="buttons.help">Help</button>
       <button onclick="window.location.href='privacy.html'" class="footer-btn" data-i18n="footer.privacy">Privacy Policy</button>
       <button onclick="window.location.href='terms.html'" class="footer-btn" data-i18n="footer.terms">Terms of Service</button>
       <button onclick="window.open('https://x.com/naoqoo2', '_blank', 'noopener')" class="footer-btn" data-i18n="footer.contact">Contact</button>
