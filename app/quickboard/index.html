@@ -23,7 +23,7 @@ layout: none
 <meta property="og:description" content="Interactive tactics board for creating and sharing soccer formations">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://naoqoo2.github.io/app/quickboard/">
-<meta property="og:image" content="https://naoqoo2.github.io/app/quickboard/images/quickboard-og.png?v=20250703">
+<meta property="og:image" content="https://naoqoo2.github.io/app/quickboard/images/quickboard-og.jpg?v=20250704">
 <meta property="og:site_name" content="QuickBoard">
 <!-- Twitter/X Card Tags -->
 <meta name="twitter:card" content="summary_large_image">
@@ -31,14 +31,14 @@ layout: none
 <meta name="twitter:creator" content="@naoqoo2">
 <meta name="twitter:title" content="QuickBoard - Soccer Tactics Board">
 <meta name="twitter:description" content="Interactive tactics board for creating and sharing soccer formations">
-<meta name="twitter:image" content="https://naoqoo2.github.io/app/quickboard/images/quickboard-og.png?v=20250703">
+<meta name="twitter:image" content="https://naoqoo2.github.io/app/quickboard/images/quickboard-og.jpg?v=20250704">
 <meta name="twitter:image:alt" content="QuickBoard Soccer Tactics Board Screenshot">
 
 <style>
 html,body{height:100%;margin:0;overflow-x:hidden;overflow-y:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:manipulation}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#222;color:#eee;display:flex;flex-direction:column;align-items:center;height:auto;overflow-y:auto}
-.app-container{display:flex;flex-direction:column;width:100%;max-width:900px;min-height:100vh;padding:0;box-sizing:border-box;align-items:center;justify-content:space-between}
-#board{width:100%;display:flex;justify-content:center;align-items:center;position:relative;padding:20px;box-sizing:border-box;min-height:200px;flex:1;overflow:visible;margin:0;touch-action:manipulation}
+.app-container{display:flex;flex-direction:column;width:100%;max-width:900px;padding:0;box-sizing:border-box;align-items:center;justify-content:flex-start}
+#board{width:100%;display:flex;justify-content:center;align-items:center;position:relative;padding:20px;box-sizing:border-box;min-height:auto;overflow:visible;margin:0;touch-action:manipulation}
 #field{position:relative;background:#060;aspect-ratio:105/68;width:calc(100% - 20px);max-width:900px;margin:0 auto;border:4px solid #fff;box-sizing:border-box;overflow:visible;min-height:100px;touch-action:manipulation}
 #field.vertical{aspect-ratio:68/105;max-width:600px}
 #field svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
@@ -204,7 +204,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   .app-footer {
     width: 100%;
     background: #222;
-    padding: 16px 20px;
+    padding: 10px 20px;
     margin-top: auto;
     box-sizing: border-box;
   }
@@ -310,7 +310,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .app-footer {
   width: 100%;
   background: #222;
-  padding: 12px 20px;
+  padding: 10px 20px;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -398,6 +398,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   
   .footer-copyright {
     text-align: center;
+  }
+}
+
+/* スマホ用フィールド調整 */
+@media (max-width: 600px) {
+  #board {
+    padding: 10px;
+    min-height: auto;
+    margin-bottom: 0;
+  }
+  #field {
+    min-height: auto;
+  }
+  .app-footer {
+    padding: 8px 20px;
   }
 }
 </style>
