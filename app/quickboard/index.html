@@ -286,6 +286,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     background: #555;
     color: #fff;
     transition: all 0.2s;
+    position: relative;
   }
   
   .header-menu button:hover {
@@ -293,16 +294,71 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
   
+  /* ボタンのアイコン */
+  #share-btn:before, #preset-btn:before, #rotate-btn:before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    vertical-align: middle;
+  }
+  
+  #share-btn:before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92 0-1.61-1.31-2.92-2.92-2.92z"></path></svg>');
+  }
+  
+  #preset-btn:before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"></path></svg>');
+  }
+  
+  #rotate-btn:before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M7.11 8.53L5.7 7.11C4.8 8.27 4.24 9.61 4.07 11h2.02c.14-.87.49-1.72 1.02-2.47zM6.09 13H4.07c.17 1.39.72 2.73 1.62 3.89l1.41-1.42c-.52-.75-.87-1.59-1.01-2.47zm1.01 5.32c1.16.9 2.51 1.44 3.9 1.61V17.9c-.87-.15-1.71-.49-2.46-1.03L7.1 18.32zM13 4.07V1L8.45 5.55 13 10V6.09c2.84.48 5 2.94 5 5.91s-2.16 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93s-3.05-7.44-7-7.93z"></path></svg>');
+  }
+  
   @media (max-width: 600px) {
     .app-header {
-      flex-direction: column;
-      gap: 12px;
+      flex-direction: row;
+      gap: 8px;
       padding: 12px;
+      justify-content: space-between;
     }
     
     .header-menu {
-      width: 100%;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    
+    .header-menu button {
+      padding: 0;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
       justify-content: center;
+      position: relative;
+    }
+    
+    .header-menu button:before {
+      margin-right: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+    }
+    
+    .header-menu button span {
+      display: none !important;
+      visibility: hidden;
+      width: 0;
+      height: 0;
+      overflow: hidden;
     }
   }
   
@@ -436,9 +492,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h1 class="header-title">QuickBoard</h1>
   </div>
   <div class="header-menu">
-    <button id="share-btn" data-i18n="buttons.share">Share</button>
-    <button id="preset-btn" data-i18n="buttons.preset">Preset</button>
-    <button id="rotate-btn" data-i18n="buttons.rotate">Rotate</button>
+    <button id="share-btn" data-i18n="buttons.share_icon"><span data-i18n="buttons.share">Share</span></button>
+    <button id="preset-btn" data-i18n="buttons.preset_icon"><span data-i18n="buttons.preset">Preset</span></button>
+    <button id="rotate-btn" data-i18n="buttons.rotate_icon"><span data-i18n="buttons.rotate">Rotate</span></button>
   </div>
 </header>
 
