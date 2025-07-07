@@ -1,0 +1,3 @@
+User-agent: *
+
+Sitemap: https://naoqoo2.com/sitemap.xml
