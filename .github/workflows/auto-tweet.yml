@@ -73,24 +73,15 @@ jobs:
         
         # Create tweet based on category  
         if [ "$CATEGORY" = "cooking" ]; then
-          echo "🍳 新しい料理レシピを投稿しました！" > tweet.txt
-          echo "$TITLE" >> tweet.txt
-          echo "$POST_URL" >> tweet.txt
-          echo "#料理 #レシピ #ブログ #育休メシ" >> tweet.txt
+          TWEET="新しい料理レシピを投稿しました！\n${TITLE}\n${POST_URL}\n#料理 #レシピ #ブログ #育休メシ"
         elif [ "$CATEGORY" = "retrospective" ]; then
-          echo "📝 振り返り記事を投稿しました！" > tweet.txt
-          echo "$TITLE" >> tweet.txt
-          echo "$POST_URL" >> tweet.txt
-          echo "#振り返り #ふりかえり #ブログ #エンジニア" >> tweet.txt
+          TWEET="振り返り記事を投稿しました！\n${TITLE}\n${POST_URL}\n#振り返り #ふりかえり #ブログ #エンジニア"
         else
-          echo "📖 新しい記事を投稿しました！" > tweet.txt
-          echo "$TITLE" >> tweet.txt
-          echo "$POST_URL" >> tweet.txt  
-          echo "#ブログ #技術 #エンジニア" >> tweet.txt
+          TWEET="新しい記事を投稿しました！\n${TITLE}\n${POST_URL}\n#ブログ #技術 #エンジニア"
         fi
         
         # URL encode the tweet content
-        ENCODED_TWEET=$(cat tweet.txt | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+        ENCODED_TWEET=$(echo -e "$TWEET" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
         echo "content=$ENCODED_TWEET" >> $GITHUB_OUTPUT
 
     - name: Post to Twitter
