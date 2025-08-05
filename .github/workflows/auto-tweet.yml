@@ -75,7 +75,7 @@ jobs:
         esac
         
         # URL encode the tweet content
-        ENCODED_TWEET=$(echo "$TWEET" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+        ENCODED_TWEET=$(echo -e "$TWEET" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
         echo "content=$ENCODED_TWEET" >> $GITHUB_OUTPUT
 
     - name: Post to Twitter
@@ -84,7 +84,7 @@ jobs:
         TWEET_CONTENT="${{ steps.tweet-content.outputs.content }}"
         
         # Decode the tweet content
-        DECODED_TWEET=$(echo "$TWEET_CONTENT" | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
+        DECODED_TWEET=$(echo -e "$TWEET_CONTENT" | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
         
         # Post tweet using Twitter API v2
         curl -X POST "https://api.twitter.com/2/tweets" \
