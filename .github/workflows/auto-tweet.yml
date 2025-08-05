@@ -64,22 +64,13 @@ jobs:
         # Create tweet based on category
         case "$CATEGORY" in
           "cooking")
-            TWEET="🍳 新しい料理レシピを投稿しました！
-${TITLE}
-${POST_URL}
-#料理 #レシピ #ブログ #育休メシ"
+            TWEET="🍳 新しい料理レシピを投稿しました！\n${TITLE}\n${POST_URL}\n#料理 #レシピ #ブログ #育休メシ"
             ;;
           "retrospective")
-            TWEET="📝 振り返り記事を投稿しました！
-${TITLE}
-${POST_URL}
-#振り返り #ふりかえり #ブログ #エンジニア"
+            TWEET="📝 振り返り記事を投稿しました！\n${TITLE}\n${POST_URL}\n#振り返り #ふりかえり #ブログ #エンジニア"
             ;;
           *)
-            TWEET="📖 新しい記事を投稿しました！
-${TITLE}
-${POST_URL}
-#ブログ #技術 #エンジニア"
+            TWEET="📖 新しい記事を投稿しました！\n${TITLE}\n${POST_URL}\n#ブログ #技術 #エンジニア"
             ;;
         esac
         
