@@ -1,0 +1,108 @@
+name: Auto Tweet
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '_posts/**/*.md'
+
+jobs:
+  auto-tweet:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    - name: Get changed files
+      id: changed-files
+      run: |
+        echo "files=$(git diff --name-only HEAD~1 HEAD | grep '^_posts.*\.md$' | head -1)" >> $GITHUB_OUTPUT
+
+    - name: Extract post info
+      id: post-info
+      if: steps.changed-files.outputs.files != ''
+      run: |
+        FILE="${{ steps.changed-files.outputs.files }}"
+        if [ -f "$FILE" ]; then
+          # Extract title from YAML front matter
+          TITLE=$(sed -n '/^title:/p' "$FILE" | sed 's/^title: *["\'\'']*\(.*\)["\'\'']*$/\1/' | head -1)
+          
+          # Extract date from filename
+          FILENAME=$(basename "$FILE")
+          DATE=$(echo "$FILENAME" | grep -o '^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}')
+          
+          # Extract category (cooking, retrospective, or blog)
+          if [[ "$FILE" == *"/cooking/"* ]]; then
+            CATEGORY="cooking"
+          elif [[ "$FILE" == *"/retrospective/"* ]]; then
+            CATEGORY="retrospective"  
+          else
+            CATEGORY="blog"
+          fi
+          
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+          echo "category=$CATEGORY" >> $GITHUB_OUTPUT
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create tweet content
+      id: tweet-content
+      if: steps.post-info.outputs.title != ''
+      run: |
+        TITLE="${{ steps.post-info.outputs.title }}"
+        CATEGORY="${{ steps.post-info.outputs.category }}"
+        DATE="${{ steps.post-info.outputs.date }}"
+        FILENAME="${{ steps.post-info.outputs.filename }}"
+        
+        # Create post URL
+        POST_URL="https://naoqoo2.github.io/blog/${DATE//\-/\/}/${FILENAME%.md}/"
+        
+        # Create tweet based on category
+        case "$CATEGORY" in
+          "cooking")
+            TWEET="🍳 新しい料理レシピを投稿しました！
+${TITLE}
+${POST_URL}
+#料理 #レシピ #ブログ #育休メシ"
+            ;;
+          "retrospective")
+            TWEET="📝 振り返り記事を投稿しました！
+${TITLE}
+${POST_URL}
+#振り返り #ふりかえり #ブログ #エンジニア"
+            ;;
+          *)
+            TWEET="📖 新しい記事を投稿しました！  
+${TITLE}
+${POST_URL}
+#ブログ #技術 #エンジニア"
+            ;;
+        esac
+        
+        # URL encode the tweet content
+        ENCODED_TWEET=$(echo "$TWEET" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+        echo "content=$ENCODED_TWEET" >> $GITHUB_OUTPUT
+
+    - name: Post to Twitter
+      if: steps.tweet-content.outputs.content != ''
+      run: |
+        TWEET_CONTENT="${{ steps.tweet-content.outputs.content }}"
+        
+        # Decode the tweet content
+        DECODED_TWEET=$(echo "$TWEET_CONTENT" | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
+        
+        # Post tweet using Twitter API v2
+        curl -X POST "https://api.twitter.com/2/tweets" \
+          -H "Authorization: Bearer ${{ secrets.TWITTER_BEARER_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d "{\"text\": \"$DECODED_TWEET\"}"
+      env:
+        TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+        TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+        TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+        TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+        TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
