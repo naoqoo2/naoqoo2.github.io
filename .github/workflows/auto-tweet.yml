@@ -71,21 +71,32 @@ jobs:
         # Create post URL
         POST_URL="https://naoqoo2.github.io/blog/${DATE//\-/\/}/${FILENAME%.md}/"
         
-        # Create tweet based on category
-        case "$CATEGORY" in
-          "cooking")
-            TWEET="🍳 新しい料理レシピを投稿しました！\n${TITLE}\n${POST_URL}\n#料理 #レシピ #ブログ #育休メシ"
-            ;;
-          "retrospective")
-            TWEET="📝 振り返り記事を投稿しました！\n${TITLE}\n${POST_URL}\n#振り返り #ふりかえり #ブログ #エンジニア"
-            ;;
-          *)
-            TWEET="📖 新しい記事を投稿しました！\n${TITLE}\n${POST_URL}\n#ブログ #技術 #エンジニア"
-            ;;
-        esac
+        # Create tweet based on category  
+        if [ "$CATEGORY" = "cooking" ]; then
+          cat > tweet.txt << 'EOF'
+🍳 新しい料理レシピを投稿しました！
+EOF
+          echo "$TITLE" >> tweet.txt
+          echo "$POST_URL" >> tweet.txt
+          echo "#料理 #レシピ #ブログ #育休メシ" >> tweet.txt
+        elif [ "$CATEGORY" = "retrospective" ]; then
+          cat > tweet.txt << 'EOF'
+📝 振り返り記事を投稿しました！
+EOF
+          echo "$TITLE" >> tweet.txt
+          echo "$POST_URL" >> tweet.txt
+          echo "#振り返り #ふりかえり #ブログ #エンジニア" >> tweet.txt
+        else
+          cat > tweet.txt << 'EOF'
+📖 新しい記事を投稿しました！
+EOF
+          echo "$TITLE" >> tweet.txt
+          echo "$POST_URL" >> tweet.txt  
+          echo "#ブログ #技術 #エンジニア" >> tweet.txt
+        fi
         
         # URL encode the tweet content
-        ENCODED_TWEET=$(echo -e "$TWEET" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+        ENCODED_TWEET=$(cat tweet.txt | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
         echo "content=$ENCODED_TWEET" >> $GITHUB_OUTPUT
 
     - name: Post to Twitter
@@ -94,7 +105,7 @@ jobs:
         TWEET_CONTENT="${{ steps.tweet-content.outputs.content }}"
         
         # Decode the tweet content
-        DECODED_TWEET=$(echo -e "$TWEET_CONTENT" | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
+        DECODED_TWEET=$(echo "$TWEET_CONTENT" | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
         
         # Post tweet using Twitter API v2
         curl -X POST "https://api.twitter.com/2/tweets" \
