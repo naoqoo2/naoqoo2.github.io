@@ -5,6 +5,12 @@ on:
     branches: [ main ]
     paths:
       - '_posts/**/*.md'
+  workflow_dispatch:
+    inputs:
+      post_file:
+        description: 'Post file path (e.g., _posts/retrospective/2025-07-21-20250721.md)'
+        required: true
+        type: string
 
 jobs:
   auto-tweet:
@@ -19,7 +25,11 @@ jobs:
     - name: Get changed files
       id: changed-files
       run: |
-        echo "files=$(git diff --name-only HEAD~1 HEAD | grep '^_posts.*\.md$' | head -1)" >> $GITHUB_OUTPUT
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "files=${{ github.event.inputs.post_file }}" >> $GITHUB_OUTPUT
+        else
+          echo "files=$(git diff --name-only HEAD~1 HEAD | grep '^_posts.*\.md$' | head -1)" >> $GITHUB_OUTPUT
+        fi
 
     - name: Extract post info
       id: post-info
