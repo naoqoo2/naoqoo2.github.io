@@ -38,7 +38,7 @@ jobs:
         FILE="${{ steps.changed-files.outputs.files }}"
         if [ -f "$FILE" ]; then
           # Extract title from YAML front matter
-          TITLE=$(sed -n '/^title:/p' "$FILE" | sed 's/^title: *["\'\'']*\(.*\)["\'\'']*$/\1/' | head -1)
+          TITLE=$(sed -n '/^title:/p' "$FILE" | sed 's/^title: *["\x27]*\(.*\)["\x27]*$/\1/' | head -1)
           
           # Extract date from filename
           FILENAME=$(basename "$FILE")
@@ -73,24 +73,24 @@ jobs:
         
         # Create tweet based on category  
         if [ "$CATEGORY" = "cooking" ]; then
-          echo "新しい料理レシピを投稿しました！" > tweet.txt
-          echo "$TITLE" >> tweet.txt
-          echo "$POST_URL" >> tweet.txt
-          echo "#料理 #レシピ #ブログ #育休メシ" >> tweet.txt
+          TWEET_TEXT="新しい料理レシピを投稿しました！
+$TITLE
+$POST_URL
+#料理 #レシピ #ブログ #育休メシ"
         elif [ "$CATEGORY" = "retrospective" ]; then
-          echo "振り返り記事を投稿しました！" > tweet.txt
-          echo "$TITLE" >> tweet.txt
-          echo "$POST_URL" >> tweet.txt
-          echo "#振り返り #ふりかえり #ブログ #エンジニア" >> tweet.txt
+          TWEET_TEXT="振り返り記事を投稿しました！
+$TITLE
+$POST_URL
+#振り返り #ふりかえり #ブログ #エンジニア"
         else
-          echo "新しい記事を投稿しました！" > tweet.txt
-          echo "$TITLE" >> tweet.txt
-          echo "$POST_URL" >> tweet.txt
-          echo "#ブログ #技術 #エンジニア" >> tweet.txt
+          TWEET_TEXT="新しい記事を投稿しました！
+$TITLE
+$POST_URL
+#ブログ #技術 #エンジニア"
         fi
         
         # URL encode the tweet content
-        ENCODED_TWEET=$(cat tweet.txt | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+        ENCODED_TWEET=$(echo "$TWEET_TEXT" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
         echo "content=$ENCODED_TWEET" >> $GITHUB_OUTPUT
 
     - name: Post to Twitter
@@ -98,14 +98,22 @@ jobs:
       run: |
         TWEET_CONTENT="${{ steps.tweet-content.outputs.content }}"
         
-        # Decode the tweet content
-        DECODED_TWEET=$(echo "$TWEET_CONTENT" | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
+        # Decode the tweet content and create JSON payload
+        JSON_PAYLOAD=$(echo "$TWEET_CONTENT" | python3 -c "
+import sys
+import urllib.parse
+import json
+
+# Decode URL-encoded content
+content = urllib.parse.unquote(sys.stdin.read().strip())
+# Create JSON payload
+print(json.dumps({'text': content}))
+")
         
-        # Post tweet using Twitter API v2
         curl -X POST "https://api.twitter.com/2/tweets" \
           -H "Authorization: Bearer ${{ secrets.TWITTER_BEARER_TOKEN }}" \
           -H "Content-Type: application/json" \
-          -d "{\"text\": \"$DECODED_TWEET\"}"
+          -d "$JSON_PAYLOAD"
       env:
         TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
         TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
