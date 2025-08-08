@@ -1,0 +1,165 @@
+---
+layout: single
+---
+
+<div class="marp-container">
+  <!-- 表示切り替えボタン -->
+  <div class="marp-controls">
+    <button id="slide-view-btn" class="marp-btn active" onclick="showSlideView()">スライド表示</button>
+    <button id="article-view-btn" class="marp-btn" onclick="showArticleView()">記事表示</button>
+  </div>
+
+  <!-- スライド表示用 -->
+  <div id="slide-view" class="marp-slide-view">
+    {% assign slides = content | split: '---' %}
+    {% for slide in slides %}
+      {% unless forloop.first %}
+        {% assign slide_content = slide | strip %}
+        {% unless slide_content == '' %}
+          <div class="marp-slide">
+            {{ slide | markdownify }}
+          </div>
+        {% endunless %}
+      {% endunless %}
+    {% endfor %}
+  </div>
+
+  <!-- 記事表示用 -->
+  <div id="article-view" class="marp-article-view" style="display: none;">
+    {% assign content_without_style = content | replace: '<!-- style -->', '' %}
+    {% assign content_clean = content_without_style | split: '<style>' | first %}
+    {% assign final_content = content_clean | replace: '---', '' %}
+    {{ final_content | markdownify }}
+  </div>
+</div>
+
+<style>
+.marp-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.marp-controls {
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e1e5e9;
+  padding-bottom: 15px;
+}
+
+.marp-btn {
+  background: #f8f9fa;
+  border: 1px solid #d1d5da;
+  border-radius: 6px;
+  color: #24292e;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 6px 16px;
+  position: relative;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  margin: 0 5px;
+}
+
+.marp-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #c9d1d9;
+}
+
+.marp-btn.active {
+  background: #0969da;
+  border-color: #0969da;
+  color: #ffffff;
+}
+
+.marp-slide-view {
+  display: block;
+}
+
+.marp-slide {
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  margin: 20px 0;
+  padding: 40px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-height: 400px;
+  font-size: 1.1em;
+}
+
+.marp-slide h1 {
+  color: #2c5282;
+  border-bottom: 3px solid #2c5282;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+  font-size: 2em;
+}
+
+.marp-slide h2 {
+  color: #2d3748;
+  margin: 25px 0 15px 0;
+  font-size: 1.5em;
+}
+
+.marp-slide h3 {
+  color: #4a5568;
+  margin: 20px 0 10px 0;
+  font-size: 1.3em;
+}
+
+.marp-slide ul {
+  margin: 15px 0;
+  padding-left: 25px;
+}
+
+.marp-slide li {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.marp-slide strong {
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+.marp-article-view {
+  line-height: 1.7;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .marp-slide {
+    padding: 20px;
+    margin: 10px 0;
+    min-height: 300px;
+    font-size: 1em;
+  }
+  
+  .marp-slide h1 {
+    font-size: 1.6em;
+  }
+  
+  .marp-slide h2 {
+    font-size: 1.3em;
+  }
+}
+</style>
+
+<script>
+function showSlideView() {
+  document.getElementById('slide-view').style.display = 'block';
+  document.getElementById('article-view').style.display = 'none';
+  document.getElementById('slide-view-btn').classList.add('active');
+  document.getElementById('article-view-btn').classList.remove('active');
+}
+
+function showArticleView() {
+  document.getElementById('slide-view').style.display = 'none';
+  document.getElementById('article-view').style.display = 'block';
+  document.getElementById('slide-view-btn').classList.remove('active');
+  document.getElementById('article-view-btn').classList.add('active');
+}
+</script>
