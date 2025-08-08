@@ -37,14 +37,9 @@ jobs:
         run: |
           FILE="${{ steps.changed-files.outputs.files }}"
           if [ -f "$FILE" ]; then
-            # front matter の title 取得（簡易）
             TITLE=$(sed -n '/^[[:space:]]*title:/p' "$FILE" | sed 's/^[[:space:]]*title:[[:space:]]*["\x27]*\(.*\)["\x27]*$/\1/' | head -1)
-
-            # ファイル名と日付
             FILENAME=$(basename "$FILE")
             DATE=$(echo "$FILENAME" | grep -o '^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}')
-
-            # カテゴリ判定
             if [[ "$FILE" == *"/cooking/"* ]]; then
               CATEGORY="cooking"
             elif [[ "$FILE" == *"/retrospective/"* ]]; then
@@ -52,7 +47,6 @@ jobs:
             else
               CATEGORY="blog"
             fi
-
             echo "title=$TITLE" >> "$GITHUB_OUTPUT"
             echo "date=$DATE" >> "$GITHUB_OUTPUT"
             echo "category=$CATEGORY" >> "$GITHUB_OUTPUT"
@@ -68,54 +62,26 @@ jobs:
           DATE="${{ steps.post-info.outputs.date }}"
           FILENAME="${{ steps.post-info.outputs.filename }}"
 
-          # 記事URL
           POST_URL="https://naoqoo2.github.io/blog/${DATE//\-/\/}/${FILENAME%.md}/"
 
-          # カテゴリ別メッセージ（printfで改行）
           if [ "$CATEGORY" = "cooking" ]; then
-            TWEET_TEXT=$(printf '%s\n%s\n%s\n%s\n' \
-              "新しい料理レシピを投稿しました！" \
-              "$TITLE" \
-              "$POST_URL" \
-              "#料理 #レシピ #ブログ #育休メシ")
+            TWEET_TEXT=$(printf '%s\n%s\n%s\n%s\n' "新しい料理レシピを投稿しました！" "$TITLE" "$POST_URL" "#料理 #レシピ #ブログ #育休メシ")
           elif [ "$CATEGORY" = "retrospective" ]; then
-            TWEET_TEXT=$(printf '%s\n%s\n%s\n%s\n' \
-              "振り返り記事を投稿しました！" \
-              "$TITLE" \
-              "$POST_URL" \
-              "#振り返り #ふりかえり #ブログ #エンジニア")
+            TWEET_TEXT=$(printf '%s\n%s\n%s\n%s\n' "振り返り記事を投稿しました！" "$TITLE" "$POST_URL" "#振り返り #ふりかえり #ブログ #エンジニア")
           else
-            TWEET_TEXT=$(printf '%s\n%s\n%s\n%s\n' \
-              "新しい記事を投稿しました！" \
-              "$TITLE" \
-              "$POST_URL" \
-              "#ブログ #技術 #エンジニア")
+            TWEET_TEXT=$(printf '%s\n%s\n%s\n%s\n' "新しい記事を投稿しました！" "$TITLE" "$POST_URL" "#ブログ #技術 #エンジニア")
           fi
 
-          # URL エンコードして outputs へ
-          ENCODED_TWEET=$(echo "$TWEET_TEXT" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+          ENCODED_TWEET=$(echo "$TWEET_TEXT" | python3 -c "import sys,urllib.parse;print(urllib.parse.quote(sys.stdin.read()))")
           echo "content=$ENCODED_TWEET" >> "$GITHUB_OUTPUT"
 
       - name: Post to Twitter
         if: steps.tweet-content.outputs.content != ''
         env:
-          # Python へは環境変数で渡す（heredoc の引数を避ける）
           TWEET_CONTENT: ${{ steps.tweet-content.outputs.content }}
-          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
-          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
-          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
           TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
         run: |
-          # URLデコード→JSON化は Python のヒアドキュメントで安全に処理
-          JSON_PAYLOAD=$(
-            python3 <<'PY'
-import os, urllib.parse, json
-content = urllib.parse.unquote(os.environ["TWEET_CONTENT"])
-print(json.dumps({'text': content}))
-PY
-          )
-
+          JSON_PAYLOAD=$(python3 -c "import os,urllib.parse,json;print(json.dumps({'text': urllib.parse.unquote(os.environ['TWEET_CONTENT'])}))")
           curl -X POST "https://api.twitter.com/2/tweets" \
             -H "Authorization: Bearer $TWITTER_BEARER_TOKEN" \
             -H "Content-Type: application/json" \
