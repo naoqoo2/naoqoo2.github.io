@@ -37,9 +37,14 @@ jobs:
         run: |
           FILE="${{ steps.changed-files.outputs.files }}"
           if [ -f "$FILE" ]; then
+            # title (front matter) の取得（簡易）
             TITLE=$(sed -n '/^title:/p' "$FILE" | sed 's/^title: *["\x27]*\(.*\)["\x27]*$/\1/' | head -1)
+
+            # ファイル名と日付
             FILENAME=$(basename "$FILE")
             DATE=$(echo "$FILENAME" | grep -o '^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}')
+
+            # カテゴリ判定
             if [[ "$FILE" == *"/cooking/"* ]]; then
               CATEGORY="cooking"
             elif [[ "$FILE" == *"/retrospective/"* ]]; then
@@ -47,6 +52,7 @@ jobs:
             else
               CATEGORY="blog"
             fi
+
             echo "title=$TITLE" >> "$GITHUB_OUTPUT"
             echo "date=$DATE" >> "$GITHUB_OUTPUT"
             echo "category=$CATEGORY" >> "$GITHUB_OUTPUT"
@@ -62,8 +68,10 @@ jobs:
           DATE="${{ steps.post-info.outputs.date }}"
           FILENAME="${{ steps.post-info.outputs.filename }}"
 
+          # 記事URL
           POST_URL="https://naoqoo2.github.io/blog/${DATE//\-/\/}/${FILENAME%.md}/"
 
+          # カテゴリ別の本文をprintfで作成（ヒアドキュメント不使用）
           if [ "$CATEGORY" = "cooking" ]; then
             TWEET_TEXT=$(printf '%s\n%s\n%s\n%s\n' \
               "新しい料理レシピを投稿しました！" \
@@ -84,6 +92,7 @@ jobs:
               "#ブログ #技術 #エンジニア")
           fi
 
+          # URL エンコードして outputs へ
           ENCODED_TWEET=$(echo "$TWEET_TEXT" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
           echo "content=$ENCODED_TWEET" >> "$GITHUB_OUTPUT"
 
@@ -91,11 +100,16 @@ jobs:
         if: steps.tweet-content.outputs.content != ''
         run: |
           TWEET_CONTENT="${{ steps.tweet-content.outputs.content }}"
-          JSON_PAYLOAD=$(echo "$TWEET_CONTENT" | python3 -c "
+
+          # Python はヒアドキュメントで渡して YAML のクォート事故を回避
+          JSON_PAYLOAD=$(
+            python3 <<'PY' "$TWEET_CONTENT"
 import sys, urllib.parse, json
-content = urllib.parse.unquote(sys.stdin.read().strip())
+content = urllib.parse.unquote(sys.argv[1])
 print(json.dumps({'text': content}))
-")
+PY
+          )
+
           curl -X POST "https://api.twitter.com/2/tweets" \
             -H "Authorization: Bearer ${{ secrets.TWITTER_BEARER_TOKEN }}" \
             -H "Content-Type: application/json" \
