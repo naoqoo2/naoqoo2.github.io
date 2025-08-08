@@ -37,8 +37,8 @@ jobs:
         run: |
           FILE="${{ steps.changed-files.outputs.files }}"
           if [ -f "$FILE" ]; then
-            # title (front matter) の取得（簡易）
-            TITLE=$(sed -n '/^title:/p' "$FILE" | sed 's/^title: *["\x27]*\(.*\)["\x27]*$/\1/' | head -1)
+            # front matter の title 取得（簡易）
+            TITLE=$(sed -n '/^[[:space:]]*title:/p' "$FILE" | sed 's/^[[:space:]]*title:[[:space:]]*["\x27]*\(.*\)["\x27]*$/\1/' | head -1)
 
             # ファイル名と日付
             FILENAME=$(basename "$FILE")
@@ -71,7 +71,7 @@ jobs:
           # 記事URL
           POST_URL="https://naoqoo2.github.io/blog/${DATE//\-/\/}/${FILENAME%.md}/"
 
-          # カテゴリ別の本文をprintfで作成（ヒアドキュメント不使用）
+          # カテゴリ別メッセージ（printfで改行）
           if [ "$CATEGORY" = "cooking" ]; then
             TWEET_TEXT=$(printf '%s\n%s\n%s\n%s\n' \
               "新しい料理レシピを投稿しました！" \
@@ -98,25 +98,25 @@ jobs:
 
       - name: Post to Twitter
         if: steps.tweet-content.outputs.content != ''
-        run: |
-          TWEET_CONTENT="${{ steps.tweet-content.outputs.content }}"
-
-          # Python はヒアドキュメントで渡して YAML のクォート事故を回避
-          JSON_PAYLOAD=$(
-            python3 <<'PY' "$TWEET_CONTENT"
-import sys, urllib.parse, json
-content = urllib.parse.unquote(sys.argv[1])
-print(json.dumps({'text': content}))
-PY
-          )
-
-          curl -X POST "https://api.twitter.com/2/tweets" \
-            -H "Authorization: Bearer ${{ secrets.TWITTER_BEARER_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "$JSON_PAYLOAD"
         env:
+          # Python へは環境変数で渡す（heredoc の引数を避ける）
+          TWEET_CONTENT: ${{ steps.tweet-content.outputs.content }}
           TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
           TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
           TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
+        run: |
+          # URLデコード→JSON化は Python のヒアドキュメントで安全に処理
+          JSON_PAYLOAD=$(
+            python3 <<'PY'
+import os, urllib.parse, json
+content = urllib.parse.unquote(os.environ["TWEET_CONTENT"])
+print(json.dumps({'text': content}))
+PY
+          )
+
+          curl -X POST "https://api.twitter.com/2/tweets" \
+            -H "Authorization: Bearer $TWITTER_BEARER_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD"
