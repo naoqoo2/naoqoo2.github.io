@@ -280,9 +280,25 @@ function initializeMarpContent() {
   console.log('Original content length:', rawContent.length);
   console.log('Original content preview:', rawContent.substring(0, 200));
   
-  // スタイルタグを2段階で削除
-  let cleanContent = rawContent.replace(/<!-- style -->[\s\S]*?<\/style>/g, '');
-  cleanContent = cleanContent.replace(/<style[\s\S]*?<\/style>/g, '');
+  // スタイルタグを詳細にログして削除
+  let cleanContent = rawContent;
+  
+  // CSSコメントとスタイルブロックを特定して削除
+  const styleCommentPattern = /<!-- style -->/g;
+  const styleTagPattern = /<style[\s\S]*?<\/style>/gi;
+  
+  console.log('Before CSS removal:', cleanContent.match(styleCommentPattern));
+  console.log('Style tags found:', cleanContent.match(styleTagPattern));
+  
+  // CSSコメントを削除
+  cleanContent = cleanContent.replace(styleCommentPattern, '');
+  
+  // styleタグとその内容を削除
+  cleanContent = cleanContent.replace(styleTagPattern, '');
+  
+  // 残ったCSSルール（先頭のsection {...}など）を削除
+  cleanContent = cleanContent.replace(/^section\s*\{[^}]*\}/gm, '');
+  cleanContent = cleanContent.replace(/^\s*[\w\-\.#]+\s*\{[^}]*\}/gm, '');
   
   console.log('After style removal:', cleanContent.length);
   console.log('Clean content preview:', cleanContent.substring(0, 200));
