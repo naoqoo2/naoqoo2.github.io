@@ -277,14 +277,29 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeMarpContent() {
   const rawContent = document.getElementById('raw-content').textContent;
   
-  // スタイルタグを削除してコンテンツを分割
+  console.log('Original content length:', rawContent.length);
+  console.log('Original content preview:', rawContent.substring(0, 200));
+  
+  // スタイルタグを2段階で削除
   let cleanContent = rawContent.replace(/<!-- style -->[\s\S]*?<\/style>/g, '');
+  cleanContent = cleanContent.replace(/<style[\s\S]*?<\/style>/g, '');
+  
+  console.log('After style removal:', cleanContent.length);
+  console.log('Clean content preview:', cleanContent.substring(0, 200));
   
   // スライドに分割（---で分割）
   let slides = cleanContent.split('---');
   
+  console.log('Before filtering - total parts:', slides.length);
+  slides.forEach((slide, index) => {
+    console.log(`Part ${index} length:`, slide.trim().length);
+    console.log(`Part ${index} preview:`, slide.trim().substring(0, 100));
+  });
+  
   // 空のスライドを除去
   slides = slides.filter(slide => slide.trim() !== '');
+  
+  console.log('After filtering - actual slides:', slides.length);
   
   totalSlides = slides.length;
   
@@ -305,7 +320,8 @@ function generateSlideView(slides) {
   const slidesContainer = document.getElementById('slides-container');
   slidesContainer.innerHTML = '';
   
-  console.log('Generating slides:', slides.length, 'slides found');
+  console.log('=== GENERATING SLIDE VIEW ===');
+  console.log('Total slides to generate:', slides.length);
   
   slides.forEach(function(slide, index) {
     if (slide.trim()) {
@@ -313,7 +329,7 @@ function generateSlideView(slides) {
       slideDiv.className = 'marp-slide';
       slideDiv.id = 'slide-' + index;
       
-      console.log('Creating slide', index, 'with ID:', slideDiv.id);
+      console.log(`Slide ${index}:`, slide.trim().substring(0, 50) + '...');
       
       // Markdownの基本的な変換を手動で行う
       let html = slide.trim();
