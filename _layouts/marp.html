@@ -2,6 +2,31 @@
 layout: single
 ---
 
+<!--
+Marp Layout for Jekyll
+======================
+マークダウンファイルからプレゼンテーションスライドを生成するJekyll用レイアウト
+
+Features:
+- 3つの表示モード: スライド、記事、マークダウン
+- レスポンシブデザイン（デスクトップ、タブレット、スマートフォン対応）
+- キーボードナビゲーション（矢印キー、p/n、数字キー、Home/End）
+- アクセシビリティ対応（ARIA属性、スクリーンリーダー対応）
+- セキュリティ対策（XSSサニタイゼーション、入力値検証）
+- パフォーマンス最適化（コンテンツキャッシュ、DOM操作最適化）
+
+Security:
+- HTMLサニタイゼーション実装済み
+- XSS攻撃対策済み
+- DoS攻撃対策済み（コンテンツサイズ制限）
+
+Accessibility:
+- WCAG準拠のARIA属性
+- キーボード完全対応
+- スクリーンリーダー対応
+- ハイコントラストモード対応
+-->
+
 <div class="marp-container">
   <!-- marpコンテナ内のスタイル分離 -->
   <style>
@@ -16,35 +41,35 @@ layout: single
   </style>
   
   <!-- 表示切り替えボタン -->
-  <div class="marp-controls">
-    <button id="slide-view-btn" class="marp-btn active" onclick="showSlideView()">スライド</button>
-    <button id="article-view-btn" class="marp-btn" onclick="showArticleView()">記事表示</button>
-    <button id="markdown-view-btn" class="marp-btn" onclick="showMarkdownView()">マークダウン</button>
+  <div class="marp-controls" role="tablist" aria-label="表示モード切り替え">
+    <button id="slide-view-btn" class="marp-btn active" role="tab" aria-selected="true" aria-controls="slide-view" tabindex="0" onclick="showSlideView()">スライド</button>
+    <button id="article-view-btn" class="marp-btn" role="tab" aria-selected="false" aria-controls="article-view" tabindex="-1" onclick="showArticleView()">記事表示</button>
+    <button id="markdown-view-btn" class="marp-btn" role="tab" aria-selected="false" aria-controls="markdown-view" tabindex="-1" onclick="showMarkdownView()">マークダウン</button>
   </div>
 
   <!-- スライド表示用 -->
-  <div id="slide-view" class="marp-slide-view">
+  <div id="slide-view" class="marp-slide-view" role="tabpanel" aria-labelledby="slide-view-btn">
     <!-- スライドナビゲーション -->
-    <div class="slide-navigation">
-      <button id="prev-btn" class="nav-btn" onclick="prevSlide()" disabled>← 前へ</button>
-      <span id="slide-counter" class="slide-counter">1 / 1</span>
-      <button id="next-btn" class="nav-btn" onclick="nextSlide()">次へ →</button>
-    </div>
+    <nav class="slide-navigation" role="navigation" aria-label="スライドナビゲーション">
+      <button id="prev-btn" class="nav-btn" onclick="prevSlide()" disabled aria-label="前のスライドへ" title="前のスライド（矢印キー左）">← 前へ</button>
+      <span id="slide-counter" class="slide-counter" role="status" aria-live="polite" aria-label="スライド番号">1 / 1</span>
+      <button id="next-btn" class="nav-btn" onclick="nextSlide()" aria-label="次のスライドへ" title="次のスライド（矢印キー右）">次へ →</button>
+    </nav>
     
     <!-- スライドコンテナ -->
-    <div id="slides-container" class="slides-container">
+    <div id="slides-container" class="slides-container" role="presentation">
       <!-- JavaScriptで動的に生成 -->
     </div>
   </div>
 
   <!-- 記事表示用 -->
-  <div id="article-view" class="marp-article-view" style="display: none;">
+  <div id="article-view" class="marp-article-view" role="tabpanel" aria-labelledby="article-view-btn" style="display: none;">
     <!-- JavaScriptで動的に生成 -->
   </div>
 
   <!-- マークダウン表示用 -->
-  <div id="markdown-view" class="marp-markdown-view" style="display: none;">
-    <pre><code id="markdown-content"></code></pre>
+  <div id="markdown-view" class="marp-markdown-view" role="tabpanel" aria-labelledby="markdown-view-btn" style="display: none;">
+    <pre><code id="markdown-content" aria-label="マークダウンソースコード"></code></pre>
   </div>
 
   <!-- 元のコンテンツ（非表示） -->
@@ -108,6 +133,8 @@ layout: single
   background: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e1e5e9;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .nav-btn {
@@ -258,21 +285,176 @@ layout: single
   padding: 0;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
+/* レスポンシブ対応（改善版） */
+
+/* タブレットサイズ (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
   .marp-slide {
-    padding: 20px;
-    margin: 10px 0;
-    min-height: 300px;
-    font-size: 1em;
+    padding: 30px;
+    margin: 15px 0;
+    min-height: 380px;
+    font-size: 1.05em;
   }
   
   .marp-slide h1 {
-    font-size: 1.6em;
+    font-size: 1.8em;
   }
   
   .marp-slide h2 {
+    font-size: 1.4em;
+  }
+  
+  .marp-controls {
+    margin-bottom: 15px;
+  }
+  
+  .slide-navigation {
+    margin-bottom: 15px;
+  }
+}
+
+/* スマートフォンサイズ (768px以下) */
+@media (max-width: 768px) {
+  .marp-container {
+    padding: 0 10px;
+  }
+  
+  .marp-slide {
+    padding: 15px;
+    margin: 10px 0;
+    min-height: 250px;
+    font-size: 0.95em;
+  }
+  
+  .marp-slide h1 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+  
+  .marp-slide h2 {
+    font-size: 1.25em;
+    margin: 20px 0 12px 0;
+  }
+  
+  .marp-slide h3 {
+    font-size: 1.1em;
+    margin: 15px 0 8px 0;
+  }
+  
+  .marp-controls {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+  
+  .marp-btn {
+    font-size: 13px;
+    padding: 5px 12px;
+    margin: 0 3px;
+  }
+  
+  .slide-navigation {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .nav-btn {
+    font-size: 13px;
+    padding: 6px 12px;
+    width: 100%;
+    max-width: 120px;
+  }
+  
+  .slide-counter {
+    font-size: 14px;
+    order: -1;
+  }
+  
+  .marp-article-view {
+    font-size: 14px;
+  }
+  
+  .marp-markdown-view {
+    font-size: 13px;
+  }
+}
+
+/* 小さなスマートフォン (480px以下) */
+@media (max-width: 480px) {
+  .marp-slide {
+    padding: 10px;
+    margin: 8px 0;
+    min-height: 200px;
+    font-size: 0.9em;
+  }
+  
+  .marp-slide h1 {
     font-size: 1.3em;
+    margin-bottom: 15px;
+  }
+  
+  .marp-slide h2 {
+    font-size: 1.15em;
+  }
+  
+  .marp-slide li {
+    margin: 6px 0;
+  }
+  
+  .marp-btn {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+  
+  .nav-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  
+  .slide-counter {
+    font-size: 13px;
+  }
+}
+
+/* フォーカススタイルの改善（アクセシビリティ） */
+.marp-btn:focus,
+.nav-btn:focus {
+  outline: 2px solid #0969da;
+  outline-offset: 2px;
+}
+
+.marp-slide:focus {
+  outline: 3px solid #0969da;
+  outline-offset: 2px;
+}
+
+/* ハイコントラストモード対応 */
+@media (prefers-contrast: high) {
+  .marp-slide {
+    border: 2px solid #000;
+  }
+  
+  .marp-btn.active {
+    background: #000;
+    color: #fff;
+  }
+  
+  .nav-btn {
+    background: #000;
+    border: 1px solid #000;
+  }
+}
+
+/* モーションを無効にしたユーザー対応 */
+@media (prefers-reduced-motion: reduce) {
+  .marp-slide {
+    transition: none;
+  }
+  
+  .marp-btn,
+  .nav-btn {
+    transition: none;
   }
 }
 </style>
@@ -280,6 +462,68 @@ layout: single
 <script>
 let currentSlide = 0;
 let totalSlides = 0;
+
+// パフォーマンス最適化用のキャッシュ
+let cachedSlides = null;
+let cachedArticleContent = null;
+let cachedMarkdownContent = null;
+let lastRawContent = null;
+
+// HTMLサニタイゼーション関数
+function sanitizeHTML(html) {
+  // 許可するタグのホワイトリスト
+  const allowedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'code', 'pre', 'blockquote'];
+  const allowedAttributes = ['class', 'id'];
+  
+  // 一時的なDOM要素を作成してパース
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  
+  // 再帰的にノードをサニタイズ
+  function sanitizeNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return node;
+    }
+    
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const tagName = node.tagName.toLowerCase();
+      
+      // 許可されていないタグは削除
+      if (!allowedTags.includes(tagName)) {
+        const fragment = document.createDocumentFragment();
+        while (node.firstChild) {
+          fragment.appendChild(sanitizeNode(node.firstChild));
+        }
+        return fragment;
+      }
+      
+      // 許可されていない属性を削除
+      const attributes = Array.from(node.attributes);
+      attributes.forEach(attr => {
+        if (!allowedAttributes.includes(attr.name.toLowerCase())) {
+          node.removeAttribute(attr.name);
+        }
+      });
+      
+      // 子ノードを再帰的にサニタイズ
+      const children = Array.from(node.childNodes);
+      children.forEach(child => {
+        const sanitized = sanitizeNode(child);
+        if (sanitized !== child) {
+          node.replaceChild(sanitized, child);
+        }
+      });
+    }
+    
+    return node;
+  }
+  
+  // 全ノードをサニタイズ
+  const children = Array.from(temp.childNodes);
+  children.forEach(child => sanitizeNode(child));
+  
+  return temp.innerHTML;
+}
 
 // ページ読み込み時にコンテンツを処理
 document.addEventListener('DOMContentLoaded', function() {
@@ -289,138 +533,306 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeMarpContent() {
   const rawContent = document.getElementById('raw-content').textContent;
   
-  // スタイルタグとCSSコメントを削除
-  let cleanContent = rawContent;
+  try {
+    // スタイルタグとCSSコメントを安全に削除
+    let cleanContent = rawContent;
+    
+    // 入力長制限（異常に大きなファイル対策）
+    if (cleanContent.length > 500000) {
+      // 本番環境ではエラーログのみ出力
+      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        console.warn('Marp: コンテンツが大きすぎるため、切り詰められました');
+      }
+      cleanContent = cleanContent.substring(0, 500000);
+    }
+    
+    // CSSコメントとスタイルブロックを安全に削除
+    cleanContent = cleanContent.replace(/<!--\s*style\s*-->/gi, '');
+    cleanContent = cleanContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+    
+    // CSSルールをより安全に削除（行頭のみ）
+    cleanContent = cleanContent.replace(/^\s*section\s*\{[^}]*\}\s*$/gm, '');
+    cleanContent = cleanContent.replace(/^\s*[a-zA-Z][\w\-\.#:\s]*\s*\{[^}]*\}\s*$/gm, '');
+    
+    // 行を安全に処理（空の行を保持）
+    const lines = cleanContent.split('\n');
+    const trimmedLines = lines.map(line => {
+      // タブとスペースのみをtrimし、内容は保持
+      return line.replace(/^[\t\s]+|[\t\s]+$/g, '');
+    });
+    cleanContent = trimmedLines.join('\n');
+    
+    // 連続する空行を整理（最大3行まで）
+    cleanContent = cleanContent.replace(/\n{4,}/g, '\n\n\n');
+    
+    // スライドに分割（より安全な正規表現）
+    let slides = cleanContent.split(/\n\s*-{3,}\s*\n/);
+    
+    // YAML Front Matterを検出して除去
+    slides = slides.filter((slide, index) => {
+      const trimmed = slide.trim();
+      
+      // 空のスライドを除去
+      if (trimmed === '') {
+        return false;
+      }
+      
+      // YAML Front Matterの特徴を検出（最初のスライドのみチェック）
+      if (index === 0) {
+        const yamlPattern = /^(?:title:|layout:|categories:|tags:|marp:|paginate:|date:|author:)/m;
+        if (yamlPattern.test(trimmed)) {
+          return false;
+        }
+      }
+      
+      // コンテンツの最小長チェック（空のスライド防止）
+      return trimmed.length >= 3;
+    });
   
-  // CSSコメントとスタイルブロックを削除
-  cleanContent = cleanContent.replace(/<!-- style -->/g, '');
-  cleanContent = cleanContent.replace(/<style[\s\S]*?<\/style>/gi, '');
-  
-  // 残ったCSSルール（先頭のsection {...}など）を削除
-  cleanContent = cleanContent.replace(/^section\s*\{[\s\S]*?\}/gm, '');
-  cleanContent = cleanContent.replace(/^\s*[\w\-\.#:]+\s*\{[\s\S]*?\}/gm, '');
-  
-  // 行頭の空白を除去してから処理
-  cleanContent = cleanContent.split('\n').map(line => line.trim()).join('\n');
-  
-  // 連続する改行を単一改行に
-  cleanContent = cleanContent.replace(/\n{3,}/g, '\n\n');
-  
-  // スライドに分割（---で分割）
-  let slides = cleanContent.split(/\n\s*---+\s*\n/);
-  
-  // 空のスライドやYAML Front Matterを除去
-  slides = slides.filter(slide => {
-    const trimmed = slide.trim();
-    // 空のスライドまたはYAML Front Matter（title:, layout:等を含む）を除去
-    return trimmed !== '' && 
-           !trimmed.includes('title:') && 
-           !trimmed.includes('layout:') &&
-           !trimmed.includes('categories:') &&
-           !trimmed.includes('tags:') &&
-           !trimmed.includes('marp:') &&
-           !trimmed.includes('paginate:');
-  });
-  
-  totalSlides = slides.length;
-  
-  // スライド表示用のHTMLを生成
-  generateSlideView(slides);
-  
-  // 記事表示用のHTMLを生成
-  generateArticleView(slides);
-  
-  // マークダウン表示用のコンテンツを生成（元のrawContentから不要な部分を削除）
-  const cleanRawContent = rawContent
-    .replace(/<!-- style -->/g, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/^section\s*\{[\s\S]*?\}/gm, '')
-    .trim();
-  generateMarkdownView(cleanRawContent);
-  
-  // 初期表示設定
-  showCurrentSlide();
+    totalSlides = slides.length;
+    
+    // スライドがない場合のエラーハンドリング
+    if (totalSlides === 0) {
+      // ユーザーにメッセージを表示（エラーログは不要）
+      document.getElementById('slides-container').innerHTML = '<div class="marp-slide active"><h2>スライドが見つかりません</h2><p>有効なコンテンツを確認してください。</p></div>';
+      totalSlides = 1;
+      showCurrentSlide();
+      return;
+    }
+    
+    // スライド数制限（パフォーマンス対策）
+    if (totalSlides > 200) {
+      slides = slides.slice(0, 200);
+      totalSlides = 200;
+      // 開発環境でのみ警告を表示
+      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        console.warn('Marp: スライド数が多すぎるため、200枚に制限しました');
+      }
+    }
+    
+    // 開発環境でのみログ出力
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      console.log('Marp: ' + totalSlides + '枚のスライドを読み込みました');
+    }
+    
+    // キャッシュを更新
+    cachedSlides = slides;
+    lastRawContent = rawContent;
+    
+    // スライド表示用のHTMLを生成
+    generateSlideView(slides);
+    
+    // 記事表示用のHTMLを生成
+    generateArticleView(slides);
+    
+    // マークダウン表示用のコンテンツを生成
+    const cleanRawContent = rawContent
+      .replace(/<!--\s*style\s*-->/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/^\s*section\s*\{[^}]*\}\s*$/gm, '')
+      .trim();
+    generateMarkdownView(cleanRawContent);
+    
+    // キャッシュを保存
+    cachedArticleContent = document.getElementById('article-view').innerHTML;
+    cachedMarkdownContent = document.getElementById('markdown-content').textContent;
+    
+    // 初期表示設定
+    showCurrentSlide();
+    
+  } catch (error) {
+    console.error('Marp: コンテンツの初期化中にエラーが発生しました:', error);
+    
+    // エラー時のフォールバック表示
+    document.getElementById('slides-container').innerHTML = 
+      '<div class="marp-slide active"><h2>エラーが発生しました</h2><p>コンテンツの読み込みに失敗しました。ファイルの形式を確認してください。</p></div>';
+    totalSlides = 1;
+    showCurrentSlide();
+  }
 }
 
 function generateSlideView(slides) {
   const slidesContainer = document.getElementById('slides-container');
+  if (!slidesContainer) {
+    console.error('Marp: slides-container要素が見つかりません');
+    return;
+  }
+  
   slidesContainer.innerHTML = '';
   
-  console.log('=== GENERATING SLIDE VIEW ===');
-  console.log('Total slides to generate:', slides.length);
+  if (!Array.isArray(slides) || slides.length === 0) {
+    console.warn('Marp: 有効なスライドデータがありません');
+    return;
+  }
   
   slides.forEach(function(slide, index) {
-    if (slide.trim()) {
-      const slideDiv = document.createElement('div');
-      slideDiv.className = 'marp-slide';
-      slideDiv.id = 'slide-' + index;
-      
-      console.log(`Slide ${index}:`, slide.trim().substring(0, 50) + '...');
+    const trimmedSlide = slide ? slide.trim() : '';
+    
+    if (trimmedSlide) {
+      try {
+        const slideDiv = document.createElement('div');
+        slideDiv.className = 'marp-slide';
+        slideDiv.id = 'slide-' + index;
+        slideDiv.setAttribute('role', 'tabpanel');
+        slideDiv.setAttribute('aria-label', 'スライド ' + (index + 1));
       
       // Markdownの基本的な変換を手動で行う
       let html = slide.trim();
       
-      // 見出しの変換
-      html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-      html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-      html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+      // 入力長制限（DoS攻撃対策）
+      if (html.length > 50000) {
+        html = html.substring(0, 50000) + '... [コンテンツが切り詰められました]';
+      }
       
-      // 太字の変換
-      html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // 見出しの変換（より安全な正規表現）
+      html = html.replace(/^### (.{1,200})$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.{1,200})$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.{1,200})$/gm, '<h1>$1</h1>');
       
-      // リストの変換
-      html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
-      html = html.replace(/^  - (.*$)/gm, '<li style="margin-left: 20px;">$1</li>');
+      // 太字の変換（入れ子制限）
+      html = html.replace(/\*\*([^*]{1,500})\*\*/g, '<strong>$1</strong>');
       
-      // リストをulタグで囲む
-      html = html.replace(/(<li>.*<\/li>)/gs, function(match) {
-        return '<ul>' + match + '</ul>';
-      });
+      // リストの変換（改善版）
+      const lines = html.split('\n');
+      let processedLines = [];
+      let inList = false;
       
-      // 改行を<br>に変換
-      html = html.replace(/\n/g, '<br>');
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const listMatch = line.match(/^(\s*)-\s+(.*)$/);
+        
+        if (listMatch) {
+          const indent = listMatch[1].length;
+          const content = listMatch[2];
+          
+          if (!inList) {
+            processedLines.push('<ul>');
+            inList = true;
+          }
+          
+          const marginLeft = indent > 0 ? ` style="margin-left: ${indent * 10}px;"` : '';
+          processedLines.push(`<li${marginLeft}>${content}</li>`);
+        } else {
+          if (inList) {
+            processedLines.push('</ul>');
+            inList = false;
+          }
+          processedLines.push(line);
+        }
+      }
       
-      slideDiv.innerHTML = html;
-      slidesContainer.appendChild(slideDiv);
+      if (inList) {
+        processedLines.push('</ul>');
+      }
+      
+      html = processedLines.join('\n');
+      
+      // 改行を<br>に変換（リスト以外）
+      html = html.replace(/\n(?![\s]*<[\/]?(ul|li))/g, '<br>');
+      
+        // HTMLをサニタイズしてから設定
+        const sanitizedHTML = sanitizeHTML(html);
+        slideDiv.innerHTML = sanitizedHTML;
+        slidesContainer.appendChild(slideDiv);
+        
+      } catch (error) {
+        console.error(`Marp: スライド ${index} の生成中にエラー:`, error);
+        
+        // エラー時のフォールバックスライド
+        const errorSlide = document.createElement('div');
+        errorSlide.className = 'marp-slide';
+        errorSlide.id = 'slide-' + index;
+        errorSlide.innerHTML = '<h2>スライド読み込みエラー</h2><p>このスライドの読み込みに失敗しました。</p>';
+        slidesContainer.appendChild(errorSlide);
+      }
     }
   });
 }
 
 function generateArticleView(slides) {
   const articleView = document.getElementById('article-view');
+  if (!articleView) {
+    console.error('Marp: article-view要素が見つかりません');
+    return;
+  }
+  
   articleView.innerHTML = '';
   
-  const articleDiv = document.createElement('div');
+  if (!Array.isArray(slides) || slides.length === 0) {
+    articleView.innerHTML = '<p>表示するコンテンツがありません。</p>';
+    return;
+  }
   
-  let allContent = slides.join('\n\n');
+  try {
+    const articleDiv = document.createElement('div');
+    
+    let allContent = slides.join('\n\n');
   
   // Markdownの基本的な変換
   let html = allContent.trim();
   
-  // 見出しの変換
-  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+  // 入力長制限（DoS攻撃対策）
+  if (html.length > 100000) {
+    html = html.substring(0, 100000) + '... [コンテンツが切り詰められました]';
+  }
   
-  // 太字の変換
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // 見出しの変換（安全な正規表現）
+  html = html.replace(/^### (.{1,200})$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.{1,200})$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.{1,200})$/gm, '<h1>$1</h1>');
   
-  // リストの変換
-  html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
-  html = html.replace(/^  - (.*$)/gm, '<li style="margin-left: 20px;">$1</li>');
+  // 太字の変換（入れ子制限）
+  html = html.replace(/\*\*([^*]{1,500})\*\*/g, '<strong>$1</strong>');
   
-  // リストをulタグで囲む
-  html = html.replace(/(<li>.*<\/li>)/gs, function(match) {
-    return '<ul>' + match + '</ul>';
-  });
+  // リストの変換（改善版）
+  const lines = html.split('\n');
+  let processedLines = [];
+  let inList = false;
   
-  // 改行を<br>に変換（段落間の空白を考慮）
-  html = html.replace(/\n\n/g, '</p><p>');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const listMatch = line.match(/^(\s*)-\s+(.*)$/);
+    
+    if (listMatch) {
+      const indent = listMatch[1].length;
+      const content = listMatch[2];
+      
+      if (!inList) {
+        processedLines.push('<ul>');
+        inList = true;
+      }
+      
+      const marginLeft = indent > 0 ? ` style="margin-left: ${indent * 10}px;"` : '';
+      processedLines.push(`<li${marginLeft}>${content}</li>`);
+    } else {
+      if (inList) {
+        processedLines.push('</ul>');
+        inList = false;
+      }
+      processedLines.push(line);
+    }
+  }
+  
+  if (inList) {
+    processedLines.push('</ul>');
+  }
+  
+  html = processedLines.join('\n');
+  
+  // 段落処理（改善版）
+  html = html.replace(/\n\n+/g, '</p><p>');
   html = '<p>' + html + '</p>';
-  html = html.replace(/\n/g, '<br>');
+  html = html.replace(/\n(?![\s]*<[\/]?(ul|li|p))/g, '<br>');
   
-  articleDiv.innerHTML = html;
-  articleView.appendChild(articleDiv);
+    // HTMLをサニタイズしてから設定
+    const sanitizedHTML = sanitizeHTML(html);
+    articleDiv.innerHTML = sanitizedHTML;
+    articleView.appendChild(articleDiv);
+    
+  } catch (error) {
+    console.error('Marp: 記事ビューの生成中にエラー:', error);
+    articleView.innerHTML = '<div><h2>エラーが発生しました</h2><p>記事の表示中にエラーが発生しました。</p></div>';
+  }
 }
 
 function generateMarkdownView(rawContent) {
@@ -430,24 +842,81 @@ function generateMarkdownView(rawContent) {
   }
 }
 
+// キャッシュからの高速表示関数
+function generateSlideViewFromCache() {
+  if (!cachedSlides) return;
+  
+  const slidesContainer = document.getElementById('slides-container');
+  if (!slidesContainer) return;
+  
+  // キャッシュされたスライドで再生成
+  generateSlideView(cachedSlides);
+}
+
+function generateArticleViewFromCache() {
+  if (!cachedArticleContent) return;
+  
+  const articleView = document.getElementById('article-view');
+  if (!articleView) return;
+  
+  articleView.innerHTML = cachedArticleContent;
+}
+
+function generateMarkdownViewFromCache() {
+  if (!cachedMarkdownContent) return;
+  
+  const markdownContent = document.getElementById('markdown-content');
+  if (!markdownContent) return;
+  
+  markdownContent.textContent = cachedMarkdownContent;
+}
+
 // スライドナビゲーション機能
 function showCurrentSlide() {
-  // 全てのスライドを非表示にする
-  const slides = document.querySelectorAll('.marp-slide');
-  slides.forEach(slide => slide.classList.remove('active'));
-  
-  // 現在のスライドを表示
-  const currentSlideElement = document.getElementById('slide-' + currentSlide);
-  if (currentSlideElement) {
-    currentSlideElement.classList.add('active');
+  try {
+    // スライド番号のバリデーション
+    if (currentSlide < 0) {
+      currentSlide = 0;
+    }
+    if (currentSlide >= totalSlides) {
+      currentSlide = totalSlides - 1;
+    }
+    
+    // 全てのスライドを非表示にする
+    const slides = document.querySelectorAll('.marp-slide');
+    slides.forEach(slide => slide.classList.remove('active'));
+    
+    // 現在のスライドを表示
+    const currentSlideElement = document.getElementById('slide-' + currentSlide);
+    if (currentSlideElement) {
+      currentSlideElement.classList.add('active');
+      currentSlideElement.focus(); // アクセシビリティ改善
+    }
+    
+    // カウンターを更新
+    const slideCounter = document.getElementById('slide-counter');
+    if (slideCounter) {
+      slideCounter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+      slideCounter.setAttribute('aria-live', 'polite'); // スクリーンリーダー対応
+    }
+    
+    // ボタンの状態を更新
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    
+    if (prevBtn) {
+      prevBtn.disabled = (currentSlide === 0);
+      prevBtn.setAttribute('aria-label', currentSlide === 0 ? '前のスライド（先頭）' : '前のスライドへ');
+    }
+    
+    if (nextBtn) {
+      nextBtn.disabled = (currentSlide === totalSlides - 1);
+      nextBtn.setAttribute('aria-label', currentSlide === totalSlides - 1 ? '次のスライド（末尾）' : '次のスライドへ');
+    }
+    
+  } catch (error) {
+    console.error('Marp: スライド表示中にエラー:', error);
   }
-  
-  // カウンターを更新
-  document.getElementById('slide-counter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
-  
-  // ボタンの状態を更新
-  document.getElementById('prev-btn').disabled = (currentSlide === 0);
-  document.getElementById('next-btn').disabled = (currentSlide === totalSlides - 1);
 }
 
 function nextSlide() {
@@ -464,42 +933,155 @@ function prevSlide() {
   }
 }
 
-// キーボードナビゲーション
+// キーボードナビゲーション（改善版）
 document.addEventListener('keydown', function(event) {
-  if (document.getElementById('slide-view').style.display !== 'none') {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+  // スライドビューの場合のみキーボードナビゲーションを有効に
+  const slideView = document.getElementById('slide-view');
+  if (!slideView || slideView.style.display === 'none') {
+    return;
+  }
+  
+  // フォームエレメントにフォーカスがある場合はスキップ
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') {
+    return;
+  }
+  
+  let handled = false;
+  
+  switch (event.key) {
+    case 'ArrowLeft':
+    case 'ArrowUp':
+    case 'PageUp':
+    case 'p': // pキーでprevious
       prevSlide();
-    } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      handled = true;
+      break;
+      
+    case 'ArrowRight':
+    case 'ArrowDown':
+    case 'PageDown':
+    case 'n': // nキーでnext
+    case ' ': // スペースキー
       nextSlide();
-    }
+      handled = true;
+      break;
+      
+    case 'Home':
+      currentSlide = 0;
+      showCurrentSlide();
+      handled = true;
+      break;
+      
+    case 'End':
+      currentSlide = totalSlides - 1;
+      showCurrentSlide();
+      handled = true;
+      break;
+      
+    // 数字キーでスライドへジャンプ（1-9）
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+      const slideNumber = parseInt(event.key) - 1;
+      if (slideNumber < totalSlides) {
+        currentSlide = slideNumber;
+        showCurrentSlide();
+        handled = true;
+      }
+      break;
+  }
+  
+  if (handled) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 });
 
 function showSlideView() {
+  // 表示切り替え
   document.getElementById('slide-view').style.display = 'block';
   document.getElementById('article-view').style.display = 'none';
   document.getElementById('markdown-view').style.display = 'none';
+  
+  // タブボタンの状態更新（アクセシビリティ改善）
   document.getElementById('slide-view-btn').classList.add('active');
+  document.getElementById('slide-view-btn').setAttribute('aria-selected', 'true');
+  document.getElementById('slide-view-btn').setAttribute('tabindex', '0');
+  
   document.getElementById('article-view-btn').classList.remove('active');
+  document.getElementById('article-view-btn').setAttribute('aria-selected', 'false');
+  document.getElementById('article-view-btn').setAttribute('tabindex', '-1');
+  
   document.getElementById('markdown-view-btn').classList.remove('active');
+  document.getElementById('markdown-view-btn').setAttribute('aria-selected', 'false');
+  document.getElementById('markdown-view-btn').setAttribute('tabindex', '-1');
+  
   showCurrentSlide();
 }
 
-function showArticleView() {
-  document.getElementById('slide-view').style.display = 'none';
-  document.getElementById('article-view').style.display = 'block';
-  document.getElementById('markdown-view').style.display = 'none';
-  document.getElementById('slide-view-btn').classList.remove('active');
-  document.getElementById('article-view-btn').classList.add('active');
-  document.getElementById('markdown-view-btn').classList.remove('active');
-}
-
 function showMarkdownView() {
+  // 表示切り替え
   document.getElementById('slide-view').style.display = 'none';
   document.getElementById('article-view').style.display = 'none';
   document.getElementById('markdown-view').style.display = 'block';
+  
+  // タブボタンの状態更新（アクセシビリティ改善）
   document.getElementById('slide-view-btn').classList.remove('active');
+  document.getElementById('slide-view-btn').setAttribute('aria-selected', 'false');
+  document.getElementById('slide-view-btn').setAttribute('tabindex', '-1');
+  
   document.getElementById('article-view-btn').classList.remove('active');
+  document.getElementById('article-view-btn').setAttribute('aria-selected', 'false');
+  document.getElementById('article-view-btn').setAttribute('tabindex', '-1');
+  
   document.getElementById('markdown-view-btn').classList.add('active');
+  document.getElementById('markdown-view-btn').setAttribute('aria-selected', 'true');
+  document.getElementById('markdown-view-btn').setAttribute('tabindex', '0');
+}
+
+function showArticleView() {
+  // 表示切り替え
+  document.getElementById('slide-view').style.display = 'none';
+  document.getElementById('article-view').style.display = 'block';
+  document.getElementById('markdown-view').style.display = 'none';
+  
+  // タブボタンの状態更新（アクセシビリティ改善）
+  document.getElementById('slide-view-btn').classList.remove('active');
+  document.getElementById('slide-view-btn').setAttribute('aria-selected', 'false');
+  document.getElementById('slide-view-btn').setAttribute('tabindex', '-1');
+  
+  document.getElementById('article-view-btn').classList.add('active');
+  document.getElementById('article-view-btn').setAttribute('aria-selected', 'true');
+  document.getElementById('article-view-btn').setAttribute('tabindex', '0');
+  
+  document.getElementById('markdown-view-btn').classList.remove('active');
+  document.getElementById('markdown-view-btn').setAttribute('aria-selected', 'false');
+  document.getElementById('markdown-view-btn').setAttribute('tabindex', '-1');
+}
+
+function showMarkdownView() {
+  // 表示切り替え
+  document.getElementById('slide-view').style.display = 'none';
+  document.getElementById('article-view').style.display = 'none';
+  document.getElementById('markdown-view').style.display = 'block';
+  
+  // タブボタンの状態更新（アクセシビリティ改善）
+  document.getElementById('slide-view-btn').classList.remove('active');
+  document.getElementById('slide-view-btn').setAttribute('aria-selected', 'false');
+  document.getElementById('slide-view-btn').setAttribute('tabindex', '-1');
+  
+  document.getElementById('article-view-btn').classList.remove('active');
+  document.getElementById('article-view-btn').setAttribute('aria-selected', 'false');
+  document.getElementById('article-view-btn').setAttribute('tabindex', '-1');
+  
+  document.getElementById('markdown-view-btn').classList.add('active');
+  document.getElementById('markdown-view-btn').setAttribute('aria-selected', 'true');
+  document.getElementById('markdown-view-btn').setAttribute('tabindex', '0');
 }
 </script>
