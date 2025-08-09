@@ -289,49 +289,38 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeMarpContent() {
   const rawContent = document.getElementById('raw-content').textContent;
   
-  console.log('Original content length:', rawContent.length);
-  console.log('Original content preview:', rawContent.substring(0, 200));
-  
-  // スタイルタグを詳細にログして削除
+  // スタイルタグとCSSコメントを削除
   let cleanContent = rawContent;
   
-  // CSSコメントとスタイルブロックを特定して削除
-  const styleCommentPattern = /<!-- style -->/g;
-  const styleTagPattern = /<style[\s\S]*?<\/style>/gi;
-  
-  console.log('Before CSS removal:', cleanContent.match(styleCommentPattern));
-  console.log('Style tags found:', cleanContent.match(styleTagPattern));
-  
-  // CSSコメントを削除
-  cleanContent = cleanContent.replace(styleCommentPattern, '');
-  
-  // styleタグとその内容を削除
-  cleanContent = cleanContent.replace(styleTagPattern, '');
+  // CSSコメントとスタイルブロックを削除
+  cleanContent = cleanContent.replace(/<!-- style -->/g, '');
+  cleanContent = cleanContent.replace(/<style[\s\S]*?<\/style>/gi, '');
   
   // 残ったCSSルール（先頭のsection {...}など）を削除
-  cleanContent = cleanContent.replace(/^section\s*\{[^}]*\}/gm, '');
-  cleanContent = cleanContent.replace(/^\s*[\w\-\.#]+\s*\{[^}]*\}/gm, '');
+  cleanContent = cleanContent.replace(/^section\s*\{[\s\S]*?\}/gm, '');
+  cleanContent = cleanContent.replace(/^\s*[\w\-\.#:]+\s*\{[\s\S]*?\}/gm, '');
   
-  console.log('After style removal:', cleanContent.length);
-  console.log('Clean content preview:', cleanContent.substring(0, 200));
+  // 行頭の空白を除去してから処理
+  cleanContent = cleanContent.split('\n').map(line => line.trim()).join('\n');
+  
+  // 連続する改行を単一改行に
+  cleanContent = cleanContent.replace(/\n{3,}/g, '\n\n');
   
   // スライドに分割（---で分割）
-  let slides = cleanContent.split(/---+/);
-  
-  console.log('Before filtering - total parts:', slides.length);
-  slides.forEach((slide, index) => {
-    console.log(`Part ${index} length:`, slide.trim().length);
-    console.log(`Part ${index} preview:`, slide.trim().substring(0, 100));
-  });
+  let slides = cleanContent.split(/\n\s*---+\s*\n/);
   
   // 空のスライドやYAML Front Matterを除去
   slides = slides.filter(slide => {
     const trimmed = slide.trim();
-    // 空のスライドまたはYAML Front Matter（title:等を含む）を除去
-    return trimmed !== '' && !trimmed.includes('title:') && !trimmed.includes('layout:');
+    // 空のスライドまたはYAML Front Matter（title:, layout:等を含む）を除去
+    return trimmed !== '' && 
+           !trimmed.includes('title:') && 
+           !trimmed.includes('layout:') &&
+           !trimmed.includes('categories:') &&
+           !trimmed.includes('tags:') &&
+           !trimmed.includes('marp:') &&
+           !trimmed.includes('paginate:');
   });
-  
-  console.log('After filtering - actual slides:', slides.length);
   
   totalSlides = slides.length;
   
@@ -341,8 +330,13 @@ function initializeMarpContent() {
   // 記事表示用のHTMLを生成
   generateArticleView(slides);
   
-  // マークダウン表示用のコンテンツを生成
-  generateMarkdownView(rawContent);
+  // マークダウン表示用のコンテンツを生成（元のrawContentから不要な部分を削除）
+  const cleanRawContent = rawContent
+    .replace(/<!-- style -->/g, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/^section\s*\{[\s\S]*?\}/gm, '')
+    .trim();
+  generateMarkdownView(cleanRawContent);
   
   // 初期表示設定
   showCurrentSlide();
