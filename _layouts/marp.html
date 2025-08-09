@@ -3,6 +3,18 @@ layout: single
 ---
 
 <div class="marp-container">
+  <!-- marpコンテナ内のスタイル分離 -->
+  <style>
+    .marp-container {
+      isolation: isolate;
+      contain: style;
+    }
+    /* ページ外の要素（Share onボタンなど）への干渉を防ぐ */
+    .marp-container ~ * {
+      all: revert !important;
+    }
+  </style>
+  
   <!-- 表示切り替えボタン -->
   <div class="marp-controls">
     <button id="slide-view-btn" class="marp-btn active" onclick="showSlideView()">スライド</button>
@@ -304,7 +316,7 @@ function initializeMarpContent() {
   console.log('Clean content preview:', cleanContent.substring(0, 200));
   
   // スライドに分割（---で分割）
-  let slides = cleanContent.split('---');
+  let slides = cleanContent.split(/---+/);
   
   console.log('Before filtering - total parts:', slides.length);
   slides.forEach((slide, index) => {
@@ -312,8 +324,12 @@ function initializeMarpContent() {
     console.log(`Part ${index} preview:`, slide.trim().substring(0, 100));
   });
   
-  // 空のスライドを除去
-  slides = slides.filter(slide => slide.trim() !== '');
+  // 空のスライドやYAML Front Matterを除去
+  slides = slides.filter(slide => {
+    const trimmed = slide.trim();
+    // 空のスライドまたはYAML Front Matter（title:等を含む）を除去
+    return trimmed !== '' && !trimmed.includes('title:') && !trimmed.includes('layout:');
+  });
   
   console.log('After filtering - actual slides:', slides.length);
   
