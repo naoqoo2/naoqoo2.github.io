@@ -2,6 +2,3 @@ _site
 .sass-cache
 .jekyll-metadata
 Gemfile.lock
-
-# Marp generated files - keep them in version control
-# assets/slides/*.html

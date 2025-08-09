@@ -2,253 +2,504 @@
 layout: single
 ---
 
-<div class="marp-presentation-container">
+<div class="marp-container">
+  <!-- marpコンテナ内のスタイル分離 -->
+  <style>
+    .marp-container {
+      isolation: isolate;
+      contain: style;
+    }
+    /* ページ外の要素（Share onボタンなど）への干渉を防ぐ */
+    .marp-container ~ * {
+      all: revert !important;
+    }
+  </style>
+  
+  <!-- 表示切り替えボタン -->
   <div class="marp-controls">
-    <div class="control-info">
-      <h2>{{ page.title }}</h2>
-      <p>プレゼンテーションスライド</p>
+    <button id="slide-view-btn" class="marp-btn active" onclick="showSlideView()">スライド</button>
+    <button id="article-view-btn" class="marp-btn" onclick="showArticleView()">記事表示</button>
+    <button id="markdown-view-btn" class="marp-btn" onclick="showMarkdownView()">マークダウン</button>
+  </div>
+
+  <!-- スライド表示用 -->
+  <div id="slide-view" class="marp-slide-view">
+    <!-- スライドナビゲーション -->
+    <div class="slide-navigation">
+      <button id="prev-btn" class="nav-btn" onclick="prevSlide()" disabled>← 前へ</button>
+      <span id="slide-counter" class="slide-counter">1 / 1</span>
+      <button id="next-btn" class="nav-btn" onclick="nextSlide()">次へ →</button>
     </div>
-    <div class="control-buttons">
-      <a href="#" id="fullscreen-btn" class="marp-control-btn" title="フルスクリーン表示">
-        <i class="fas fa-expand"></i> フルスクリーン
-      </a>
-      <a href="#" id="new-window-btn" class="marp-control-btn" title="新しいウィンドウで開く">
-        <i class="fas fa-external-link-alt"></i> 新しいウィンドウ
-      </a>
+    
+    <!-- スライドコンテナ -->
+    <div id="slides-container" class="slides-container">
+      <!-- JavaScriptで動的に生成 -->
     </div>
   </div>
 
-  <div class="marp-slide-container">
-    {% assign slide_file = page.slug | append: '.html' %}
-    {% assign slide_path = '/assets/slides/' | append: slide_file %}
-    
-    <div class="slide-notice">
-      <p><i class="fas fa-info-circle"></i> 
-         スライドを表示しています。操作方法：
-         <kbd>←</kbd><kbd>→</kbd>で移動、<kbd>F</kbd>でフルスクリーン
-      </p>
-    </div>
-    
-    <iframe 
-      id="slide-iframe"
-      src="{{ slide_path }}"
-      width="100%" 
-      height="600"
-      frameborder="0"
-      allowfullscreen
-      sandbox="allow-scripts allow-same-origin allow-presentation">
-      <p>お使いのブラウザはiframeをサポートしていません。
-         <a href="{{ slide_path }}">こちら</a>から直接スライドを表示してください。</p>
-    </iframe>
+  <!-- 記事表示用 -->
+  <div id="article-view" class="marp-article-view" style="display: none;">
+    <!-- JavaScriptで動的に生成 -->
   </div>
 
-  <div class="marp-content-section">
-    <h3><i class="fas fa-file-alt"></i> 記事として読む</h3>
-    <div class="article-content">
-      {{ content }}
-    </div>
+  <!-- マークダウン表示用 -->
+  <div id="markdown-view" class="marp-markdown-view" style="display: none;">
+    <pre><code id="markdown-content"></code></pre>
+  </div>
+
+  <!-- 元のコンテンツ（非表示） -->
+  <div id="raw-content" style="display: none;">
+{{ content }}
   </div>
 </div>
 
 <style>
-.marp-presentation-container {
+.marp-container {
   max-width: 100%;
   margin: 0 auto;
 }
 
 .marp-controls {
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e1e5e9;
+  padding-bottom: 15px;
+}
+
+.marp-btn {
+  background: #f8f9fa;
+  border: 1px solid #d1d5da;
+  border-radius: 6px;
+  color: #24292e;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 6px 16px;
+  position: relative;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  margin: 0 5px;
+}
+
+.marp-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #c9d1d9;
+}
+
+.marp-btn.active {
+  background: #0969da;
+  border-color: #0969da;
+  color: #ffffff;
+}
+
+.marp-slide-view {
+  display: block;
+}
+
+.slide-navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8f9fa;
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
-  padding: 20px;
   margin-bottom: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
 }
 
-.control-info h2 {
-  margin: 0 0 5px 0;
-  color: #24292e;
-  font-size: 1.5em;
-}
-
-.control-info p {
-  margin: 0;
-  color: #6a737d;
-  font-size: 0.9em;
-}
-
-.control-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.marp-control-btn {
+.nav-btn {
   background: #0969da;
-  color: white;
-  text-decoration: none;
-  padding: 8px 16px;
+  border: none;
   border-radius: 6px;
+  color: white;
+  cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  padding: 8px 16px;
   transition: background-color 0.2s;
 }
 
-.marp-control-btn:hover {
+.nav-btn:hover:not(:disabled) {
   background: #0860ca;
-  color: white;
-  text-decoration: none;
 }
 
-.marp-slide-container {
-  background: white;
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.nav-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
-.slide-notice {
-  background: #fff3cd;
-  border-bottom: 1px solid #ffeaa7;
-  padding: 12px 20px;
-  margin: 0;
-}
-
-.slide-notice p {
-  margin: 0;
-  font-size: 14px;
-  color: #856404;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.slide-notice kbd {
-  background: #f8f9fa;
-  border: 1px solid #d1d5da;
-  border-radius: 3px;
-  padding: 2px 6px;
-  font-size: 12px;
-  font-family: monospace;
-  margin: 0 2px;
-}
-
-#slide-iframe {
-  display: block;
-  min-height: 600px;
-  border: none;
-}
-
-.marp-content-section {
-  background: #f8f9fa;
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
-  padding: 25px;
-  margin-top: 30px;
-}
-
-.marp-content-section h3 {
-  margin: 0 0 20px 0;
+.slide-counter {
+  font-size: 16px;
+  font-weight: 600;
   color: #24292e;
-  font-size: 1.3em;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-.article-content {
+.slides-container {
+  position: relative;
+  min-height: 450px;
+}
+
+.marp-slide {
   background: white;
   border: 1px solid #e1e5e9;
-  border-radius: 6px;
-  padding: 20px;
-  line-height: 1.7;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-height: 400px;
+  font-size: 1.1em;
+  display: none;
 }
 
-.article-content h1,
-.article-content h2,
-.article-content h3,
-.article-content h4,
-.article-content h5,
-.article-content h6 {
+.marp-slide.active {
+  display: block;
+}
+
+.marp-slide h1 {
   color: #2c5282;
-  margin: 25px 0 15px 0;
-}
-
-.article-content h1 {
-  border-bottom: 2px solid #2c5282;
+  border-bottom: 3px solid #2c5282;
   padding-bottom: 10px;
+  margin-bottom: 30px;
+  font-size: 2em;
 }
 
-.article-content ul {
-  padding-left: 20px;
+.marp-slide h2 {
+  color: #2d3748;
+  margin: 25px 0 15px 0;
+  font-size: 1.5em;
 }
 
-.article-content li {
+.marp-slide h3 {
+  color: #4a5568;
+  margin: 20px 0 10px 0;
+  font-size: 1.3em;
+}
+
+.marp-slide ul {
+  margin: 15px 0;
+  padding-left: 25px;
+}
+
+.marp-slide li {
   margin: 8px 0;
+  line-height: 1.6;
 }
 
-.article-content strong {
+.marp-slide strong {
   color: #e53e3e;
   font-weight: 600;
 }
 
+.marp-article-view {
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.marp-article-view h1 {
+  font-size: 1.8em;
+  margin: 30px 0 20px 0;
+  color: #2c5282;
+  border-bottom: 2px solid #2c5282;
+  padding-bottom: 8px;
+}
+
+.marp-article-view h2 {
+  font-size: 1.4em;
+  margin: 25px 0 15px 0;
+  color: #2d3748;
+}
+
+.marp-article-view h3 {
+  font-size: 1.2em;
+  margin: 20px 0 10px 0;
+  color: #4a5568;
+}
+
+.marp-article-view ul {
+  margin: 15px 0;
+  padding-left: 20px;
+}
+
+.marp-article-view li {
+  margin: 6px 0;
+  line-height: 1.6;
+}
+
+.marp-article-view p {
+  margin: 15px 0;
+  line-height: 1.7;
+}
+
+.marp-markdown-view {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.marp-markdown-view pre {
+  background: #f8f9fa;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.marp-markdown-view code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+  color: #24292e;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
-  .marp-controls {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+  .marp-slide {
+    padding: 20px;
+    margin: 10px 0;
+    min-height: 300px;
+    font-size: 1em;
   }
   
-  .control-buttons {
-    width: 100%;
-    justify-content: flex-start;
+  .marp-slide h1 {
+    font-size: 1.6em;
   }
   
-  .marp-control-btn {
-    font-size: 13px;
-    padding: 6px 12px;
-  }
-  
-  #slide-iframe {
-    min-height: 400px;
-  }
-  
-  .slide-notice {
-    padding: 10px 15px;
+  .marp-slide h2 {
+    font-size: 1.3em;
   }
 }
 </style>
 
 <script>
+let currentSlide = 0;
+let totalSlides = 0;
+
+// ページ読み込み時にコンテンツを処理
 document.addEventListener('DOMContentLoaded', function() {
-  const fullscreenBtn = document.getElementById('fullscreen-btn');
-  const newWindowBtn = document.getElementById('new-window-btn');
-  const iframe = document.getElementById('slide-iframe');
+  initializeMarpContent();
+});
+
+function initializeMarpContent() {
+  const rawContent = document.getElementById('raw-content').textContent;
   
-  // フルスクリーン表示
-  fullscreenBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    if (iframe.requestFullscreen) {
-      iframe.requestFullscreen();
-    } else if (iframe.webkitRequestFullscreen) {
-      iframe.webkitRequestFullscreen();
-    } else if (iframe.mozRequestFullScreen) {
-      iframe.mozRequestFullScreen();
+  // スタイルタグとCSSコメントを削除
+  let cleanContent = rawContent;
+  
+  // CSSコメントとスタイルブロックを削除
+  cleanContent = cleanContent.replace(/<!-- style -->/g, '');
+  cleanContent = cleanContent.replace(/<style[\s\S]*?<\/style>/gi, '');
+  
+  // 残ったCSSルール（先頭のsection {...}など）を削除
+  cleanContent = cleanContent.replace(/^section\s*\{[\s\S]*?\}/gm, '');
+  cleanContent = cleanContent.replace(/^\s*[\w\-\.#:]+\s*\{[\s\S]*?\}/gm, '');
+  
+  // 行頭の空白を除去してから処理
+  cleanContent = cleanContent.split('\n').map(line => line.trim()).join('\n');
+  
+  // 連続する改行を単一改行に
+  cleanContent = cleanContent.replace(/\n{3,}/g, '\n\n');
+  
+  // スライドに分割（---で分割）
+  let slides = cleanContent.split(/\n\s*---+\s*\n/);
+  
+  // 空のスライドやYAML Front Matterを除去
+  slides = slides.filter(slide => {
+    const trimmed = slide.trim();
+    // 空のスライドまたはYAML Front Matter（title:, layout:等を含む）を除去
+    return trimmed !== '' && 
+           !trimmed.includes('title:') && 
+           !trimmed.includes('layout:') &&
+           !trimmed.includes('categories:') &&
+           !trimmed.includes('tags:') &&
+           !trimmed.includes('marp:') &&
+           !trimmed.includes('paginate:');
+  });
+  
+  totalSlides = slides.length;
+  
+  // スライド表示用のHTMLを生成
+  generateSlideView(slides);
+  
+  // 記事表示用のHTMLを生成
+  generateArticleView(slides);
+  
+  // マークダウン表示用のコンテンツを生成（元のrawContentから不要な部分を削除）
+  const cleanRawContent = rawContent
+    .replace(/<!-- style -->/g, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/^section\s*\{[\s\S]*?\}/gm, '')
+    .trim();
+  generateMarkdownView(cleanRawContent);
+  
+  // 初期表示設定
+  showCurrentSlide();
+}
+
+function generateSlideView(slides) {
+  const slidesContainer = document.getElementById('slides-container');
+  slidesContainer.innerHTML = '';
+  
+  console.log('=== GENERATING SLIDE VIEW ===');
+  console.log('Total slides to generate:', slides.length);
+  
+  slides.forEach(function(slide, index) {
+    if (slide.trim()) {
+      const slideDiv = document.createElement('div');
+      slideDiv.className = 'marp-slide';
+      slideDiv.id = 'slide-' + index;
+      
+      console.log(`Slide ${index}:`, slide.trim().substring(0, 50) + '...');
+      
+      // Markdownの基本的な変換を手動で行う
+      let html = slide.trim();
+      
+      // 見出しの変換
+      html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+      
+      // 太字の変換
+      html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      // リストの変換
+      html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
+      html = html.replace(/^  - (.*$)/gm, '<li style="margin-left: 20px;">$1</li>');
+      
+      // リストをulタグで囲む
+      html = html.replace(/(<li>.*<\/li>)/gs, function(match) {
+        return '<ul>' + match + '</ul>';
+      });
+      
+      // 改行を<br>に変換
+      html = html.replace(/\n/g, '<br>');
+      
+      slideDiv.innerHTML = html;
+      slidesContainer.appendChild(slideDiv);
     }
   });
+}
+
+function generateArticleView(slides) {
+  const articleView = document.getElementById('article-view');
+  articleView.innerHTML = '';
   
-  // 新しいウィンドウで開く
-  newWindowBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    const slideUrl = iframe.src;
-    window.open(slideUrl, '_blank', 'width=1280,height=800,scrollbars=yes,resizable=yes');
+  const articleDiv = document.createElement('div');
+  
+  let allContent = slides.join('\n\n');
+  
+  // Markdownの基本的な変換
+  let html = allContent.trim();
+  
+  // 見出しの変換
+  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+  
+  // 太字の変換
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  // リストの変換
+  html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
+  html = html.replace(/^  - (.*$)/gm, '<li style="margin-left: 20px;">$1</li>');
+  
+  // リストをulタグで囲む
+  html = html.replace(/(<li>.*<\/li>)/gs, function(match) {
+    return '<ul>' + match + '</ul>';
   });
+  
+  // 改行を<br>に変換（段落間の空白を考慮）
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = '<p>' + html + '</p>';
+  html = html.replace(/\n/g, '<br>');
+  
+  articleDiv.innerHTML = html;
+  articleView.appendChild(articleDiv);
+}
+
+function generateMarkdownView(rawContent) {
+  const markdownContent = document.getElementById('markdown-content');
+  if (markdownContent) {
+    markdownContent.textContent = rawContent.trim();
+  }
+}
+
+// スライドナビゲーション機能
+function showCurrentSlide() {
+  // 全てのスライドを非表示にする
+  const slides = document.querySelectorAll('.marp-slide');
+  slides.forEach(slide => slide.classList.remove('active'));
+  
+  // 現在のスライドを表示
+  const currentSlideElement = document.getElementById('slide-' + currentSlide);
+  if (currentSlideElement) {
+    currentSlideElement.classList.add('active');
+  }
+  
+  // カウンターを更新
+  document.getElementById('slide-counter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+  
+  // ボタンの状態を更新
+  document.getElementById('prev-btn').disabled = (currentSlide === 0);
+  document.getElementById('next-btn').disabled = (currentSlide === totalSlides - 1);
+}
+
+function nextSlide() {
+  if (currentSlide < totalSlides - 1) {
+    currentSlide++;
+    showCurrentSlide();
+  }
+}
+
+function prevSlide() {
+  if (currentSlide > 0) {
+    currentSlide--;
+    showCurrentSlide();
+  }
+}
+
+// キーボードナビゲーション
+document.addEventListener('keydown', function(event) {
+  if (document.getElementById('slide-view').style.display !== 'none') {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      prevSlide();
+    } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      nextSlide();
+    }
+  }
 });
+
+function showSlideView() {
+  document.getElementById('slide-view').style.display = 'block';
+  document.getElementById('article-view').style.display = 'none';
+  document.getElementById('markdown-view').style.display = 'none';
+  document.getElementById('slide-view-btn').classList.add('active');
+  document.getElementById('article-view-btn').classList.remove('active');
+  document.getElementById('markdown-view-btn').classList.remove('active');
+  showCurrentSlide();
+}
+
+function showArticleView() {
+  document.getElementById('slide-view').style.display = 'none';
+  document.getElementById('article-view').style.display = 'block';
+  document.getElementById('markdown-view').style.display = 'none';
+  document.getElementById('slide-view-btn').classList.remove('active');
+  document.getElementById('article-view-btn').classList.add('active');
+  document.getElementById('markdown-view-btn').classList.remove('active');
+}
+
+function showMarkdownView() {
+  document.getElementById('slide-view').style.display = 'none';
+  document.getElementById('article-view').style.display = 'none';
+  document.getElementById('markdown-view').style.display = 'block';
+  document.getElementById('slide-view-btn').classList.remove('active');
+  document.getElementById('article-view-btn').classList.remove('active');
+  document.getElementById('markdown-view-btn').classList.add('active');
+}
 </script>
