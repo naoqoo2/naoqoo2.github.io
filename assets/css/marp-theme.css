@@ -1,0 +1,132 @@
+/* Marp Theme for naoqoo2.com */
+/* @theme default */
+
+section {
+  background: #ffffff;
+  color: #24292e;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 28px;
+  line-height: 1.6;
+  padding: 60px;
+  width: 1280px;
+  height: 720px;
+}
+
+/* ヘッダースタイル */
+section h1 {
+  color: #2c5282;
+  border-bottom: 3px solid #2c5282;
+  padding-bottom: 15px;
+  margin-bottom: 40px;
+  font-size: 2.2em;
+  font-weight: 700;
+}
+
+section h2 {
+  color: #2d3748;
+  margin: 35px 0 20px 0;
+  font-size: 1.6em;
+  font-weight: 600;
+}
+
+section h3 {
+  color: #4a5568;
+  margin: 25px 0 15px 0;
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+/* リストスタイル */
+section ul {
+  margin: 20px 0;
+  padding-left: 30px;
+}
+
+section li {
+  margin: 12px 0;
+  line-height: 1.7;
+}
+
+section li li {
+  margin: 8px 0;
+  font-size: 0.9em;
+}
+
+/* 強調テキスト */
+section strong {
+  color: #e53e3e;
+  font-weight: 700;
+}
+
+section em {
+  color: #0969da;
+  font-style: italic;
+}
+
+/* コードブロック */
+section pre {
+  background: #f6f8fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  font-size: 0.8em;
+}
+
+section code {
+  background: #f6f8fa;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85em;
+}
+
+/* ブロック引用 */
+section blockquote {
+  border-left: 4px solid #0969da;
+  margin: 20px 0;
+  padding-left: 20px;
+  color: #6a737d;
+  font-style: italic;
+}
+
+/* フッター（ページ番号） */
+section::after {
+  color: #6a737d;
+  font-size: 0.6em;
+  content: attr(data-marpit-pagination) ' / ' attr(data-marpit-pagination-total);
+  position: absolute;
+  right: 30px;
+  bottom: 20px;
+}
+
+/* タイトルスライド用 */
+section.title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+section.title h1 {
+  font-size: 3em;
+  margin-bottom: 30px;
+  border: none;
+}
+
+section.title p {
+  font-size: 1.2em;
+  color: #6a737d;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 1280px) {
+  section {
+    padding: 40px;
+    font-size: 24px;
+  }
+  
+  section h1 {
+    font-size: 2em;
+  }
+}
