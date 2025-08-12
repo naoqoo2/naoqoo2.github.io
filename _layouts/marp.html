@@ -3,7 +3,7 @@ layout: single
 ---
 
 <!-- Marp Simple Layout -->
-<div class="marp-presentation" style="all: initial; display: block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+<div class="marp-presentation" style="all: initial; display: block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin-top: 40px;">
   <style>
     /* 完全隔離されたスタイル - ページ外に影響なし */
     .marp-presentation {
@@ -27,8 +27,8 @@ layout: single
       padding: 10px 20px;
       background: rgba(248, 249, 250, 0.8);
       border: 1px solid rgba(225, 229, 233, 0.6);
-      border-radius: 6px;
-      margin-bottom: 20px;
+      border-radius: 8px;
+      margin-top: 0;
     }
     
     .nav-left {
@@ -233,23 +233,23 @@ layout: single
     
   </style>
   
+  <!-- スライド表示エリア -->
+  <div id="slides-container"></div>
+  
   <!-- ナビゲーション -->
   <div class="marp-nav">
     <div class="nav-left">
       <!-- 左側スペーサー（右側と同じ幅を確保） -->
     </div>
     <div class="nav-center">
-      <button onclick="prevSlide()" id="prev-btn">← 前へ</button>
+      <button onclick="prevSlide()" id="prev-btn">← prev</button>
       <span class="marp-counter" id="slide-counter">1 / 1</span>
-      <button onclick="nextSlide()" id="next-btn">次へ →</button>
+      <button onclick="nextSlide()" id="next-btn">next →</button>
     </div>
     <div class="nav-right">
       <button onclick="toggleFullscreen()" id="fullscreen-btn">⛶</button>
     </div>
   </div>
-  
-  <!-- スライド表示エリア -->
-  <div id="slides-container"></div>
   
   <!-- 元コンテンツ（非表示） -->
   <div id="raw-content" style="display: none;">{{ content }}</div>
