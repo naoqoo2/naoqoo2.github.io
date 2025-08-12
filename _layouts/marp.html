@@ -2,442 +2,326 @@
 layout: single
 ---
 
-<!-- Marp Layout for Jekyll -->
-
-<div class="marp-container">
-  <!-- marpコンテナ内のスタイル分離 -->
+<!-- Marp Simple Layout -->
+<div class="marp-presentation" style="all: initial; display: block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <style>
-    .marp-container {
-      isolation: isolate;
-      contain: style;
+    /* 完全隔離されたスタイル - ページ外に影響なし */
+    .marp-presentation {
+      all: initial;
+      display: block !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
-    /* ページ外の要素（Share onボタンなど）への干渉を防ぐ */
-    .marp-container ~ * {
-      all: revert !important;
+    
+    .marp-presentation *,
+    .marp-presentation *:before,
+    .marp-presentation *:after {
+      all: unset;
+      display: revert;
+      box-sizing: border-box;
+    }
+    
+    .marp-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #f8f9fa;
+      border: 1px solid #e1e5e9;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    
+    .marp-nav button {
+      background: #0969da;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .marp-nav button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .marp-counter {
+      font-weight: 600;
+      font-size: 14px;
+      color: #24292e;
+    }
+    
+    .marp-slide {
+      background: white;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      padding: 48px;
+      width: 960px;
+      height: 540px;
+      aspect-ratio: 16/9;
+      display: none;
+      overflow: auto;
+      font-size: 20px !important;
+      line-height: 1.6 !important;
+      color: #24292f !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      font-weight: normal !important;
+    }
+    
+    /* layout: singleで表示されるPermalink非表示 - スライド内では意味がない */
+    .marp-slide .post-meta,
+    .marp-slide .page__meta,
+    .marp-slide .page__date,
+    .marp-slide .page__taxonomy,
+    .marp-slide .page-share,
+    .marp-slide .btn,
+    .marp-slide .header-link {
+      display: none !important;
+    }
+    
+    .marp-slide.active {
+      display: block;
+    }
+    
+    .marp-slide h1 {
+      font-size: 40px !important;
+      margin: 0 0 32px 0 !important;
+      font-weight: 700 !important;
+      color: #24292f !important;
+      line-height: 1.2 !important;
+    }
+    
+    .marp-slide h2 {
+      font-size: 32px !important;
+      margin: 32px 0 24px 0 !important;
+      font-weight: 600 !important;
+      color: #24292f !important;
+      line-height: 1.3 !important;
+    }
+    
+    .marp-slide h3 {
+      font-size: 26px !important;
+      margin: 24px 0 16px 0 !important;
+      font-weight: 600 !important;
+      color: #24292f !important;
+      line-height: 1.4 !important;
+    }
+    
+    .marp-slide ul, .marp-slide ol {
+      margin: 16px 0 !important;
+      padding-left: 32px !important;
+      list-style-type: disc !important;
+    }
+    
+    .marp-slide li {
+      margin: 8px 0 !important;
+      line-height: 1.5 !important;
+      display: list-item !important;
+    }
+    
+    .marp-slide strong {
+      font-weight: bold !important;
+      color: #24292f !important;
+    }
+    
+    .marp-slide p {
+      margin: 16px 0 !important;
+      line-height: 1.6 !important;
+      font-family: inherit !important;
+    }
+    
+    .marp-slide * {
+      font-family: inherit !important;
+      font-weight: normal !important;
+    }
+    
+    /* 外部スタイルの完全リセット */
+    .marp-slide, .marp-slide * {
+      box-sizing: border-box !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    
+    /* テキストサイズの再確認 */
+    .marp-slide p, .marp-slide li, .marp-slide span {
+      font-size: 20px !important;
     }
   </style>
   
-
-  <!-- スライド表示用 -->
-  <div id="slide-view" class="marp-slide-view" role="main" aria-label="プレゼンテーションスライド">
-    <!-- スライドナビゲーション -->
-    <nav class="slide-navigation" role="navigation" aria-label="スライドナビゲーション">
-      <button id="prev-btn" class="nav-btn" onclick="prevSlide()" disabled aria-label="前のスライドへ" title="前のスライド（矢印キー左）">← 前へ</button>
-      <span id="slide-counter" class="slide-counter" role="status" aria-live="polite" aria-label="スライド番号">1 / 1</span>
-      <button id="next-btn" class="nav-btn" onclick="nextSlide()" aria-label="次のスライドへ" title="次のスライド（矢印キー右）">次へ →</button>
-    </nav>
-    
-    <!-- スライドコンテナ -->
-    <div id="slides-container" class="slides-container" role="presentation">
-      <!-- JavaScriptで動的に生成 -->
-    </div>
+  <!-- ナビゲーション -->
+  <div class="marp-nav">
+    <button onclick="prevSlide()" id="prev-btn">← 前へ</button>
+    <span class="marp-counter" id="slide-counter">1 / 1</span>
+    <button onclick="nextSlide()" id="next-btn">次へ →</button>
   </div>
-
-
-  <!-- 元のコンテンツ（非表示） -->
-  <div id="raw-content" style="display: none;">
-{{ content }}
-  </div>
+  
+  <!-- スライド表示エリア -->
+  <div id="slides-container"></div>
+  
+  <!-- 元コンテンツ（非表示） -->
+  <div id="raw-content" style="display: none;">{{ content }}</div>
 </div>
-
-<style>
-.marp-container {
-  max-width: 100%;
-  margin: 0 auto;
-}
-
-
-.marp-slide-view {
-  display: block;
-}
-
-.slide-navigation {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e1e5e9;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.nav-btn {
-  background: #0969da;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 16px;
-  transition: background-color 0.2s;
-}
-
-.nav-btn:hover:not(:disabled) {
-  background: #0860ca;
-}
-
-.nav-btn:disabled {
-  background: #6c757d;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.slide-counter {
-  font-size: 16px;
-  font-weight: 600;
-  color: #24292e;
-}
-
-.slides-container {
-  position: relative;
-  min-height: 450px;
-}
-
-.marp-slide {
-  background: white;
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
-  padding: 40px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  min-height: 400px;
-  font-size: 1.1em;
-  display: none;
-}
-
-.marp-slide.active {
-  display: block;
-}
-
-.marp-slide h1 {
-  color: #2c5282;
-  border-bottom: 3px solid #2c5282;
-  padding-bottom: 10px;
-  margin-bottom: 30px;
-  font-size: 2em;
-}
-
-.marp-slide h2 {
-  color: #2d3748;
-  margin: 25px 0 15px 0;
-  font-size: 1.5em;
-}
-
-.marp-slide h3 {
-  color: #4a5568;
-  margin: 20px 0 10px 0;
-  font-size: 1.3em;
-}
-
-.marp-slide ul {
-  margin: 15px 0;
-  padding-left: 25px;
-}
-
-.marp-slide li {
-  margin: 8px 0;
-  line-height: 1.6;
-}
-
-.marp-slide strong {
-  color: #e53e3e;
-  font-weight: 600;
-}
-
-
-/* レスポンシブ対応（改善版） */
-
-/* タブレットサイズ (769px - 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .marp-slide {
-    padding: 30px;
-    margin: 15px 0;
-    min-height: 380px;
-    font-size: 1.05em;
-  }
-  
-  .marp-slide h1 {
-    font-size: 1.8em;
-  }
-  
-  .marp-slide h2 {
-    font-size: 1.4em;
-  }
-  
-  
-  .slide-navigation {
-    margin-bottom: 15px;
-  }
-}
-
-/* スマートフォンサイズ (768px以下) */
-@media (max-width: 768px) {
-  .marp-container {
-    padding: 0 10px;
-  }
-  
-  .marp-slide {
-    padding: 15px;
-    margin: 10px 0;
-    min-height: 250px;
-    font-size: 0.95em;
-  }
-  
-  .marp-slide h1 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-  }
-  
-  .marp-slide h2 {
-    font-size: 1.25em;
-    margin: 20px 0 12px 0;
-  }
-  
-  .marp-slide h3 {
-    font-size: 1.1em;
-    margin: 15px 0 8px 0;
-  }
-  
-  .marp-controls {
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-  }
-  
-  
-  .slide-navigation {
-    flex-direction: column;
-    gap: 10px;
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-  
-  .nav-btn {
-    font-size: 13px;
-    padding: 6px 12px;
-    width: 100%;
-    max-width: 120px;
-  }
-  
-  .slide-counter {
-    font-size: 14px;
-    order: -1;
-  }
-  
-}
-
-/* 小さなスマートフォン (480px以下) */
-@media (max-width: 480px) {
-  .marp-slide {
-    padding: 10px;
-    margin: 8px 0;
-    min-height: 200px;
-    font-size: 0.9em;
-  }
-  
-  .marp-slide h1 {
-    font-size: 1.3em;
-    margin-bottom: 15px;
-  }
-  
-  .marp-slide h2 {
-    font-size: 1.15em;
-  }
-  
-  .marp-slide li {
-    margin: 6px 0;
-  }
-  
-  
-  .nav-btn {
-    font-size: 12px;
-    padding: 5px 10px;
-  }
-  
-  .slide-counter {
-    font-size: 13px;
-  }
-}
-
-/* フォーカススタイルの改善（アクセシビリティ） */
-.nav-btn:focus {
-  outline: 2px solid #0969da;
-  outline-offset: 2px;
-}
-
-.marp-slide:focus {
-  outline: 3px solid #0969da;
-  outline-offset: 2px;
-}
-
-/* ハイコントラストモード対応 */
-@media (prefers-contrast: high) {
-  .marp-slide {
-    border: 2px solid #000;
-  }
-  
-  .nav-btn {
-    background: #000;
-    border: 1px solid #000;
-  }
-}
-
-/* モーションを無効にしたユーザー対応 */
-@media (prefers-reduced-motion: reduce) {
-  .marp-slide {
-    transition: none;
-  }
-  
-  .nav-btn {
-    transition: none;
-  }
-}
-</style>
 
 <script>
 let currentSlide = 0;
 let totalSlides = 0;
 
-// シンプルなMarkdown変換関数
-function convertMarkdownToHTML(markdown) {
-  let html = markdown.trim();
-  
-  // 見出しの変換
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  
-  // 太字の変換
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  
-  // リストの変換
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/^  - (.+)$/gm, '<li style="margin-left: 20px;">$1</li>');
-  
-  // リストをulタグで囲む
-  html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
-  
-  // 改行を<br>に変換
-  html = html.replace(/\n/g, '<br>');
-  
-  return html;
-}
-
-// ページ読み込み時にコンテンツを処理
+// ページ読み込み時に初期化
 document.addEventListener('DOMContentLoaded', function() {
-  initializeMarpContent();
+  initializeSlides();
 });
 
-function initializeMarpContent() {
-  const rawContent = document.getElementById('raw-content').textContent;
+function initializeSlides() {
+  const rawContentElement = document.getElementById('raw-content');
   
   try {
-    // CSSコメントとスタイルブロックを除去
-    let cleanContent = rawContent;
-    cleanContent = cleanContent.replace(/<!--\s*style\s*-->/gi, '');
-    cleanContent = cleanContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+    // HTMLコンテンツを取得
+    let htmlContent = rawContentElement.innerHTML;
     
-    console.log('=== Marp デバッグ ===');
-    console.log('rawContentに---が含まれているか:', rawContent.includes('---'));
-    console.log('CSS除去後に---が含まれているか:', cleanContent.includes('---'));
+    // styleタグを除去
+    htmlContent = htmlContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+    
+    // HTMLをマークダウン風テキストに変換
+    let textContent = htmlContent
+      .replace(/<hr\s*\/?>/gi, '\n---\n')
+      .replace(/<\/p>\s*<p>/gi, '\n\n')
+      .replace(/<p>/gi, '')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<h([1-6])>/gi, (match, level) => '#'.repeat(parseInt(level)) + ' ')
+      .replace(/<\/h[1-6]>/gi, '\n\n')
+      .replace(/<strong>/gi, '**')
+      .replace(/<\/strong>/gi, '**')
+      .replace(/<li>/gi, '- ')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<\/?ul>/gi, '')
+      .replace(/<\/?ol>/gi, '')
+      .replace(/\s*\n\s*\n\s*/g, '\n\n')
+      .trim();
     
     // スライドに分割
-    let slides = cleanContent.split(/---+/);
-    console.log('分割後のスライド数:', slides.length);
+    let slides = textContent.split(/\n\s*---\s*\n/);
+    slides = slides.filter(slide => slide.trim().length >= 5);
     
-    // YAML Front Matterを検出して除去
-    slides = slides.filter((slide, index) => {
-      const trimmed = slide.trim();
-      
-      // 空のスライドを除去
-      if (trimmed === '') {
-        return false;
-      }
-      
-      // YAML Front Matterの特徴を検出（最初のスライドのみチェック）
-      if (index === 0) {
-        const yamlPattern = /^(?:title:|layout:|categories:|tags:|marp:|paginate:|date:|author:)/m;
-        if (yamlPattern.test(trimmed)) {
-          return false;
-        }
-      }
-      
-      // コンテンツの最小長チェック（空のスライド防止）
-      return trimmed.length >= 3;
-    });
-    
-    console.log('有効なスライド数:', slides.length);
-  
     totalSlides = slides.length;
     
-    // スライドがない場合のエラーハンドリング
     if (totalSlides === 0) {
-      // ユーザーにメッセージを表示（エラーログは不要）
-      document.getElementById('slides-container').innerHTML = '<div class="marp-slide active"><h2>スライドが見つかりません</h2><p>有効なコンテンツを確認してください。</p></div>';
+      document.getElementById('slides-container').innerHTML = 
+        '<div class="marp-slide active"><h1>スライドがありません</h1><p>コンテンツを確認してください。</p></div>';
       totalSlides = 1;
-      showCurrentSlide();
-      return;
+    } else {
+      generateSlides(slides);
     }
     
-    console.log(totalSlides + '枚のスライドを読み込み完了');
+    // URL hashからスライド番号を取得
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#slide-')) {
+      const slideNumber = parseInt(hash.replace('#slide-', ''));
+      if (slideNumber >= 1 && slideNumber <= totalSlides) {
+        currentSlide = slideNumber - 1; // 0ベースのインデックスに変換
+        console.log('URL hashから開始スライド:', slideNumber);
+      }
+    }
     
-    // スライド表示用のHTMLを生成
-    generateSlideView(slides);
-    
-    // 初期表示設定
     showCurrentSlide();
     
   } catch (error) {
-    console.error('Marp: コンテンツの初期化中にエラーが発生しました:', error);
-    
-    // エラー時のフォールバック表示
+    console.error('スライド初期化エラー:', error);
     document.getElementById('slides-container').innerHTML = 
-      '<div class="marp-slide active"><h2>エラーが発生しました</h2><p>コンテンツの読み込みに失敗しました。ファイルの形式を確認してください。</p></div>';
+      '<div class="marp-slide active"><h1>エラー</h1><p>スライドの読み込みに失敗しました。</p></div>';
     totalSlides = 1;
     showCurrentSlide();
   }
 }
 
-function generateSlideView(slides) {
-  const slidesContainer = document.getElementById('slides-container');
-  if (!slidesContainer) {
-    console.error('Marp: slides-container要素が見つかりません');
-    return;
-  }
+function generateSlides(slides) {
+  const container = document.getElementById('slides-container');
+  container.innerHTML = '';
   
-  slidesContainer.innerHTML = '';
-  
-  if (!Array.isArray(slides) || slides.length === 0) {
-    console.warn('Marp: 有効なスライドデータがありません');
-    return;
-  }
-  
-  slides.forEach(function(slide, index) {
-    const trimmedSlide = slide ? slide.trim() : '';
+  slides.forEach((slide, index) => {
+    const slideDiv = document.createElement('div');
+    slideDiv.className = 'marp-slide';
+    slideDiv.id = 'slide-' + index;
     
-    if (trimmedSlide) {
-      const slideDiv = document.createElement('div');
-      slideDiv.className = 'marp-slide';
-      slideDiv.id = 'slide-' + index;
-      
-      // Markdownを簡単なHTMLに変換
-      const html = convertMarkdownToHTML(slide.trim());
-      slideDiv.innerHTML = html;
-      slidesContainer.appendChild(slideDiv);
+    // デバッグ用ログ
+    console.log('Processing slide:', index);
+    console.log('Raw slide content:', slide.trim());
+    
+    // Permalink要素の検出
+    if (slide.includes('permalink') || slide.includes('post-meta') || slide.includes('page__meta')) {
+      console.warn('Permalink要素が検出されました:', slide);
     }
+    
+    // マークダウンをHTMLに変換（段落単位で処理）
+    let lines = slide.trim().split('\n');
+    let html = '';
+    let inList = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i].trim();
+      
+      // 空行の処理
+      if (line === '') {
+        if (inList) {
+          html += '</ul>';
+          inList = false;
+        }
+        html += '</p><p>';
+        continue;
+      }
+      
+      // ヘッダーの処理
+      if (line.match(/^###\s+(.+)$/)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<h3>' + line.replace(/^###\s+/, '') + '</h3>';
+      } else if (line.match(/^##\s+(.+)$/)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<h2>' + line.replace(/^##\s+/, '') + '</h2>';
+      } else if (line.match(/^#\s+(.+)$/)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<h1>' + line.replace(/^#\s+/, '') + '</h1>';
+      } 
+      // リストの処理
+      else if (line.match(/^-\s+(.+)$/)) {
+        if (!inList) {
+          html += '<ul>';
+          inList = true;
+        }
+        let listItem = line.replace(/^-\s+/, '');
+        // 太字処理
+        listItem = listItem.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html += '<li>' + listItem + '</li>';
+      } 
+      // 通常の段落
+      else {
+        if (inList) { html += '</ul>'; inList = false; }
+        // 太字処理
+        line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html += line + ' ';
+      }
+    }
+    
+    // 最後にリストが開いていた場合は閉じる
+    if (inList) {
+      html += '</ul>';
+    }
+    
+    // 段落タグで包む（空の段落タグを除去）
+    html = '<p>' + html + '</p>';
+    html = html.replace(/<p><\/p>/g, '').replace(/<p>\s*<\/p>/g, '');
+    
+    console.log('Processed HTML:', html);
+    
+    slideDiv.innerHTML = html;
+    container.appendChild(slideDiv);
   });
 }
 
-
-
-
-// スライドナビゲーション機能
 function showCurrentSlide() {
-  // 全てのスライドを非表示にする
-  const slides = document.querySelectorAll('.marp-slide');
-  slides.forEach(slide => slide.classList.remove('active'));
+  // 全スライドを非表示
+  document.querySelectorAll('.marp-slide').forEach(slide => slide.classList.remove('active'));
   
   // 現在のスライドを表示
   const currentSlideElement = document.getElementById('slide-' + currentSlide);
@@ -445,12 +329,19 @@ function showCurrentSlide() {
     currentSlideElement.classList.add('active');
   }
   
-  // カウンターを更新
+  // カウンター更新
   document.getElementById('slide-counter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
   
-  // ボタンの状態を更新
+  // ボタン状態更新
   document.getElementById('prev-btn').disabled = (currentSlide === 0);
   document.getElementById('next-btn').disabled = (currentSlide === totalSlides - 1);
+  
+  // URL hashを更新（ヒストリーには追加しない）
+  const newHash = '#slide-' + (currentSlide + 1);
+  if (window.location.hash !== newHash) {
+    window.location.hash = newHash;
+    console.log('URL hashを更新:', newHash);
+  }
 }
 
 function nextSlide() {
@@ -467,77 +358,22 @@ function prevSlide() {
   }
 }
 
-// キーボードナビゲーション（改善版）
+// キーボードナビゲーション
 document.addEventListener('keydown', function(event) {
-  // スライドビューが存在する場合のみキーボードナビゲーションを有効に
-  const slideView = document.getElementById('slide-view');
-  if (!slideView) {
-    return;
-  }
-  
-  // フォームエレメントにフォーカスがある場合はスキップ
-  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') {
-    return;
-  }
-  
-  let handled = false;
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
   
   switch (event.key) {
     case 'ArrowLeft':
     case 'ArrowUp':
-    case 'PageUp':
-    case 'p': // pキーでprevious
       prevSlide();
-      handled = true;
+      event.preventDefault();
       break;
-      
     case 'ArrowRight':
     case 'ArrowDown':
-    case 'PageDown':
-    case 'n': // nキーでnext
-    case ' ': // スペースキー
+    case ' ':
       nextSlide();
-      handled = true;
+      event.preventDefault();
       break;
-      
-    case 'Home':
-      currentSlide = 0;
-      showCurrentSlide();
-      handled = true;
-      break;
-      
-    case 'End':
-      currentSlide = totalSlides - 1;
-      showCurrentSlide();
-      handled = true;
-      break;
-      
-    // 数字キーでスライドへジャンプ（1-9）
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-      const slideNumber = parseInt(event.key) - 1;
-      if (slideNumber < totalSlides) {
-        currentSlide = slideNumber;
-        showCurrentSlide();
-        handled = true;
-      }
-      break;
-  }
-  
-  if (handled) {
-    event.preventDefault();
-    event.stopPropagation();
   }
 });
-
-
-
-
 </script>
