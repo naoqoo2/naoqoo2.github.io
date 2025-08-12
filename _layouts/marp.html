@@ -311,7 +311,6 @@ function initializeSlides() {
       const slideNumber = parseInt(hash.replace('#slide-', ''));
       if (slideNumber >= 1 && slideNumber <= totalSlides) {
         currentSlide = slideNumber - 1; // 0ベースのインデックスに変換
-        console.log('URL hashから開始スライド:', slideNumber);
       }
     }
     
@@ -335,14 +334,6 @@ function generateSlides(slides) {
     slideDiv.className = 'marp-slide';
     slideDiv.id = 'slide-' + index;
     
-    // デバッグ用ログ
-    console.log('Processing slide:', index);
-    console.log('Raw slide content:', slide.trim());
-    
-    // Permalink要素の検出
-    if (slide.includes('permalink') || slide.includes('post-meta') || slide.includes('page__meta')) {
-      console.warn('Permalink要素が検出されました:', slide);
-    }
     
     // マークダウンをHTMLに変換（段落単位で処理）
     let lines = slide.trim().split('\n');
@@ -402,7 +393,6 @@ function generateSlides(slides) {
     html = '<p>' + html + '</p>';
     html = html.replace(/<p><\/p>/g, '').replace(/<p>\s*<\/p>/g, '');
     
-    console.log('Processed HTML:', html);
     
     slideDiv.innerHTML = html;
     container.appendChild(slideDiv);
@@ -430,7 +420,6 @@ function showCurrentSlide() {
   const newHash = '#slide-' + (currentSlide + 1);
   if (window.location.hash !== newHash) {
     window.location.hash = newHash;
-    console.log('URL hashを更新:', newHash);
   }
 }
 
@@ -459,12 +448,10 @@ function toggleFullscreen() {
     presentation.classList.add('fullscreen-mode');
     button.textContent = '⛶';
     isFullscreen = true;
-    console.log('全画面モード開始');
   } else {
     presentation.classList.remove('fullscreen-mode');
     button.textContent = '⛶';
     isFullscreen = false;
-    console.log('全画面モード終了');
   }
 }
 
