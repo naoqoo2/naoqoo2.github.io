@@ -397,10 +397,7 @@ function initializeMarpContent() {
     
     // 入力長制限（異常に大きなファイル対策）
     if (cleanContent.length > 500000) {
-      // 本番環境ではエラーログのみ出力
-      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-        console.warn('Marp: コンテンツが大きすぎるため、切り詰められました');
-      }
+      console.warn('Marp: コンテンツが大きすぎるため、切り詰められました');
       cleanContent = cleanContent.substring(0, 500000);
     }
     
@@ -423,23 +420,22 @@ function initializeMarpContent() {
     // 連続する空行を整理（最大3行まで）
     cleanContent = cleanContent.replace(/\n{4,}/g, '\n\n\n');
     
-    // デバッグ用ログ
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      console.log('=== スライド分割デバッグ ===');
-      console.log('cleanContent length:', cleanContent.length);
-      console.log('cleanContent preview:', cleanContent.substring(0, 500));
-      console.log('--- が含まれているか:', cleanContent.includes('---'));
-    }
+    // デバッグ用ログ（本番環境対応）
+    console.log('=== スライド分割デバッグ ===');
+    console.log('cleanContent length:', cleanContent.length);
+    console.log('cleanContent preview:', cleanContent.substring(0, 500));
+    console.log('--- が含まれているか:', cleanContent.includes('---'));
+    console.log('<hr が含まれているか:', cleanContent.includes('<hr'));
+    console.log('Jekyll処理後のHTML確認:', rawContent.substring(0, 300));
     
-    // スライドに分割（より安全な正規表現）
-    let slides = cleanContent.split(/\n\s*-{3,}\s*\n/);
+    // スライドに分割（Jekyll処理後のHTMLに対応）
+    // Jekyll は Markdown の --- を <hr> タグに変換するため
+    let slides = cleanContent.split(/<hr\s*\/?>/i);
     
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      console.log('分割後のスライド数:', slides.length);
-      slides.forEach((slide, index) => {
-        console.log(`スライド ${index}:`, slide.trim().substring(0, 100));
-      });
-    }
+    console.log('分割後のスライド数:', slides.length);
+    slides.forEach((slide, index) => {
+      console.log(`スライド ${index} (長さ: ${slide.trim().length}):`, slide.trim().substring(0, 150));
+    });
     
     // YAML Front Matterを検出して除去
     slides = slides.filter((slide, index) => {
@@ -462,12 +458,10 @@ function initializeMarpContent() {
       return trimmed.length >= 3;
     });
     
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      console.log('フィルタ後のスライド数:', slides.length);
-      slides.forEach((slide, index) => {
-        console.log(`フィルタ後スライド ${index}:`, slide.trim().substring(0, 100));
-      });
-    }
+    console.log('フィルタ後のスライド数:', slides.length);
+    slides.forEach((slide, index) => {
+      console.log(`フィルタ後スライド ${index} (長さ: ${slide.trim().length}):`, slide.trim().substring(0, 150));
+    });
   
     totalSlides = slides.length;
     
@@ -484,16 +478,10 @@ function initializeMarpContent() {
     if (totalSlides > 200) {
       slides = slides.slice(0, 200);
       totalSlides = 200;
-      // 開発環境でのみ警告を表示
-      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-        console.warn('Marp: スライド数が多すぎるため、200枚に制限しました');
-      }
+      console.warn('Marp: スライド数が多すぎるため、200枚に制限しました');
     }
     
-    // 開発環境でのみログ出力
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      console.log('Marp: ' + totalSlides + '枚のスライドを読み込みました');
-    }
+    console.log('Marp: ' + totalSlides + '枚のスライドを読み込みました');
     
     // キャッシュを更新
     cachedSlides = slides;
