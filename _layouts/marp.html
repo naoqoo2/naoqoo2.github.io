@@ -185,6 +185,25 @@ layout: single
       font-size: 20px !important;
     }
     
+    /* スマホ対応 */
+    @media (max-width: 768px) {
+      .marp-slide h1 {
+        font-size: 28px !important;
+      }
+      
+      .marp-slide h2 {
+        font-size: 24px !important;
+      }
+      
+      .marp-slide h3 {
+        font-size: 20px !important;
+      }
+      
+      .marp-slide p, .marp-slide li, .marp-slide span {
+        font-size: 16px !important;
+      }
+    }
+    
     /* 全画面モード */
     .fullscreen-mode {
       position: fixed !important;
@@ -455,13 +474,33 @@ function toggleFullscreen() {
   }
 }
 
-// 全画面時の欄外クリックで終了
+// スライド左右クリックでページ遷移
 document.addEventListener('click', function(event) {
+  const slideElement = event.target.closest('.marp-slide');
+  
+  // 全画面時の欄外クリックで終了
   if (isFullscreen && 
-      !event.target.closest('.marp-slide') && 
+      !slideElement && 
       !event.target.closest('.marp-nav') &&
       event.target !== document.getElementById('fullscreen-btn')) {
     toggleFullscreen();
+    return;
+  }
+  
+  // スライド左右クリックでページ遷移
+  if (slideElement) {
+    const rect = slideElement.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const slideWidth = rect.width;
+    
+    // 左半分クリックで前のスライド
+    if (clickX < slideWidth / 2) {
+      prevSlide();
+    }
+    // 右半分クリックで次のスライド
+    else {
+      nextSlide();
+    }
   }
 });
 
