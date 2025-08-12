@@ -423,8 +423,23 @@ function initializeMarpContent() {
     // 連続する空行を整理（最大3行まで）
     cleanContent = cleanContent.replace(/\n{4,}/g, '\n\n\n');
     
+    // デバッグ用ログ
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      console.log('=== スライド分割デバッグ ===');
+      console.log('cleanContent length:', cleanContent.length);
+      console.log('cleanContent preview:', cleanContent.substring(0, 500));
+      console.log('--- が含まれているか:', cleanContent.includes('---'));
+    }
+    
     // スライドに分割（より安全な正規表現）
     let slides = cleanContent.split(/\n\s*-{3,}\s*\n/);
+    
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      console.log('分割後のスライド数:', slides.length);
+      slides.forEach((slide, index) => {
+        console.log(`スライド ${index}:`, slide.trim().substring(0, 100));
+      });
+    }
     
     // YAML Front Matterを検出して除去
     slides = slides.filter((slide, index) => {
@@ -446,6 +461,13 @@ function initializeMarpContent() {
       // コンテンツの最小長チェック（空のスライド防止）
       return trimmed.length >= 3;
     });
+    
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      console.log('フィルタ後のスライド数:', slides.length);
+      slides.forEach((slide, index) => {
+        console.log(`フィルタ後スライド ${index}:`, slide.trim().substring(0, 100));
+      });
+    }
   
     totalSlides = slides.length;
     
