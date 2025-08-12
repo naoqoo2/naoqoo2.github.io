@@ -25,26 +25,52 @@ layout: single
       justify-content: space-between;
       align-items: center;
       padding: 10px 20px;
-      background: #f8f9fa;
-      border: 1px solid #e1e5e9;
+      background: rgba(248, 249, 250, 0.8);
+      border: 1px solid rgba(225, 229, 233, 0.6);
       border-radius: 6px;
       margin-bottom: 20px;
     }
     
+    .nav-left {
+      flex: 1;
+    }
+    
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+    }
+    
+    .nav-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    
     .marp-nav button {
-      background: #0969da;
-      border: none;
-      color: white;
+      background: rgba(9, 105, 218, 0.1);
+      border: 1px solid rgba(9, 105, 218, 0.3);
+      color: #0969da;
       padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
+      transition: all 0.2s ease;
     }
     
     .marp-nav button:disabled {
-      background: #6c757d;
+      background: rgba(108, 117, 125, 0.1);
+      border: 1px solid rgba(108, 117, 125, 0.3);
+      color: #6c757d;
       cursor: not-allowed;
       opacity: 0.6;
+    }
+    
+    .marp-nav button:hover:not(:disabled) {
+      background: rgba(9, 105, 218, 0.2);
+      border-color: rgba(9, 105, 218, 0.5);
     }
     
     .marp-counter {
@@ -158,13 +184,68 @@ layout: single
     .marp-slide p, .marp-slide li, .marp-slide span {
       font-size: 20px !important;
     }
+    
+    /* 全画面モード */
+    .fullscreen-mode {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999 !important;
+      background: #000 !important;
+      margin: 0 !important;
+      max-width: none !important;
+    }
+    
+    /* 全画面時は他の要素を完全に隠す */
+    body:has(.fullscreen-mode) header,
+    body:has(.fullscreen-mode) footer,
+    body:has(.fullscreen-mode) .masthead,
+    body:has(.fullscreen-mode) .page__footer {
+      display: none !important;
+    }
+    
+    .fullscreen-mode .marp-nav {
+      display: none !important;
+    }
+    
+    .fullscreen-mode .marp-slide {
+      width: 90vw !important;
+      height: 90vh !important;
+      max-width: none !important;
+      margin: 5vh auto !important;
+      font-size: 2.5vw !important;
+      border: none !important;
+    }
+    
+    .fullscreen-mode .marp-slide h1 {
+      font-size: 5vw !important;
+    }
+    
+    .fullscreen-mode .marp-slide h2 {
+      font-size: 4vw !important;
+    }
+    
+    .fullscreen-mode .marp-slide h3 {
+      font-size: 3.5vw !important;
+    }
+    
   </style>
   
   <!-- ナビゲーション -->
   <div class="marp-nav">
-    <button onclick="prevSlide()" id="prev-btn">← 前へ</button>
-    <span class="marp-counter" id="slide-counter">1 / 1</span>
-    <button onclick="nextSlide()" id="next-btn">次へ →</button>
+    <div class="nav-left">
+      <!-- 左側スペーサー（右側と同じ幅を確保） -->
+    </div>
+    <div class="nav-center">
+      <button onclick="prevSlide()" id="prev-btn">← 前へ</button>
+      <span class="marp-counter" id="slide-counter">1 / 1</span>
+      <button onclick="nextSlide()" id="next-btn">次へ →</button>
+    </div>
+    <div class="nav-right">
+      <button onclick="toggleFullscreen()" id="fullscreen-btn">⛶</button>
+    </div>
   </div>
   
   <!-- スライド表示エリア -->
@@ -367,6 +448,36 @@ function prevSlide() {
   }
 }
 
+// 全画面モード管理
+let isFullscreen = false;
+
+function toggleFullscreen() {
+  const presentation = document.querySelector('.marp-presentation');
+  const button = document.getElementById('fullscreen-btn');
+  
+  if (!isFullscreen) {
+    presentation.classList.add('fullscreen-mode');
+    button.textContent = '⛶';
+    isFullscreen = true;
+    console.log('全画面モード開始');
+  } else {
+    presentation.classList.remove('fullscreen-mode');
+    button.textContent = '⛶';
+    isFullscreen = false;
+    console.log('全画面モード終了');
+  }
+}
+
+// 全画面時の欄外クリックで終了
+document.addEventListener('click', function(event) {
+  if (isFullscreen && 
+      !event.target.closest('.marp-slide') && 
+      !event.target.closest('.marp-nav') &&
+      event.target !== document.getElementById('fullscreen-btn')) {
+    toggleFullscreen();
+  }
+});
+
 // キーボードナビゲーション
 document.addEventListener('keydown', function(event) {
   if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
@@ -381,6 +492,17 @@ document.addEventListener('keydown', function(event) {
     case 'ArrowDown':
     case ' ':
       nextSlide();
+      event.preventDefault();
+      break;
+    case 'Escape':
+      if (isFullscreen) {
+        toggleFullscreen();
+      }
+      event.preventDefault();
+      break;
+    case 'f':
+    case 'F':
+      toggleFullscreen();
       event.preventDefault();
       break;
   }
