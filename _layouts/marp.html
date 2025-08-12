@@ -2,30 +2,7 @@
 layout: single
 ---
 
-<!--
-Marp Layout for Jekyll
-======================
-マークダウンファイルからプレゼンテーションスライドを生成するJekyll用レイアウト
-
-Features:
-- 3つの表示モード: スライド、記事、マークダウン
-- レスポンシブデザイン（デスクトップ、タブレット、スマートフォン対応）
-- キーボードナビゲーション（矢印キー、p/n、数字キー、Home/End）
-- アクセシビリティ対応（ARIA属性、スクリーンリーダー対応）
-- セキュリティ対策（XSSサニタイゼーション、入力値検証）
-- パフォーマンス最適化（コンテンツキャッシュ、DOM操作最適化）
-
-Security:
-- HTMLサニタイゼーション実装済み
-- XSS攻撃対策済み
-- DoS攻撃対策済み（コンテンツサイズ制限）
-
-Accessibility:
-- WCAG準拠のARIA属性
-- キーボード完全対応
-- スクリーンリーダー対応
-- ハイコントラストモード対応
--->
+<!-- Marp Layout for Jekyll -->
 
 <div class="marp-container">
   <!-- marpコンテナ内のスタイル分離 -->
@@ -323,64 +300,29 @@ Accessibility:
 let currentSlide = 0;
 let totalSlides = 0;
 
-// パフォーマンス最適化用のキャッシュ
-let cachedSlides = null;
-let lastRawContent = null;
-
-// HTMLサニタイゼーション関数
-function sanitizeHTML(html) {
-  // 許可するタグのホワイトリスト
-  const allowedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'code', 'pre', 'blockquote'];
-  const allowedAttributes = ['class', 'id'];
+// シンプルなMarkdown変換関数
+function convertMarkdownToHTML(markdown) {
+  let html = markdown.trim();
   
-  // 一時的なDOM要素を作成してパース
-  const temp = document.createElement('div');
-  temp.innerHTML = html;
+  // 見出しの変換
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
   
-  // 再帰的にノードをサニタイズ
-  function sanitizeNode(node) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      return node;
-    }
-    
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      const tagName = node.tagName.toLowerCase();
-      
-      // 許可されていないタグは削除
-      if (!allowedTags.includes(tagName)) {
-        const fragment = document.createDocumentFragment();
-        while (node.firstChild) {
-          fragment.appendChild(sanitizeNode(node.firstChild));
-        }
-        return fragment;
-      }
-      
-      // 許可されていない属性を削除
-      const attributes = Array.from(node.attributes);
-      attributes.forEach(attr => {
-        if (!allowedAttributes.includes(attr.name.toLowerCase())) {
-          node.removeAttribute(attr.name);
-        }
-      });
-      
-      // 子ノードを再帰的にサニタイズ
-      const children = Array.from(node.childNodes);
-      children.forEach(child => {
-        const sanitized = sanitizeNode(child);
-        if (sanitized !== child) {
-          node.replaceChild(sanitized, child);
-        }
-      });
-    }
-    
-    return node;
-  }
+  // 太字の変換
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   
-  // 全ノードをサニタイズ
-  const children = Array.from(temp.childNodes);
-  children.forEach(child => sanitizeNode(child));
+  // リストの変換
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^  - (.+)$/gm, '<li style="margin-left: 20px;">$1</li>');
   
-  return temp.innerHTML;
+  // リストをulタグで囲む
+  html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+  
+  // 改行を<br>に変換
+  html = html.replace(/\n/g, '<br>');
+  
+  return html;
 }
 
 // ページ読み込み時にコンテンツを処理
@@ -392,50 +334,18 @@ function initializeMarpContent() {
   const rawContent = document.getElementById('raw-content').textContent;
   
   try {
-    // スタイルタグとCSSコメントを安全に削除
+    // CSSコメントとスタイルブロックを除去
     let cleanContent = rawContent;
-    
-    // 入力長制限（異常に大きなファイル対策）
-    if (cleanContent.length > 500000) {
-      console.warn('Marp: コンテンツが大きすぎるため、切り詰められました');
-      cleanContent = cleanContent.substring(0, 500000);
-    }
-    
-    // CSSコメントとスタイルブロックを安全に削除
     cleanContent = cleanContent.replace(/<!--\s*style\s*-->/gi, '');
     cleanContent = cleanContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
     
-    // CSSルールをより安全に削除（行頭のみ）
-    cleanContent = cleanContent.replace(/^\s*section\s*\{[^}]*\}\s*$/gm, '');
-    cleanContent = cleanContent.replace(/^\s*[a-zA-Z][\w\-\.#:\s]*\s*\{[^}]*\}\s*$/gm, '');
+    console.log('=== Marp デバッグ ===');
+    console.log('rawContentに---が含まれているか:', rawContent.includes('---'));
+    console.log('CSS除去後に---が含まれているか:', cleanContent.includes('---'));
     
-    // 行を安全に処理（空の行を保持）
-    const lines = cleanContent.split('\n');
-    const trimmedLines = lines.map(line => {
-      // タブとスペースのみをtrimし、内容は保持
-      return line.replace(/^[\t\s]+|[\t\s]+$/g, '');
-    });
-    cleanContent = trimmedLines.join('\n');
-    
-    // 連続する空行を整理（最大3行まで）
-    cleanContent = cleanContent.replace(/\n{4,}/g, '\n\n\n');
-    
-    // デバッグ用ログ（本番環境対応）
-    console.log('=== スライド分割デバッグ ===');
-    console.log('cleanContent length:', cleanContent.length);
-    console.log('cleanContent preview:', cleanContent.substring(0, 500));
-    console.log('--- が含まれているか:', cleanContent.includes('---'));
-    console.log('<hr が含まれているか:', cleanContent.includes('<hr'));
-    console.log('Jekyll処理後のHTML確認:', rawContent.substring(0, 300));
-    
-    // スライドに分割（Jekyll処理後のHTMLに対応）
-    // Jekyll は Markdown の --- を <hr> タグに変換するため
-    let slides = cleanContent.split(/<hr\s*\/?>/i);
-    
+    // スライドに分割
+    let slides = cleanContent.split(/---+/);
     console.log('分割後のスライド数:', slides.length);
-    slides.forEach((slide, index) => {
-      console.log(`スライド ${index} (長さ: ${slide.trim().length}):`, slide.trim().substring(0, 150));
-    });
     
     // YAML Front Matterを検出して除去
     slides = slides.filter((slide, index) => {
@@ -458,10 +368,7 @@ function initializeMarpContent() {
       return trimmed.length >= 3;
     });
     
-    console.log('フィルタ後のスライド数:', slides.length);
-    slides.forEach((slide, index) => {
-      console.log(`フィルタ後スライド ${index} (長さ: ${slide.trim().length}):`, slide.trim().substring(0, 150));
-    });
+    console.log('有効なスライド数:', slides.length);
   
     totalSlides = slides.length;
     
@@ -474,18 +381,7 @@ function initializeMarpContent() {
       return;
     }
     
-    // スライド数制限（パフォーマンス対策）
-    if (totalSlides > 200) {
-      slides = slides.slice(0, 200);
-      totalSlides = 200;
-      console.warn('Marp: スライド数が多すぎるため、200枚に制限しました');
-    }
-    
-    console.log('Marp: ' + totalSlides + '枚のスライドを読み込みました');
-    
-    // キャッシュを更新
-    cachedSlides = slides;
-    lastRawContent = rawContent;
+    console.log(totalSlides + '枚のスライドを読み込み完了');
     
     // スライド表示用のHTMLを生成
     generateSlideView(slides);
@@ -522,145 +418,39 @@ function generateSlideView(slides) {
     const trimmedSlide = slide ? slide.trim() : '';
     
     if (trimmedSlide) {
-      try {
-        const slideDiv = document.createElement('div');
-        slideDiv.className = 'marp-slide';
-        slideDiv.id = 'slide-' + index;
-        slideDiv.setAttribute('role', 'tabpanel');
-        slideDiv.setAttribute('aria-label', 'スライド ' + (index + 1));
+      const slideDiv = document.createElement('div');
+      slideDiv.className = 'marp-slide';
+      slideDiv.id = 'slide-' + index;
       
-      // Markdownの基本的な変換を手動で行う
-      let html = slide.trim();
-      
-      // 入力長制限（DoS攻撃対策）
-      if (html.length > 50000) {
-        html = html.substring(0, 50000) + '... [コンテンツが切り詰められました]';
-      }
-      
-      // 見出しの変換（より安全な正規表現）
-      html = html.replace(/^### (.{1,200})$/gm, '<h3>$1</h3>');
-      html = html.replace(/^## (.{1,200})$/gm, '<h2>$1</h2>');
-      html = html.replace(/^# (.{1,200})$/gm, '<h1>$1</h1>');
-      
-      // 太字の変換（入れ子制限）
-      html = html.replace(/\*\*([^*]{1,500})\*\*/g, '<strong>$1</strong>');
-      
-      // リストの変換（改善版）
-      const lines = html.split('\n');
-      let processedLines = [];
-      let inList = false;
-      
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const listMatch = line.match(/^(\s*)-\s+(.*)$/);
-        
-        if (listMatch) {
-          const indent = listMatch[1].length;
-          const content = listMatch[2];
-          
-          if (!inList) {
-            processedLines.push('<ul>');
-            inList = true;
-          }
-          
-          const marginLeft = indent > 0 ? ` style="margin-left: ${indent * 10}px;"` : '';
-          processedLines.push(`<li${marginLeft}>${content}</li>`);
-        } else {
-          if (inList) {
-            processedLines.push('</ul>');
-            inList = false;
-          }
-          processedLines.push(line);
-        }
-      }
-      
-      if (inList) {
-        processedLines.push('</ul>');
-      }
-      
-      html = processedLines.join('\n');
-      
-      // 改行を<br>に変換（リスト以外）
-      html = html.replace(/\n(?![\s]*<[\/]?(ul|li))/g, '<br>');
-      
-        // HTMLをサニタイズしてから設定
-        const sanitizedHTML = sanitizeHTML(html);
-        slideDiv.innerHTML = sanitizedHTML;
-        slidesContainer.appendChild(slideDiv);
-        
-      } catch (error) {
-        console.error(`Marp: スライド ${index} の生成中にエラー:`, error);
-        
-        // エラー時のフォールバックスライド
-        const errorSlide = document.createElement('div');
-        errorSlide.className = 'marp-slide';
-        errorSlide.id = 'slide-' + index;
-        errorSlide.innerHTML = '<h2>スライド読み込みエラー</h2><p>このスライドの読み込みに失敗しました。</p>';
-        slidesContainer.appendChild(errorSlide);
-      }
+      // Markdownを簡単なHTMLに変換
+      const html = convertMarkdownToHTML(slide.trim());
+      slideDiv.innerHTML = html;
+      slidesContainer.appendChild(slideDiv);
     }
   });
 }
 
 
-// キャッシュからの高速表示関数
-function generateSlideViewFromCache() {
-  if (!cachedSlides) return;
-  
-  const slidesContainer = document.getElementById('slides-container');
-  if (!slidesContainer) return;
-  
-  // キャッシュされたスライドで再生成
-  generateSlideView(cachedSlides);
-}
 
 
 // スライドナビゲーション機能
 function showCurrentSlide() {
-  try {
-    // スライド番号のバリデーション
-    if (currentSlide < 0) {
-      currentSlide = 0;
-    }
-    if (currentSlide >= totalSlides) {
-      currentSlide = totalSlides - 1;
-    }
-    
-    // 全てのスライドを非表示にする
-    const slides = document.querySelectorAll('.marp-slide');
-    slides.forEach(slide => slide.classList.remove('active'));
-    
-    // 現在のスライドを表示
-    const currentSlideElement = document.getElementById('slide-' + currentSlide);
-    if (currentSlideElement) {
-      currentSlideElement.classList.add('active');
-      currentSlideElement.focus(); // アクセシビリティ改善
-    }
-    
-    // カウンターを更新
-    const slideCounter = document.getElementById('slide-counter');
-    if (slideCounter) {
-      slideCounter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
-      slideCounter.setAttribute('aria-live', 'polite'); // スクリーンリーダー対応
-    }
-    
-    // ボタンの状態を更新
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    
-    if (prevBtn) {
-      prevBtn.disabled = (currentSlide === 0);
-      prevBtn.setAttribute('aria-label', currentSlide === 0 ? '前のスライド（先頭）' : '前のスライドへ');
-    }
-    
-    if (nextBtn) {
-      nextBtn.disabled = (currentSlide === totalSlides - 1);
-      nextBtn.setAttribute('aria-label', currentSlide === totalSlides - 1 ? '次のスライド（末尾）' : '次のスライドへ');
-    }
-    
-  } catch (error) {
-    console.error('Marp: スライド表示中にエラー:', error);
+  // 全てのスライドを非表示にする
+  const slides = document.querySelectorAll('.marp-slide');
+  slides.forEach(slide => slide.classList.remove('active'));
+  
+  // 現在のスライドを表示
+  const currentSlideElement = document.getElementById('slide-' + currentSlide);
+  if (currentSlideElement) {
+    currentSlideElement.classList.add('active');
   }
+  
+  // カウンターを更新
+  document.getElementById('slide-counter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+  
+  // ボタンの状態を更新
+  document.getElementById('prev-btn').disabled = (currentSlide === 0);
+  document.getElementById('next-btn').disabled = (currentSlide === totalSlides - 1);
 }
 
 function nextSlide() {
