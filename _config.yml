@@ -17,10 +17,21 @@ title: naoqoo2
 email:
 description: >- # this means to ignore newlines until "baseurl:"
   naoqoo2のエンジニアブログです。
+baseurl: "" # サブディレクトリを使用する場合はここに設定
+url: "https://naoqoo2.com" # サイトのベースURL
 twitter_username: naoqoo2
 github_username: naoqoo2
 minimal_mistakes_skin: default
 search: true
+
+# SEO & OGイメージ設定
+logo: /assets/images/naoqoo2.jpg
+social:
+  type: Person
+  name: naoqoo2
+  links:
+    - "https://twitter.com/naoqoo2"
+    - "https://github.com/naoqoo2"
 
 # Build settings
 markdown: kramdown
@@ -104,6 +115,10 @@ defaults:
       related: true
       classes: wide #記事の表示幅を広げる
       image: /assets/images/naoqoo2.jpg
+      # OG用の設定
+      og_image: /assets/images/naoqoo2.jpg
+      twitter:
+        card: summary_large_image
   # _pages
   - scope:
       path: "_pages"
