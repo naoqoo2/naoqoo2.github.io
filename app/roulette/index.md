@@ -202,19 +202,21 @@ custom_css: |
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: rgba(13, 110, 253, 0.95);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 0.75rem 1.25rem;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         z-index: 15;
         max-width: 80%;
         text-align: center;
         word-break: break-word;
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
     }
     
     .result-overlay.show {
