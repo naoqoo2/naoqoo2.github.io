@@ -10,14 +10,14 @@ custom_css: |
     .roulette-app {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 1rem;
+        padding: 0.5rem;
     }
     
     .header-section {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-bottom: 1rem;
+        padding-bottom: 0.5rem;
     }
     
     .header-title {
@@ -32,9 +32,9 @@ custom_css: |
     
     .roulette-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
         justify-items: center;
     }
     
@@ -54,7 +54,7 @@ custom_css: |
     @media (max-width: 768px) {
         .roulette-grid {
             grid-template-columns: 1fr;
-            gap: 1rem;
+            gap: 0.5rem;
         }
         
         .roulette-grid.odd-count .roulette-card:last-child {
@@ -68,12 +68,12 @@ custom_css: |
         
         .card-body {
             grid-template-columns: 1fr;
-            gap: 1.5rem;
+            gap: 1rem;
         }
         
         .roulette-canvas {
-            width: 240px;
-            height: 240px;
+            width: 220px;
+            height: 220px;
         }
         
         .items-textarea {
@@ -101,24 +101,25 @@ custom_css: |
     }
     
     .roulette-card {
-        background: white;
+        background: transparent;
         border: 1px solid #e9ecef;
-        border-radius: 12px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        padding: 0 1rem;
         overflow: hidden;
-        transition: box-shadow 0.2s ease;
     }
     
-    .roulette-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
     
     .card-header {
-        background: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-        padding: 1rem;
+        background: transparent;
+        padding: 0.5rem 0;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: 0.5rem;
         align-items: center;
     }
     
@@ -128,39 +129,40 @@ custom_css: |
         font-weight: 600;
         font-size: 1.1rem;
         color: #495057;
-        width: calc(100% - 60px);
+        flex: 1;
         padding: 0.25rem;
         max-width: 300px;
     }
     
     .roulette-title:focus {
-        outline: 2px solid #0d6efd;
-        outline-offset: 2px;
+        outline: none;
+        border: 2px solid #0d6efd;
         background: white;
         border-radius: 4px;
+        padding: 0.25rem 0.5rem;
     }
     
     .delete-btn {
         background: none;
-        border: 1px solid #dc3545;
-        color: #dc3545;
-        padding: 0.375rem 0.75rem;
-        border-radius: 6px;
-        font-size: 0.875rem;
+        border: none;
+        color: #6c757d;
+        padding: 0.375rem;
+        font-size: 1rem;
         cursor: pointer;
         transition: all 0.2s ease;
+        line-height: 1;
     }
     
     .delete-btn:hover {
-        background: #dc3545;
-        color: white;
+        color: #dc3545;
+        transform: scale(1.2);
     }
     
     .card-body {
-        padding: 1.5rem;
+        padding: 0.5rem 0;
         display: grid;
         grid-template-columns: auto 1fr;
-        gap: 2rem;
+        gap: 1rem;
         align-items: start;
     }
     
@@ -168,7 +170,7 @@ custom_css: |
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 1rem;
+        gap: 0.5rem;
     }
     
     .roulette-display {
@@ -179,8 +181,8 @@ custom_css: |
     .roulette-canvas {
         cursor: pointer;
         transition: transform 3s cubic-bezier(0.6, 0, 0, 1);
-        width: 280px;
-        height: 280px;
+        width: 260px;
+        height: 260px;
         border-radius: 50%;
         border: 3px solid #dee2e6;
     }
@@ -223,13 +225,13 @@ custom_css: |
         background: #6366f1;
         border: 1px solid #6366f1;
         color: white;
-        padding: 0.5rem 1rem;
+        padding: 0.375rem 0.75rem;
         border-radius: 6px;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        align-self: flex-end;
+        align-self: flex-start;
         margin-bottom: 0.5rem;
     }
     
@@ -249,17 +251,18 @@ custom_css: |
     .roulette-right {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.5rem;
         align-items: flex-start;
+        width: 100%;
     }
     
     
     .items-textarea {
         width: 100%;
-        min-height: 200px;
+        min-height: 180px;
         border: 1px solid #ced4da;
-        border-radius: 8px;
-        padding: 0.75rem;
+        border-radius: 6px;
+        padding: 0.5rem;
         font-size: 0.875rem;
         font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
         resize: vertical;
@@ -362,7 +365,9 @@ custom_css: |
         <div class="roulette-card">
             <div class="card-header">
                 <input type="text" class="roulette-title" value="" maxlength="30" placeholder="ルーレット名">
-                <button class="delete-btn" title="削除">×</button>
+                <div class="header-actions">
+                    <button class="delete-btn" title="削除">×</button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="roulette-left">
@@ -371,7 +376,6 @@ custom_css: |
                         <canvas class="roulette-canvas" width="280" height="280"></canvas>
                         <div class="result-overlay"></div>
                     </div>
-                    <!-- スピンボタンは右側に移動 -->
                 </div>
                 <div class="roulette-right">
                     <button class="btn-spin">スピン！</button>
@@ -631,8 +635,8 @@ class RouletteManager {
         const words = text.split('');
         const lineHeight = 16;
         
-        // 10文字程度を目安に改行
-        if (text.length <= 10) {
+        // 6文字程度を目安に改行
+        if (text.length <= 6) {
             ctx.fillText(text, x, y);
             return;
         }
@@ -643,13 +647,13 @@ class RouletteManager {
         let secondLine = text.substring(midPoint);
         
         // 単語境界で調整（ひらがな・カタカナ・漢字の場合は文字単位）
-        if (text.length > 10) {
-            firstLine = text.substring(0, Math.min(10, midPoint));
+        if (text.length > 6) {
+            firstLine = text.substring(0, Math.min(6, midPoint));
             secondLine = text.substring(firstLine.length);
             
             // 2行目が長すぎる場合は省略
-            if (secondLine.length > 8) {
-                secondLine = secondLine.substring(0, 7) + '...';
+            if (secondLine.length > 6) {
+                secondLine = secondLine.substring(0, 6) + '...';
             }
         }
         
