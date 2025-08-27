@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="{{ site.locale | default: 'ja' }}" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title | default: site.title }}</title>
+    <link rel="icon" href="{{ '/favicon.ico' | relative_url }}">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+    {% assign gtm_id = site.analytics.google.tracking_id %}
+    {% if gtm_id %}
+    <!-- Google Tag Manager -->
+    <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','{{ gtm_id }}');
+    </script>
+    <!-- End Google Tag Manager -->
+    {% endif %}
+
+    <style>
+    /* Layout base */
+    .page__inner-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+    .page__content { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+    .app-header { background: #fff; border-bottom: 1px solid #e1e4e8; padding: 1rem 0; }
+    .app-nav { display: flex; justify-content: space-between; align-items: center; }
+    .app-brand { display: flex; align-items: center; gap: .75rem; }
+    .app-logo { display: inline-flex; align-items: center; }
+    .app-logo img { display: block; height: 40px; width: auto; border-radius: 4px; }
+    .app-title { font-size: 1.25rem; font-weight: 700; color: #495057; text-decoration: none; }
+    .app-title:hover { text-decoration: none; color: #6c757d; }
+    @media (max-width: 768px) {
+      .app-nav { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+    </style>
+
+    {% if page.custom_css %}
+    <style>
+    {{ page.custom_css }}
+    </style>
+    {% endif %}
+  </head>
+  <body class="layout--app" dir="ltr">
+
+  {% if gtm_id %}
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id={{ gtm_id }}" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  {% endif %}
+
+  <div class="app-header">
+    <div class="page__inner-wrap">
+      <nav class="app-nav">
+        <div class="app-brand">
+          {% if site.logo %}
+          <a class="app-logo" href="{{ site.baseurl }}/"><img src="{{ site.logo | relative_url }}" alt="{{ site.title }}"></a>
+          {% endif %}
+          <a href="{{ site.baseurl }}/" class="app-title">{{ site.title }}</a>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+
+  <main class="page__content" role="main">
+    {{ content }}
+  </main>
+
+  </body>
+</html>
