@@ -20,6 +20,12 @@ custom_css: |
         padding-bottom: 0.5rem;
     }
     
+    .header-buttons {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    
     .header-title {
         font-size: 1.75rem;
         font-weight: 600;
@@ -77,14 +83,32 @@ custom_css: |
         }
         
         .items-textarea {
-            min-height: 150px;
+            min-height: 120px;
         }
         
         .header-section {
             flex-direction: row;
-            gap: 1rem;
+            gap: 0.5rem;
             align-items: center;
             justify-content: space-between;
+            padding-bottom: 0.25rem;
+        }
+        
+        .header-title {
+            font-size: 1.25rem;
+        }
+        
+        .header-buttons {
+            gap: 0.5rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-secondary {
+            min-width: 100px;
         }
         
         .fab-add {
@@ -166,6 +190,15 @@ custom_css: |
         align-items: start;
     }
     
+    @media (max-width: 768px) {
+        .card-body {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto;
+            gap: 1rem;
+            text-align: center;
+        }
+    }
+    
     .roulette-left {
         display: flex;
         flex-direction: column;
@@ -185,6 +218,13 @@ custom_css: |
         height: 260px;
         border-radius: 50%;
         border: 3px solid #dee2e6;
+    }
+    
+    @media (max-width: 768px) {
+        .roulette-canvas {
+            width: 220px;
+            height: 220px;
+        }
     }
     
     .roulette-pin {
@@ -217,10 +257,14 @@ custom_css: |
         box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
         border: 1px solid rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(10px);
+        cursor: text;
+        user-select: text;
+        pointer-events: none;
     }
     
     .result-overlay.show {
         opacity: 1;
+        pointer-events: auto;
     }
     
     .btn-spin {
@@ -299,6 +343,26 @@ custom_css: |
         transform: translateY(-1px);
     }
     
+    .btn-secondary {
+        background: #6c757d;
+        border: 1px solid #6c757d;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 100px;
+        text-align: center;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        border-color: #5a6268;
+        transform: translateY(-1px);
+    }
+    
     .fab-add {
         position: fixed;
         bottom: 2rem;
@@ -346,6 +410,57 @@ custom_css: |
         display: none;
     }
     
+    /* ビューモード用スタイル */
+    .view-mode .roulette-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.25rem;
+    }
+    
+    .view-mode .roulette-right,
+    .view-mode .fab-add,
+    .view-mode .delete-btn {
+        display: none;
+    }
+    
+    .view-mode .card-header {
+        padding: 0.25rem 0;
+    }
+    
+    .view-mode .header-actions {
+        display: none;
+    }
+    
+    .view-mode .roulette-card {
+        border: none;
+        background: transparent;
+        padding: 0.25rem;
+    }
+    
+    .view-mode .card-body {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        padding: 0;
+    }
+    
+    /* ビューモード時のレスポンシブ対応 */
+    @media (max-width: 1200px) and (min-width: 901px) {
+        .view-mode .roulette-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 900px) and (min-width: 601px) {
+        .view-mode .roulette-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 600px) {
+        .view-mode .roulette-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
 ---
 
 <div class="roulette-app">
@@ -353,9 +468,14 @@ custom_css: |
         <h1 class="header-title">
             Webルーレット
         </h1>
-        <button id="spinAll" class="btn-primary">
-            全てスピン！
-        </button>
+        <div class="header-buttons">
+            <button id="toggleViewMode" class="btn-secondary">
+                <i class="fas fa-eye"></i> ビュー
+            </button>
+            <button id="spinAll" class="btn-primary">
+                <i class="fas fa-sync-alt"></i> 全てスピン！
+            </button>
+        </div>
     </div>
     
     <div id="rouletteSets" class="roulette-grid">
@@ -398,11 +518,13 @@ class RouletteManager {
     constructor() {
         this.sets = [];
         this.nextId = 1;
+        this.isViewMode = false;
         this.init();
     }
 
     init() {
         this.loadFromStorage();
+        this.loadViewModeState();
         this.setupEventListeners();
         
         // 最低1つのルーレットを保証
@@ -416,6 +538,10 @@ class RouletteManager {
     setupEventListeners() {
         document.getElementById('spinAll').addEventListener('click', () => {
             this.spinAll();
+        });
+        
+        document.getElementById('toggleViewMode').addEventListener('click', () => {
+            this.toggleViewMode();
         });
         
         document.getElementById('addRoulette').addEventListener('click', () => {
@@ -762,6 +888,48 @@ class RouletteManager {
                 this.sets = [];
                 this.nextId = 1;
             }
+        }
+    }
+
+    toggleViewMode() {
+        this.isViewMode = !this.isViewMode;
+        const app = document.querySelector('.roulette-app');
+        const toggleBtn = document.getElementById('toggleViewMode');
+        
+        if (this.isViewMode) {
+            app.classList.add('view-mode');
+            toggleBtn.innerHTML = '<i class="fas fa-edit"></i> 編集';
+        } else {
+            app.classList.remove('view-mode');
+            toggleBtn.innerHTML = '<i class="fas fa-eye"></i> ビュー';
+        }
+        
+        this.saveViewModeState();
+    }
+
+    saveViewModeState() {
+        localStorage.setItem('rouletteViewMode', JSON.stringify(this.isViewMode));
+    }
+
+    loadViewModeState() {
+        try {
+            const saved = localStorage.getItem('rouletteViewMode');
+            if (saved !== null) {
+                this.isViewMode = JSON.parse(saved);
+                const app = document.querySelector('.roulette-app');
+                const toggleBtn = document.getElementById('toggleViewMode');
+                
+                if (this.isViewMode) {
+                    app.classList.add('view-mode');
+                    toggleBtn.innerHTML = '<i class="fas fa-edit"></i> 編集';
+                } else {
+                    app.classList.remove('view-mode');
+                    toggleBtn.innerHTML = '<i class="fas fa-eye"></i> ビュー';
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load view mode state:', e);
+            this.isViewMode = false;
         }
     }
 }
