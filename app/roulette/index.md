@@ -18,12 +18,87 @@ custom_css: |
         justify-content: space-between;
         align-items: center;
         padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .floating-buttons {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        z-index: 1000;
+    }
+
+    .btn-spin-all {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        height: 60px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        white-space: nowrap;
+    }
+
+    .btn-spin-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-spin-all:active {
+        transform: translateY(0);
     }
     
-    .header-buttons {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
+    .mode-tabs {
+        display: inline-flex;
+        background: #e9ecef;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 2px;
+        overflow: hidden;
+    }
+    
+    .tab-button {
+        background: none;
+        border: none;
+        padding: 0.375rem 0.875rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+        color: #6c757d;
+        width: 100px;
+        text-align: center;
+        position: relative;
+        box-sizing: border-box;
+    }
+    
+    .tab-button:hover:not(.active) {
+        background: rgba(0, 0, 0, 0.04);
+        color: #495057;
+    }
+    
+    .tab-button.active {
+        background: #6c757d;
+        color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     }
     
     .header-title {
@@ -69,8 +144,40 @@ custom_css: |
         
         .roulette-card {
             width: 100%;
-            max-width: none;
         }
+
+        .header-section {
+            flex-direction: row;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-controls {
+            justify-content: flex-end;
+        }
+
+        .floating-buttons {
+            bottom: 1rem;
+            right: 1rem;
+        }
+
+        .tab-button {
+            padding: 0.3rem 0.5rem;
+            width: 80px;
+            font-size: 0.8rem;
+        }
+
+        .btn-spin-all {
+            padding: 0.75rem;
+            border-radius: 50%;
+            width: 60px;
+        }
+
+        .btn-spin-all .spin-text {
+            display: none;
+        }
+
         
         .card-body {
             grid-template-columns: 1fr;
@@ -95,25 +202,21 @@ custom_css: |
         }
         
         .header-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
         }
         
-        .header-buttons {
-            gap: 0.5rem;
+        .mode-tabs {
+            padding: 3px;
+            gap: 1px;
         }
         
-        .btn-primary, .btn-secondary {
+        .tab-button {
             padding: 0.375rem 0.75rem;
             font-size: 0.75rem;
-        }
-        
-        .btn-secondary {
-            min-width: 100px;
+            min-width: 70px;
         }
         
         .fab-add {
-            bottom: 1rem;
-            right: 1rem;
             border-radius: 50%;
             padding: 0;
             width: 60px;
@@ -364,9 +467,6 @@ custom_css: |
     }
     
     .fab-add {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
         min-width: 60px;
         height: 60px;
         border-radius: 50%;
@@ -378,7 +478,6 @@ custom_css: |
         cursor: pointer;
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         transition: all 0.2s ease;
-        z-index: 1000;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -404,6 +503,7 @@ custom_css: |
             padding: 0 1.5rem;
         }
     }
+    
     
     /* 最初のカードは削除ボタン非表示 */
     .roulette-card[data-set-id="1"] .delete-btn {
@@ -468,13 +568,15 @@ custom_css: |
         <h1 class="header-title">
             Webルーレット
         </h1>
-        <div class="header-buttons">
-            <button id="toggleViewMode" class="btn-secondary">
-                <i class="fas fa-eye"></i> ビュー
-            </button>
-            <button id="spinAll" class="btn-primary">
-                <i class="fas fa-sync-alt"></i> 全てスピン！
-            </button>
+        <div class="header-controls">
+            <div class="mode-tabs">
+                <button id="viewTab" class="tab-button" data-mode="view">
+                    <i class="fas fa-eye"></i> ビュー
+                </button>
+                <button id="editTab" class="tab-button active" data-mode="edit">
+                    <i class="fas fa-edit"></i> 編集
+                </button>
+            </div>
         </div>
     </div>
     
@@ -500,17 +602,22 @@ custom_css: |
                     </div>
                 </div>
                 <div class="roulette-right">
-                    <button class="btn-spin">スピン！</button>
                     <textarea class="items-textarea" placeholder="項目（1行につき1つ）"></textarea>
                 </div>
             </div>
         </div>
     </template>
     
-    <button id="addRoulette" class="fab-add" title="ルーレット追加">
-        <span style="transform: translateY(-2px); display: inline-block;">+</span>
-        <span class="add-text">ルーレットを追加</span>
-    </button>
+    <div class="floating-buttons">
+        <button id="spinAll" class="btn-spin-all">
+            <i class="fas fa-sync-alt"></i>
+            <span class="spin-text">全てスピン！</span>
+        </button>
+        <button id="addRoulette" class="fab-add" title="ルーレット追加">
+            <span style="transform: translateY(-2px); display: inline-block;">+</span>
+            <span class="add-text">ルーレットを追加</span>
+        </button>
+    </div>
 </div>
 
 <script>
@@ -540,8 +647,12 @@ class RouletteManager {
             this.spinAll();
         });
         
-        document.getElementById('toggleViewMode').addEventListener('click', () => {
-            this.toggleViewMode();
+        document.getElementById('viewTab').addEventListener('click', () => {
+            this.setViewMode(true);
+        });
+        
+        document.getElementById('editTab').addEventListener('click', () => {
+            this.setViewMode(false);
         });
         
         document.getElementById('addRoulette').addEventListener('click', () => {
@@ -638,14 +749,7 @@ class RouletteManager {
         const ro = node.querySelector('.result-overlay');
         ro.textContent = setData.result || '';
 
-        // Disable state
-        const spinBtn = node.querySelector('.btn-spin');
-        if (setData.isSpinning) {
-            spinBtn.disabled = true;
-            spinBtn.textContent = '回転中...';
-        } else {
-            spinBtn.textContent = 'スピン！';
-        }
+        // 回転状態の表示は結果オーバーレイで管理
 
         this.setupSetEventListeners(node, setData);
         return node;
@@ -675,13 +779,11 @@ class RouletteManager {
         const canvas = setElement.querySelector('.roulette-canvas');
         const textarea = setElement.querySelector('.items-textarea');
         if (textarea) textarea.placeholder = '項目（1行につき1つ）';
-        const spinBtn = setElement.querySelector('.btn-spin');
         const deleteBtn = setElement.querySelector('.delete-btn');
         const titleInput = setElement.querySelector('.roulette-title');
 
-        // スピンボタン・ルーレットクリック
+        // ルーレットクリック
         const spinHandler = () => this.spinRoulette(setData, canvas, setElement);
-        spinBtn.addEventListener('click', spinHandler);
         canvas.addEventListener('click', spinHandler);
 
         // テキストエリア変更
@@ -795,11 +897,7 @@ class RouletteManager {
         setData.isSpinning = true;
         setData.result = null;
         
-        const spinBtn = setElement.querySelector('.btn-spin');
         const resultOverlay = setElement.querySelector('.result-overlay');
-        
-        spinBtn.textContent = '回転中...';
-        spinBtn.disabled = true;
         resultOverlay.classList.remove('show');
 
         // 回転角度計算
@@ -818,10 +916,6 @@ class RouletteManager {
             
             setData.result = setData.items[selectedIndex];
             setData.isSpinning = false;
-            
-            // UI更新
-            spinBtn.textContent = 'スピン！';
-            spinBtn.disabled = false;
             
             this.showResult(setElement, setData.result);
             this.saveToStorage();
@@ -891,17 +985,20 @@ class RouletteManager {
         }
     }
 
-    toggleViewMode() {
-        this.isViewMode = !this.isViewMode;
+    setViewMode(isViewMode) {
+        this.isViewMode = isViewMode;
         const app = document.querySelector('.roulette-app');
-        const toggleBtn = document.getElementById('toggleViewMode');
+        const viewTab = document.getElementById('viewTab');
+        const editTab = document.getElementById('editTab');
         
         if (this.isViewMode) {
             app.classList.add('view-mode');
-            toggleBtn.innerHTML = '<i class="fas fa-edit"></i> 編集';
+            viewTab.classList.add('active');
+            editTab.classList.remove('active');
         } else {
             app.classList.remove('view-mode');
-            toggleBtn.innerHTML = '<i class="fas fa-eye"></i> ビュー';
+            viewTab.classList.remove('active');
+            editTab.classList.add('active');
         }
         
         this.saveViewModeState();
@@ -917,14 +1014,17 @@ class RouletteManager {
             if (saved !== null) {
                 this.isViewMode = JSON.parse(saved);
                 const app = document.querySelector('.roulette-app');
-                const toggleBtn = document.getElementById('toggleViewMode');
+                const viewTab = document.getElementById('viewTab');
+                const editTab = document.getElementById('editTab');
                 
                 if (this.isViewMode) {
                     app.classList.add('view-mode');
-                    toggleBtn.innerHTML = '<i class="fas fa-edit"></i> 編集';
+                    viewTab.classList.add('active');
+                    editTab.classList.remove('active');
                 } else {
                     app.classList.remove('view-mode');
-                    toggleBtn.innerHTML = '<i class="fas fa-eye"></i> ビュー';
+                    viewTab.classList.remove('active');
+                    editTab.classList.add('active');
                 }
             }
         } catch (e) {
