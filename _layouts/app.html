@@ -43,6 +43,18 @@
     {{ page.custom_css }}
     </style>
     {% endif %}
+
+    {% if site.head_scripts %}
+      {% for script in site.head_scripts %}
+        <script src="{{ script | relative_url }}"></script>
+      {% endfor %}
+    {% endif %}
+
+    {% if page.head_scripts %}
+      {% for script in page.head_scripts %}
+        <script src="{{ script | relative_url }}"></script>
+      {% endfor %}
+    {% endif %}
   </head>
   <body class="layout--app" dir="ltr">
 
