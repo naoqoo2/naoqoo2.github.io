@@ -78,6 +78,19 @@ custom_css: |
 
     /* Controls row helpers */
     .roulette-controls-row { min-height: 56px; }
+
+    /* SP: スピンは左寄せ（中央絶対配置を無効化） */
+    @media (max-width: 768px) {
+        .roulette-controls-row { display: flex; }
+        .controls-center { position: static !important; left: auto !important; transform: none !important; margin-right: auto; }
+        #spinAll { white-space: nowrap; }
+    }
+
+    /* 横持ち時は強制2列（小さめ端末の横持ち対策） */
+    @media (orientation: landscape) and (max-width: 767.98px) {
+        .view-mode #rouletteSets > .roulette-card { flex-basis: calc(50% - 0.75rem); max-width: calc(50% - 0.75rem); }
+        .edit-mode #rouletteSets > .roulette-card { flex-basis: calc(50% - 0.75rem); max-width: calc(50% - 0.75rem); }
+    }
     
     .result-overlay {
         position: absolute;
