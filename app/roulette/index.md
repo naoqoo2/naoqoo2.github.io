@@ -47,14 +47,11 @@ custom_css: |
         flex: 0 1 100%;
         max-width: 100%;
     }
-    @media (min-width: 640px) { /* sm */
+    @media (min-width: 640px) { /* sm: 2列 */
         .view-mode #rouletteSets > .roulette-card { flex-basis: calc(50% - 0.75rem); max-width: calc(50% - 0.75rem); }
     }
-    @media (min-width: 768px) { /* md */
+    @media (min-width: 1024px) { /* lg: 3列（最大） */
         .view-mode #rouletteSets > .roulette-card { flex-basis: calc(33.333% - 0.75rem); max-width: calc(33.333% - 0.75rem); }
-    }
-    @media (min-width: 1024px) { /* lg */
-        .view-mode #rouletteSets > .roulette-card { flex-basis: calc(25% - 0.75rem); max-width: calc(25% - 0.75rem); }
     }
 
     /* 編集モードも中央寄せ（md以上は2列を維持） */
@@ -68,27 +65,21 @@ custom_css: |
         flex: 0 1 100%;
         max-width: 100%;
     }
-    /* ビューモードが2列の幅帯（sm: 640px〜md未満）では、編集モードは縦積み */
-    @media (min-width: 640px) and (max-width: 767.98px) {
-        .edit-mode .roulette-card .md\:flex-row { flex-direction: column !important; }
-        .edit-mode .roulette-card .md\:flex-row > * { width: 100% !important; }
-        .edit-mode .roulette-right { flex: initial; max-width: none; }
-    }
+    /* カード内は常に縦積み（テキストエリアは下） */
+    .roulette-app .roulette-card .md\:flex-row { flex-direction: column !important; }
+    .roulette-app .roulette-card .md\:flex-row > * { width: 100% !important; }
 
-    /* md以上（ビューが3〜4列の帯域）では、編集モードは横並びのまま */
+    /* 列数は共通: mdで2列、lgで3列 */
     @media (min-width: 768px) { /* md */
         .edit-mode #rouletteSets > .roulette-card { flex-basis: calc(50% - 0.75rem); max-width: calc(50% - 0.75rem); }
-        /* 左を可変、右パネルは最大360pxで横並び */
-        .edit-mode .roulette-card .md\:flex-row > :first-child { flex: 1 1 auto; width: auto; }
-        .edit-mode .roulette-right { flex: 0 1 360px; max-width: 360px; }
+    }
+    @media (min-width: 1024px) { /* lg */
+        .edit-mode #rouletteSets > .roulette-card { flex-basis: calc(33.333% - 0.75rem); max-width: calc(33.333% - 0.75rem); }
     }
 
-    /* SP（1列の編集モード）でルーレットを中央寄せ */
-    @media (max-width: 767.98px) {
-        .edit-mode .roulette-canvas { display: block; margin-left: auto; margin-right: auto; }
-        /* 念のため親のflexボックス幅を広げて中央寄せを効かせる */
-        .edit-mode .roulette-card .relative.flex { width: 100%; justify-content: center; }
-    }
+    /* ルーレットを常に中央寄せ */
+    .roulette-app .roulette-canvas { display: block; margin-left: auto; margin-right: auto; }
+    .roulette-app .roulette-card .relative.flex { width: 100%; justify-content: center; }
 
     /* 以前のレイアウト強制は撤去し、Tailwindユーティリティで制御 */
     
@@ -262,12 +253,6 @@ custom_css: |
         display: none;
     }
     
-    /* ビューモード用スタイル */
-    .view-mode .roulette-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.25rem;
-    }
-    
     .view-mode .roulette-right,
     .view-mode .delete-btn,
     .view-mode #addRoulette {
@@ -305,24 +290,7 @@ custom_css: |
     
     /* ビューモードの見た目調整（表示制御のみ維持） */
     
-    /* ビューモード時のレスポンシブ対応 */
-    @media (max-width: 1200px) and (min-width: 901px) {
-        .view-mode .roulette-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-    
-    @media (max-width: 900px) and (min-width: 601px) {
-        .view-mode .roulette-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @media (max-width: 600px) {
-        .view-mode .roulette-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+    /* ビューモードの見た目調整（表示制御のみ維持） */
     
 ---
 
@@ -481,7 +449,6 @@ class RouletteManager {
         const canvas = setElement.querySelector('.roulette-canvas');
         this.updateCanvasSize(canvas);
         this.drawRoulette(canvas, setData.items);
-        this.syncTextareaFontSize(setElement, canvas);
         this.observeSet(setElement);
         
         this.saveToStorage();
@@ -521,7 +488,6 @@ class RouletteManager {
         const canvas = setElement.querySelector('.roulette-canvas');
         this.updateCanvasSize(canvas);
         this.drawRoulette(canvas, setData.items);
-        this.syncTextareaFontSize(setElement, canvas);
         this.observeSet(setElement);
     }
 
@@ -543,17 +509,8 @@ class RouletteManager {
             const row = node.querySelector('.md\\:flex-row') || node.querySelector('.flex');
             if (row && row.firstElementChild) {
                 const left = row.firstElementChild;
-                if (this.isViewMode) {
-                    left.classList.add('w-full');
-                    left.classList.remove('md:w-1/2');
-                } else {
-                    left.classList.remove('md:w-1/2');
-                    if (window.innerWidth < 768) {
-                        left.classList.add('w-full');
-                    } else {
-                        left.classList.remove('w-full');
-                    }
-                }
+                left.classList.add('w-full');
+                left.classList.remove('md:w-1/2');
             }
         } catch (e) {}
 
@@ -569,7 +526,7 @@ class RouletteManager {
         }
         const available = col ? Math.floor(col.getBoundingClientRect().width) : (canvas.clientWidth || 260);
         const desired = Math.floor(available - 24);
-        const size = Math.max(220, Math.min(desired, 560));
+        const size = Math.max(240, Math.min(desired, 720));
         if (canvas.width !== size || canvas.height !== size) {
             canvas.width = size;
             canvas.height = size;
@@ -585,7 +542,6 @@ class RouletteManager {
             const canvas = el.querySelector('.roulette-canvas');
             this.updateCanvasSize(canvas);
             this.drawRoulette(canvas, setData.items);
-            this.syncTextareaFontSize(el, canvas);
         });
     }
 
@@ -731,13 +687,7 @@ class RouletteManager {
         return { dynamicFont, lineHeight };
     }
 
-    syncTextareaFontSize(setElement, canvas) {
-        if (!canvas) return;
-        const textarea = setElement.querySelector('.items-textarea');
-        if (!textarea) return;
-        const { dynamicFont } = this.computeFontMetrics(canvas);
-        textarea.style.fontSize = dynamicFont + 'px';
-    }
+    // テキストエリアと結果オーバーレイのフォントはCSSに委ねる
 
     spinRoulette(setData, canvas, setElement) {
         if (setData.isSpinning) return;
@@ -874,7 +824,6 @@ class RouletteManager {
             this.updateCanvasSize(canvas);
             const setData = this.sets.find(s => s.id === id);
             if (setData) this.drawRoulette(canvas, setData.items);
-            this.syncTextareaFontSize(setElement, canvas);
         });
         ro.observe(leftCol);
         this._resizeObservers.set(id, ro);
@@ -897,26 +846,13 @@ class RouletteManager {
         if (!container) return;
         container.className = 'mb-3'; // 表示はCSSで切替
 
-        // カード内レイアウト（ビュー: 左カラム全幅、編集: 左右1/2）
+        // カード内レイアウト（常に縦積み。左=ルーレットは全幅）
         const cards = container.querySelectorAll('.roulette-card');
         cards.forEach(card => {
             const row = card.querySelector('.md\\:flex-row') || card.querySelector('.flex');
             if (!row || !row.firstElementChild) return;
-            if (this.isViewMode) {
-                // ビュー: 左カラムは全幅
-                row.firstElementChild.classList.remove('md:w-1/2');
-                row.firstElementChild.classList.add('w-full');
-            } else {
-                // 編集: 画面幅に応じて幅クラスを調整
-                row.firstElementChild.classList.remove('md:w-1/2');
-                if (window.innerWidth >= 768) {
-                    // md以上は横並び想定のためw-fullは外す
-                    row.firstElementChild.classList.remove('w-full');
-                } else {
-                    // SP帯は縦積み・中央寄せのためw-fullを付与
-                    row.firstElementChild.classList.add('w-full');
-                }
-            }
+            row.firstElementChild.classList.remove('md:w-1/2');
+            row.firstElementChild.classList.add('w-full');
         });
 
         requestAnimationFrame(() => this.resizeAllCanvases());
