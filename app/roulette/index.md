@@ -76,11 +76,8 @@ custom_css: |
         /* 下線・ホバー時の影は不要 */
     }
 
-    /* Header row: ensure spin button is perfectly centered */
-    .roulette-header-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
-    .roulette-header-left { justify-self: start; }
-    .roulette-header-center { justify-self: center; }
-    .roulette-header-right { justify-self: end; display: flex; align-items: center; gap: 0.5rem; }
+    /* Controls row helpers */
+    .roulette-controls-row { min-height: 56px; }
     
     .result-overlay {
         position: absolute;
@@ -290,19 +287,24 @@ custom_css: |
 ---
 
 <div class="roulette-app max-w-screen-2xl mx-auto px-3" style="visibility:hidden;">
-    <!-- Sticky header: title (left), spin (center), add + mode toggle (right) -->
+    <!-- Title row (non-sticky / SP only) -->
+    <div class="py-2 md:hidden">
+        <h1 class="text-xl font-semibold text-gray-700 m-0 text-center md:text-left">Webルーレット</h1>
+    </div>
+
+    <!-- Sticky controls: spin centered, actions on right; title shows here on md+ -->
     <div class="roulette-sticky-header sticky top-0 z-40">
-        <div class="roulette-header-row py-2">
-            <div class="roulette-header-left flex items-center gap-3">
+        <div class="roulette-controls-row relative flex items-center py-2">
+            <div class="controls-left hidden md:flex items-center">
                 <h1 class="text-xl font-semibold text-gray-700 m-0">Webルーレット</h1>
             </div>
-            <div class="roulette-header-center flex items-center justify-center">
+            <div class="controls-center absolute left-1/2 transform -translate-x-1/2">
                 <button id="spinAll" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 text-lg">
                     <i class="fas fa-sync-alt text-xl"></i>
                     <span class="spin-text">スピン！</span>
                 </button>
             </div>
-            <div class="roulette-header-right">
+            <div class="controls-right ml-auto flex items-center gap-2">
                 <button id="addRoulette" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-md font-semibold shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2 text-sm" title="ルーレット追加">
                     <i class="fas fa-plus"></i>
                     <span class="add-text">追加</span>
