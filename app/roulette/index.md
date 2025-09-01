@@ -154,7 +154,7 @@ custom_css: |
         border: 1px solid #ced4da;
         border-radius: 6px;
         padding: 0.5rem;
-        font-size: 14px; /* JSでキャンバスと同じサイズに同期 */
+        font-size: 16px; /* iOSの自動ズーム回避（16px以上で発動しない） */
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'YuGothic', 'Meiryo', sans-serif;
         resize: vertical;
         transition: border-color 0.2s ease;
@@ -340,7 +340,7 @@ custom_css: |
                         </div>
                         <div class="roulette-right w-full md:w-1/2 flex flex-col">
                             <textarea class="w-full border border-gray-300 rounded-md px-3 py-2 items-textarea bg-gray-50 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white flex-1" 
-                                    placeholder="項目（1行につき1つ）" style="min-height: 260px;"></textarea>
+                                    placeholder="項目（1行につき1つ）" rows="8"></textarea>
                         </div>
                     </div>
                 </div>
