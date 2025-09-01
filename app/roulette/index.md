@@ -247,10 +247,7 @@ custom_css: |
     }
     
     
-    /* 最初のカードは削除ボタン非表示 */
-    .roulette-card[data-set-id="1"] .delete-btn {
-        display: none;
-    }
+    /* 削除ボタンの表示はJSで制御（セット数が1のときのみ非表示） */
     
     .view-mode .roulette-right,
     .view-mode .delete-btn {
@@ -426,6 +423,7 @@ class RouletteManager {
         
         this.sets.push(setData);
         this.renderAllSets();
+        this.updateDeleteButtonsState();
         this.saveToStorage();
     }
 
@@ -454,6 +452,7 @@ class RouletteManager {
         this.observeSet(setElement);
         
         this.saveToStorage();
+        this.updateDeleteButtonsState();
         
         // 現在位置からスムーズスクロール
         setTimeout(() => {
@@ -481,6 +480,7 @@ class RouletteManager {
         this.applyLayoutClasses();
         this.observeAll();
         this.resizeAllCanvases();
+        this.updateDeleteButtonsState();
     }
 
     renderSet(setData) {
@@ -491,6 +491,15 @@ class RouletteManager {
         this.updateCanvasSize(canvas);
         this.drawRoulette(canvas, setData.items);
         this.observeSet(setElement);
+        this.updateDeleteButtonsState();
+    }
+
+    updateDeleteButtonsState() {
+        const showByCount = this.sets.length > 1;
+        const show = showByCount && !this.isViewMode; // ビューモードは常に非表示
+        document.querySelectorAll('.roulette-card .delete-btn').forEach(btn => {
+            btn.style.display = show ? 'block' : 'none';
+        });
     }
 
     createSetElement(setData) {
@@ -566,17 +575,11 @@ class RouletteManager {
             this.saveToStorage();
         });
 
-        // 削除ボタンの表示制御と処理
+        // 削除ボタンのクリックハンドラ（可視状態は別途一括で制御）
         if (deleteBtn) {
-            // 最初のルーレット（ID=1）または最後の1つの場合は削除ボタンを非表示
-            if (setData.id === 1 || this.sets.length <= 1) {
-                deleteBtn.style.display = 'none';
-            } else {
-                deleteBtn.style.display = 'block';
-                deleteBtn.addEventListener('click', () => {
-                    this.deleteSet(setData.id);
-                });
-            }
+            deleteBtn.addEventListener('click', () => {
+                this.deleteSet(setData.id);
+            });
         }
 
         // タイトル変更
@@ -759,6 +762,7 @@ class RouletteManager {
         this.saveToStorage();
         this.applyLayoutClasses();
         this.unobserveSet(setId);
+        this.updateDeleteButtonsState();
     }
 
     saveToStorage() {
@@ -809,6 +813,7 @@ class RouletteManager {
         this.saveViewModeState();
         this.applyLayoutClasses();
         this.observeAll();
+        this.updateDeleteButtonsState();
     }
 
     observeSet(setElement) {
