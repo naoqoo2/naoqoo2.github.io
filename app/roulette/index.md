@@ -363,6 +363,18 @@ class RouletteManager {
         this.init();
     }
 
+    getRandomDefaultText() {
+        const patterns = [
+            // 通常（均等）
+            '項目1\n項目2\n項目3\n項目4\n項目5\n項目6',
+            // 改行重み付（空行で直前項目の重み+1）
+            'はずれ\n\n\nあたり',
+            // 数値重み付（末尾 *N）
+            'たわし*19\nパジェロ'
+        ];
+        return patterns[Math.floor(Math.random() * patterns.length)];
+    }
+
     init() {
         this.loadFromStorage();
         this.setupEventListeners();
@@ -416,7 +428,7 @@ class RouletteManager {
         
         const setData = {
             id: this.nextId++,
-            items: ['項目1', '項目2', '項目3', '項目4', '項目5', '項目6'],
+            text: this.getRandomDefaultText(),
             title: 'ルーレット1',
             isSpinning: false,
             result: null,
@@ -432,7 +444,7 @@ class RouletteManager {
     addSet() {
         const setData = {
             id: this.nextId++,
-            items: ['項目1', '項目2', '項目3', '項目4', '項目5', '項目6'],
+            text: this.getRandomDefaultText(),
             title: `ルーレット${this.sets.length + 1}`,
             isSpinning: false,
             result: null,
@@ -450,7 +462,7 @@ class RouletteManager {
         // Canvas初期化
         const canvas = setElement.querySelector('.roulette-canvas');
         this.updateCanvasSize(canvas);
-        this.drawRoulette(canvas, setData.items);
+        this.drawRoulette(canvas, setElement);
         this.observeSet(setElement);
         
         this.saveToStorage();
@@ -491,7 +503,7 @@ class RouletteManager {
         container.appendChild(setElement);
         const canvas = setElement.querySelector('.roulette-canvas');
         this.updateCanvasSize(canvas);
-        this.drawRoulette(canvas, setData.items);
+        this.drawRoulette(canvas, setElement);
         this.observeSet(setElement);
         this.updateDeleteButtonsState();
     }
@@ -511,7 +523,7 @@ class RouletteManager {
 
         // Fill fields
         node.querySelector('.roulette-title').value = setData.title;
-        node.querySelector('.items-textarea').value = setData.items.join('\n');
+        node.querySelector('.items-textarea').value = (typeof setData.text === 'string') ? setData.text : '';
         const ro = node.querySelector('.result-overlay');
         ro.textContent = setData.result || '';
 
@@ -529,6 +541,41 @@ class RouletteManager {
 
         this.setupSetEventListeners(node, setData);
         return node;
+    }
+
+    getWeightedItems(setElement) {
+        try {
+            const ta = setElement?.querySelector?.('.items-textarea');
+            const text = (ta && typeof ta.value === 'string') ? ta.value : '';
+            const lines = text.split(/\n/);
+            // 末尾の空行は無視（ユーザーの意図しない改行を除外）
+            while (lines.length > 0 && lines[lines.length - 1].trim().length === 0) {
+                lines.pop();
+            }
+            const result = [];
+            let last = null;
+            for (const raw of lines) {
+                const line = raw.trim();
+                if (line.length === 0) {
+                    if (last) last.weight += 1; // 空行は直前の項目の重みを増やす
+                } else {
+                    // 明示重み（末尾 *N）に対応。例: 赤*3 → label=赤, weight=3
+                    let label = line;
+                    let weight = 1;
+                    const m = line.match(/^(.*?)\s*\*\s*(\d+)$/);
+                    if (m) {
+                        label = m[1].trim();
+                        const n = parseInt(m[2], 10);
+                        if (!isNaN(n) && n > 0) weight = n;
+                    }
+                    last = { label, weight };
+                    result.push(last);
+                }
+            }
+            return result;
+        } catch (_) {
+            return [];
+        }
     }
 
     updateCanvasSize(canvas) {
@@ -554,14 +601,13 @@ class RouletteManager {
             if (!el) return;
             const canvas = el.querySelector('.roulette-canvas');
             this.updateCanvasSize(canvas);
-            this.drawRoulette(canvas, setData.items);
+            this.drawRoulette(canvas, el);
         });
     }
 
     setupSetEventListeners(setElement, setData) {
         const canvas = setElement.querySelector('.roulette-canvas');
         const textarea = setElement.querySelector('.items-textarea');
-        if (textarea) textarea.placeholder = '項目（1行につき1つ）';
         const deleteBtn = setElement.querySelector('.delete-btn');
         const titleInput = setElement.querySelector('.roulette-title');
 
@@ -571,9 +617,8 @@ class RouletteManager {
 
         // テキストエリア変更
         textarea.addEventListener('input', () => {
-            const items = textarea.value.split('\n').filter(item => item.trim());
-            setData.items = items.length > 0 ? items : ['項目1'];
-            this.drawRoulette(canvas, setData.items);
+            setData.text = textarea.value;
+            this.drawRoulette(canvas, setElement);
             this.saveToStorage();
         });
 
@@ -593,7 +638,7 @@ class RouletteManager {
         // 項目は常時表示のためトグルなし
     }
 
-    drawRoulette(canvas, items) {
+    drawRoulette(canvas, setElement) {
         const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
@@ -601,9 +646,9 @@ class RouletteManager {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (items.length === 0) return;
-
-        const anglePerItem = (2 * Math.PI) / items.length;
+        const weighted = this.getWeightedItems(setElement);
+        if (weighted.length === 0) return;
+        const totalWeight = weighted.reduce((s, it) => s + it.weight, 0);
         const colors = [
             '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
             '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
@@ -613,22 +658,27 @@ class RouletteManager {
         // フォントサイズをキャンバスサイズに応じて可変（テキストエリアと共通化）
         const { dynamicFont, lineHeight } = this.computeFontMetrics(canvas);
 
-        items.forEach((item, index) => {
-            const startAngle = index * anglePerItem - Math.PI / 2;
-            const endAngle = (index + 1) * anglePerItem - Math.PI / 2;
+        let currentAngle = -Math.PI / 2;
+        weighted.forEach(({ label, weight }, index) => {
+            const angle = (2 * Math.PI) * (weight / totalWeight);
+            const startAngle = currentAngle;
+            const endAngle = currentAngle + angle;
 
             // セクション描画
             ctx.beginPath();
             ctx.moveTo(centerX, centerY);
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
             ctx.closePath();
-            ctx.fillStyle = colors[index % colors.length];
+            // 1個目と2個目の色を入れ替える
+            let ci = index % colors.length;
+            if (ci === 0) ci = 1; else if (ci === 1) ci = 0;
+            ctx.fillStyle = colors[ci];
             ctx.fill();
 
             // テキスト描画
             ctx.save();
             ctx.translate(centerX, centerY);
-            ctx.rotate(startAngle + anglePerItem / 2);
+            ctx.rotate(startAngle + angle / 2);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = '#333';
@@ -636,8 +686,9 @@ class RouletteManager {
             
             const textRadius = radius * 0.7;
             const maxWidth = radius * 0.6;
-            this.drawTextWithWrap(ctx, item, textRadius, 0, maxWidth, dynamicFont, lineHeight);
+            this.drawTextWithWrap(ctx, label, textRadius, 0, maxWidth, dynamicFont, lineHeight);
             ctx.restore();
+            currentAngle = endAngle;
         });
     }
 
@@ -698,6 +749,11 @@ class RouletteManager {
 
     spinRoulette(setData, canvas, setElement) {
         if (setData.isSpinning) return;
+        // 事前に重みを確認（空ルーレットなら何もしない）
+        const weightedBefore = this.getWeightedItems(setElement);
+        if (!weightedBefore || weightedBefore.length === 0) {
+            return;
+        }
 
         setData.isSpinning = true;
         setData.result = null;
@@ -714,15 +770,32 @@ class RouletteManager {
         canvas.style.transform = `rotate(${rotation}deg)`;
 
         setTimeout(() => {
-            // 結果計算
-            const normalizedRotation = rotation % 360;
-            const sectorAngle = 360 / setData.items.length;
-            const selectedIndex = Math.floor((360 - normalizedRotation + sectorAngle / 2) / sectorAngle) % setData.items.length;
-            
-            setData.result = setData.items[selectedIndex];
+            // 結果計算（重み付き）
+            const normalizedRotation = rotation % 360; // 0..359
+            const weighted = weightedBefore; // スタート時の定義で固定
+            const totalWeight = weighted.reduce((s, it) => s + it.weight, 0) || 1;
+            // ポインタは常に上(-90deg)。回転が時計回りRのとき、元の座標系でのポインタ角は -90 - R
+            const pointerAngle = (((-90 - normalizedRotation) % 360) + 360) % 360; // 0..359
+            let selectedIndex = 0;
+            let startDeg = -90;
+            for (let i = 0; i < weighted.length; i++) {
+                const angleDeg = 360 * (weighted[i].weight / totalWeight);
+                const endDeg = startDeg + angleDeg;
+                // 正規化して範囲チェック（エッジでのブレは次の区間に含めない）
+                const s = ((startDeg % 360) + 360) % 360;
+                const e = ((endDeg % 360) + 360) % 360;
+                const inRange = e > s
+                  ? (pointerAngle >= s && pointerAngle < e)
+                  : (pointerAngle >= s || pointerAngle < e);
+                if (inRange) { selectedIndex = i; break; }
+                startDeg = endDeg;
+            }
+            setData.result = weighted[selectedIndex]?.label || '';
             setData.isSpinning = false;
             
-            this.showResult(setElement, setData.result);
+            if (setData.result) {
+                this.showResult(setElement, setData.result);
+            }
             this.saveToStorage();
         }, 3000);
 
@@ -768,28 +841,36 @@ class RouletteManager {
     }
 
     saveToStorage() {
-        const saveData = {
-            sets: this.sets.map(set => ({
-                ...set,
-                isSpinning: false
-            })),
-            nextId: this.nextId
-        };
+        // DOMのテキストエリア内容を優先して保存（空行も含めて保持）
+        const setsForSave = this.sets.map(set => {
+            const copy = { ...set, isSpinning: false };
+            const el = document.querySelector(`[data-set-id="${set.id}"]`);
+            const ta = el ? el.querySelector('.items-textarea') : null;
+            if (ta && typeof ta.value === 'string') {
+                copy.text = ta.value;
+            } else if (typeof copy.text !== 'string') {
+                // textが未設定の古いデータの場合、itemsから生成（今後は保存時にtextが入る）
+                copy.text = Array.isArray(copy.items) ? copy.items.join('\n') : '';
+            }
+            // itemsは保存しない（将来はtextのみをソースオブトゥルースに）
+            delete copy.items;
+            return copy;
+        });
+        const saveData = { sets: setsForSave, nextId: this.nextId };
         localStorage.setItem('rouletteData', JSON.stringify(saveData));
     }
 
     loadFromStorage() {
         const saved = localStorage.getItem('rouletteData');
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                this.sets = data.sets || [];
-                this.nextId = data.nextId || 1;
-            } catch (e) {
-                console.error('Failed to load saved data:', e);
-                this.sets = [];
-                this.nextId = 1;
-            }
+        if (!saved) return;
+        try {
+            const data = JSON.parse(saved);
+            this.sets = data.sets || [];
+            this.nextId = data.nextId || 1;
+        } catch (e) {
+            console.error('Failed to load saved data:', e);
+            this.sets = [];
+            this.nextId = 1;
         }
     }
 
@@ -829,7 +910,7 @@ class RouletteManager {
         const ro = new ResizeObserver(() => {
             this.updateCanvasSize(canvas);
             const setData = this.sets.find(s => s.id === id);
-            if (setData) this.drawRoulette(canvas, setData.items);
+            if (setData) this.drawRoulette(canvas, setElement);
         });
         ro.observe(leftCol);
         this._resizeObservers.set(id, ro);
