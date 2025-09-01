@@ -2,343 +2,95 @@
 layout: app
 title: "Webルーレット"
 app_name: "Webルーレット"
-description: "項目からランダムに選択するオンラインルーレットツール"
+description: "入力した項目からランダムに即決定できる無料のオンラインルーレット。複数ルーレット管理、編集/ビュー切替、スマホ対応。イベントや当番決めに最適。"
+include_tailwind: true
 custom_css: |
-    @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css');
-    @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css');
-    
-    .roulette-app {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0.5rem;
-    }
-    
-    .header-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .header-controls {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .floating-buttons {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        z-index: 1000;
-    }
-
-    .btn-spin-all {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 0.75rem 1.5rem;
-        height: 60px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
-        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-        white-space: nowrap;
-    }
-
-    .btn-spin-all:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-spin-all:active {
-        transform: translateY(0);
-    }
-    
-    .mode-tabs {
-        display: inline-flex;
-        background: #e9ecef;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
-        padding: 2px;
-        overflow: hidden;
-    }
-    
-    .tab-button {
-        background: none;
-        border: none;
-        padding: 0.375rem 0.875rem;
-        border-radius: 4px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.15s ease-in-out;
-        color: #6c757d;
-        width: 100px;
-        text-align: center;
-        position: relative;
-        box-sizing: border-box;
-    }
-    
-    .tab-button:hover:not(.active) {
-        background: rgba(0, 0, 0, 0.04);
-        color: #495057;
-    }
-    
-    .tab-button.active {
-        background: #6c757d;
-        color: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    }
-    
-    .header-title {
-        font-size: 1.75rem;
-        font-weight: 600;
-        color: #495057;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .roulette-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        justify-items: center;
-    }
-    
-    @media (min-width: 1200px) {
-        .roulette-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    /* 奇数時の最後の要素を自動的に中央配置（CSS Grid の自動判定） */
-    .roulette-card:nth-last-child(1):nth-child(odd) {
-        grid-column: 1 / -1;
-        justify-self: center;
-    }
-    
-    /* モバイル対応 */
-    @media (max-width: 768px) {
-        .roulette-grid {
-            grid-template-columns: 1fr;
-            gap: 0.5rem;
-        }
-        
-        .roulette-grid.odd-count .roulette-card:last-child {
-            grid-column: 1;
-        }
-        
-        .roulette-card {
-            width: 100%;
-        }
-
-        .header-section {
-            flex-direction: row;
-            gap: 0.5rem;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .header-controls {
-            justify-content: flex-end;
-        }
-
-        .floating-buttons {
-            bottom: 1rem;
-            right: 1rem;
-        }
-
-        .tab-button {
-            padding: 0.3rem 0.5rem;
-            width: 80px;
-            font-size: 0.8rem;
-        }
-
-        .btn-spin-all {
-            padding: 0.75rem;
-            border-radius: 50%;
-            width: 60px;
-        }
-
-        .btn-spin-all .spin-text {
-            display: none;
-        }
-
-        
-        .card-body {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        
-        .roulette-canvas {
-            width: 220px;
-            height: 220px;
-        }
-        
-        .items-textarea {
-            min-height: 120px;
-        }
-        
-        .header-section {
-            flex-direction: row;
-            gap: 0.5rem;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 0.25rem;
-        }
-        
-        .header-title {
-            font-size: 1.1rem;
-        }
-        
-        .mode-tabs {
-            padding: 3px;
-            gap: 1px;
-        }
-        
-        .tab-button {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.75rem;
-            min-width: 70px;
-        }
-        
-        .fab-add {
-            border-radius: 50%;
-            padding: 0;
-            width: 60px;
-        }
-        
-        .fab-add .add-text {
-            display: none;
-        }
-    }
-    
-    .roulette-card {
-        background: transparent;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 0 1rem;
-        overflow: hidden;
-    }
-    
-    
-    .card-header {
-        background: transparent;
-        padding: 0.5rem 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .header-actions {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }
-    
-    .roulette-title {
-        border: none;
-        background: transparent;
-        font-weight: 600;
-        font-size: 1.1rem;
-        color: #495057;
-        flex: 1;
-        padding: 0.25rem;
-        max-width: 300px;
-    }
-    
-    .roulette-title:focus {
-        outline: none;
-        border: 2px solid #0d6efd;
-        background: white;
-        border-radius: 4px;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .delete-btn {
-        background: none;
-        border: none;
-        color: #6c757d;
-        padding: 0.375rem;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        line-height: 1;
-    }
-    
-    .delete-btn:hover {
-        color: #dc3545;
-        transform: scale(1.2);
-    }
-    
-    .card-body {
-        padding: 0.5rem 0;
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 1rem;
-        align-items: start;
-    }
-    
-    @media (max-width: 768px) {
-        .card-body {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto auto;
-            gap: 1rem;
-            text-align: center;
-        }
-    }
-    
-    .roulette-left {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .roulette-display {
-        position: relative;
-        text-align: center;
-    }
-    
+    /* ルーレット固有のスタイル */
     .roulette-canvas {
-        cursor: pointer;
         transition: transform 3s cubic-bezier(0.6, 0, 0, 1);
-        width: 260px;
-        height: 260px;
-        border-radius: 50%;
-        border: 3px solid #dee2e6;
     }
     
+    /* スマホ時の調整（サイズ固定は撤去、テキストのみ制御） */
     @media (max-width: 768px) {
-        .roulette-canvas {
-            width: 220px;
-            height: 220px;
+        .spin-text, .add-text {
+            display: none;
+        }
+        
+        /* スマホ時はボタンを丸型にしてアイコンのみ表示 */
+        #spinAll, #addRoulette {
+            width: 60px !important;
+            height: 60px !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            justify-content: center !important;
+        }
+        
+        #spinAll i, #addRoulette i {
+            margin: 0 !important;
         }
     }
-    
-    .roulette-pin {
-        position: absolute;
-        top: -8px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 18px;
-        color: #495057;
-        z-index: 10;
+
+    /* ビューモード・編集モード用スタイル */
+    .view-mode .roulette-right,
+    .view-mode .delete-btn {
+        display: none !important;
     }
+
+    /* 最終行を中央寄せするため、ビューモードはFlex + 固定比率基準 */
+    .view-mode #rouletteSets {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; /* 最終行中央寄せ */
+        gap: 0.75rem; /* Tailwind gap-3 相当 */
+    }
+    .view-mode #rouletteSets > .roulette-card {
+        flex: 0 1 100%;
+        max-width: 100%;
+    }
+    @media (min-width: 640px) { /* sm */
+        .view-mode #rouletteSets > .roulette-card { flex-basis: calc(50% - 0.75rem); max-width: calc(50% - 0.75rem); }
+    }
+    @media (min-width: 768px) { /* md */
+        .view-mode #rouletteSets > .roulette-card { flex-basis: calc(33.333% - 0.75rem); max-width: calc(33.333% - 0.75rem); }
+    }
+    @media (min-width: 1024px) { /* lg */
+        .view-mode #rouletteSets > .roulette-card { flex-basis: calc(25% - 0.75rem); max-width: calc(25% - 0.75rem); }
+    }
+
+    /* 編集モードも中央寄せ（md以上は2列を維持） */
+    .edit-mode #rouletteSets {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    .edit-mode #rouletteSets > .roulette-card {
+        flex: 0 1 100%;
+        max-width: 100%;
+    }
+    /* ビューモードが2列の幅帯（sm: 640px〜md未満）では、編集モードは縦積み */
+    @media (min-width: 640px) and (max-width: 767.98px) {
+        .edit-mode .roulette-card .md\:flex-row { flex-direction: column !important; }
+        .edit-mode .roulette-card .md\:flex-row > * { width: 100% !important; }
+        .edit-mode .roulette-right { flex: initial; max-width: none; }
+    }
+
+    /* md以上（ビューが3〜4列の帯域）では、編集モードは横並びのまま */
+    @media (min-width: 768px) { /* md */
+        .edit-mode #rouletteSets > .roulette-card { flex-basis: calc(50% - 0.75rem); max-width: calc(50% - 0.75rem); }
+        /* 左を可変、右パネルは最大360pxで横並び */
+        .edit-mode .roulette-card .md\:flex-row > :first-child { flex: 1 1 auto; width: auto; }
+        .edit-mode .roulette-right { flex: 0 1 360px; max-width: 360px; }
+    }
+
+    /* SP（1列の編集モード）でルーレットを中央寄せ */
+    @media (max-width: 767.98px) {
+        .edit-mode .roulette-canvas { display: block; margin-left: auto; margin-right: auto; }
+        /* 念のため親のflexボックス幅を広げて中央寄せを効かせる */
+        .edit-mode .roulette-card .relative.flex { width: 100%; justify-content: center; }
+    }
+
+    /* 以前のレイアウト強制は撤去し、Tailwindユーティリティで制御 */
     
     .result-overlay {
         position: absolute;
@@ -412,8 +164,8 @@ custom_css: |
         border: 1px solid #ced4da;
         border-radius: 6px;
         padding: 0.5rem;
-        font-size: 0.875rem;
-        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 14px; /* JSでキャンバスと同じサイズに同期 */
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'YuGothic', 'Meiryo', sans-serif;
         resize: vertical;
         transition: border-color 0.2s ease;
         background: #f8f9fa;
@@ -517,9 +269,14 @@ custom_css: |
     }
     
     .view-mode .roulette-right,
-    .view-mode .fab-add,
-    .view-mode .delete-btn {
+    .view-mode .delete-btn,
+    .view-mode #addRoulette {
         display: none;
+    }
+    
+    /* ビューモードでも全てスピンボタンは表示 */
+    .view-mode #spinAll {
+        display: flex !important;
     }
     
     .view-mode .card-header {
@@ -531,16 +288,22 @@ custom_css: |
     }
     
     .view-mode .roulette-card {
-        border: none;
-        background: transparent;
         padding: 0.25rem;
     }
     
-    .view-mode .card-body {
-        grid-template-columns: 1fr;
-        justify-items: center;
-        padding: 0;
+    /* ビューモード時の枠線とスタイルを削除 */
+    .view-mode .roulette-card .bg-white {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
     }
+    
+    /* ビューモード時のタイトル下の罫線も削除 */
+    .view-mode .border-b {
+        border-bottom: none !important;
+    }
+    
+    /* ビューモードの見た目調整（表示制御のみ維持） */
     
     /* ビューモード時のレスポンシブ対応 */
     @media (max-width: 1200px) and (min-width: 901px) {
@@ -563,58 +326,61 @@ custom_css: |
     
 ---
 
-<div class="roulette-app">
-    <div class="header-section">
-        <h1 class="header-title">
+<div class="roulette-app max-w-screen-2xl mx-auto px-3" style="visibility:hidden;">
+    <div class="flex justify-between items-center pb-2 mb-3">
+        <h1 class="text-xl font-semibold text-gray-600 m-0">
             Webルーレット
         </h1>
-        <div class="header-controls">
-            <div class="mode-tabs">
-                <button id="viewTab" class="tab-button" data-mode="view">
-                    <i class="fas fa-eye"></i> ビュー
-                </button>
-                <button id="editTab" class="tab-button active" data-mode="edit">
-                    <i class="fas fa-edit"></i> 編集
-                </button>
-            </div>
+        <div class="bg-gray-200 border border-gray-400 rounded-lg p-1 flex">
+            <button id="viewTab" class="px-4 py-2 rounded-md text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-100" data-mode="view">
+                <i class="fas fa-eye"></i> ビュー
+            </button>
+            <button id="editTab" class="px-4 py-2 rounded-md text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-100" data-mode="edit">
+                <i class="fas fa-edit"></i> 編集
+            </button>
         </div>
     </div>
     
-    <div id="rouletteSets" class="roulette-grid">
+    <!-- 初期クラスは最小限。JSでモード別にTailwindを付与 -->
+    <div id="rouletteSets" class="mb-3">
         <!-- ルーレットが動的に追加されます -->
     </div>
     
     <!-- Template: ルーレットカード（複製用） -->
     <template id="roulette-template">
         <div class="roulette-card">
-            <div class="card-header">
-                <input type="text" class="roulette-title" value="" maxlength="30" placeholder="ルーレット名">
-                <div class="header-actions">
-                    <button class="delete-btn" title="削除">×</button>
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm h-full">
+                <div class="flex justify-between items-center py-2 px-4 border-b border-gray-200">
+                    <input type="text" class="flex-1 border-0 bg-transparent font-bold text-gray-700 roulette-title max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white rounded px-2 py-1" 
+                           value="" maxlength="30" placeholder="ルーレット名">
+                    <button class="delete-btn text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 transition-all" title="削除">×</button>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="roulette-left">
-                    <div class="roulette-display">
-                        <div class="roulette-pin">▼</div>
-                        <canvas class="roulette-canvas" width="280" height="280"></canvas>
-                        <div class="result-overlay"></div>
+                <div class="p-4">
+                    <div class="flex flex-col md:flex-row w-full gap-4 md:gap-6 items-start">
+                        <div class="flex flex-col items-center justify-center w-full md:w-1/2">
+                            <div class="relative flex justify-center">
+                                <div class="roulette-pin absolute text-gray-700 text-lg z-10" style="top: -8px; left: 50%; transform: translateX(-50%);">▼</div>
+                                <canvas class="roulette-canvas cursor-pointer rounded-full border-4 border-gray-300" width="260" height="260"></canvas>
+                                <div class="result-overlay absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                            </div>
+                        </div>
+                        <div class="roulette-right w-full md:w-1/2 flex flex-col">
+                            <textarea class="w-full border border-gray-300 rounded-md px-3 py-2 items-textarea bg-gray-50 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white flex-1" 
+                                    placeholder="項目（1行につき1つ）" style="min-height: 260px;"></textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="roulette-right">
-                    <textarea class="items-textarea" placeholder="項目（1行につき1つ）"></textarea>
                 </div>
             </div>
         </div>
     </template>
     
-    <div class="floating-buttons">
-        <button id="spinAll" class="btn-spin-all">
-            <i class="fas fa-sync-alt"></i>
+    <div class="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+        <button id="spinAll" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 flex items-center gap-2 text-lg">
+            <i class="fas fa-sync-alt text-xl"></i>
             <span class="spin-text">全てスピン！</span>
         </button>
-        <button id="addRoulette" class="fab-add" title="ルーレット追加">
-            <span style="transform: translateY(-2px); display: inline-block;">+</span>
+        <button id="addRoulette" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 flex items-center gap-2 text-lg" title="ルーレット追加">
+            <i class="fas fa-plus text-xl"></i>
             <span class="add-text">ルーレットを追加</span>
         </button>
     </div>
@@ -626,20 +392,31 @@ class RouletteManager {
         this.sets = [];
         this.nextId = 1;
         this.isViewMode = false;
+        this._resizeObservers = new Map();
         this.init();
     }
 
     init() {
         this.loadFromStorage();
-        this.loadViewModeState();
         this.setupEventListeners();
-        
+
+        // 可能な限り早くモードを適用（チラつき軽減）
+        this.bootstrapViewMode();
+
         // 最低1つのルーレットを保証
         if (this.sets.length === 0) {
             this.addFirstSet();
         } else {
             this.renderAllSets();
         }
+
+        // 初期レイアウト調整後に表示
+        requestAnimationFrame(() => {
+            this.applyLayoutClasses();
+            this.resizeAllCanvases();
+            const root = document.querySelector('.roulette-app');
+            if (root) root.style.visibility = 'visible';
+        });
     }
 
     setupEventListeners() {
@@ -658,7 +435,10 @@ class RouletteManager {
         document.getElementById('addRoulette').addEventListener('click', () => {
             this.addSet();
         });
-        window.addEventListener('resize', () => this.resizeAllCanvases());
+        window.addEventListener('resize', () => {
+            this.applyLayoutClasses();
+            this.resizeAllCanvases();
+        });
     }
 
     addFirstSet() {
@@ -695,11 +475,14 @@ class RouletteManager {
         const container = document.getElementById('rouletteSets');
         const setElement = this.createSetElement(setData);
         container.appendChild(setElement);
+        this.applyLayoutClasses();
         
         // Canvas初期化
         const canvas = setElement.querySelector('.roulette-canvas');
         this.updateCanvasSize(canvas);
         this.drawRoulette(canvas, setData.items);
+        this.syncTextareaFontSize(setElement, canvas);
+        this.observeSet(setElement);
         
         this.saveToStorage();
         
@@ -723,9 +506,11 @@ class RouletteManager {
     renderAllSets() {
         const container = document.getElementById('rouletteSets');
         container.innerHTML = '';
-        container.className = 'roulette-grid';
-        
+        // レイアウトはモードに応じてTailwindクラスで適用
+
         this.sets.forEach(setData => { this.renderSet(setData); });
+        this.applyLayoutClasses();
+        this.observeAll();
         this.resizeAllCanvases();
     }
 
@@ -736,6 +521,8 @@ class RouletteManager {
         const canvas = setElement.querySelector('.roulette-canvas');
         this.updateCanvasSize(canvas);
         this.drawRoulette(canvas, setData.items);
+        this.syncTextareaFontSize(setElement, canvas);
+        this.observeSet(setElement);
     }
 
     createSetElement(setData) {
@@ -751,17 +538,43 @@ class RouletteManager {
 
         // 回転状態の表示は結果オーバーレイで管理
 
+        // 追加前にモードに応じたレイアウトクラスを整える（初期チラつき対策）
+        try {
+            const row = node.querySelector('.md\\:flex-row') || node.querySelector('.flex');
+            if (row && row.firstElementChild) {
+                const left = row.firstElementChild;
+                if (this.isViewMode) {
+                    left.classList.add('w-full');
+                    left.classList.remove('md:w-1/2');
+                } else {
+                    left.classList.remove('md:w-1/2');
+                    if (window.innerWidth < 768) {
+                        left.classList.add('w-full');
+                    } else {
+                        left.classList.remove('w-full');
+                    }
+                }
+            }
+        } catch (e) {}
+
         this.setupSetEventListeners(node, setData);
         return node;
     }
 
     updateCanvasSize(canvas) {
-        const rect = canvas.getBoundingClientRect();
-        // SPでは横いっぱい、PC/Tabletはカード内幅で自動。範囲を制限。
-        const target = Math.max(220, Math.min(360, Math.round(rect.width)));
-        if (canvas.width !== target) {
-            canvas.width = target;
-            canvas.height = target;
+        // 左カラム（canvasの親の親）幅に応じて可変
+        let col = null;
+        if (canvas && canvas.parentElement && canvas.parentElement.parentElement) {
+            col = canvas.parentElement.parentElement;
+        }
+        const available = col ? Math.floor(col.getBoundingClientRect().width) : (canvas.clientWidth || 260);
+        const desired = Math.floor(available - 24);
+        const size = Math.max(220, Math.min(desired, 560));
+        if (canvas.width !== size || canvas.height !== size) {
+            canvas.width = size;
+            canvas.height = size;
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
         }
     }
 
@@ -772,6 +585,7 @@ class RouletteManager {
             const canvas = el.querySelector('.roulette-canvas');
             this.updateCanvasSize(canvas);
             this.drawRoulette(canvas, setData.items);
+            this.syncTextareaFontSize(el, canvas);
         });
     }
 
@@ -833,6 +647,9 @@ class RouletteManager {
             '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'
         ];
 
+        // フォントサイズをキャンバスサイズに応じて可変（テキストエリアと共通化）
+        const { dynamicFont, lineHeight } = this.computeFontMetrics(canvas);
+
         items.forEach((item, index) => {
             const startAngle = index * anglePerItem - Math.PI / 2;
             const endAngle = (index + 1) * anglePerItem - Math.PI / 2;
@@ -852,43 +669,74 @@ class RouletteManager {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = '#333';
-            ctx.font = 'bold 13px "Segoe UI", sans-serif';
+            ctx.font = `bold ${dynamicFont}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'YuGothic', 'Meiryo', sans-serif`;
             
             const textRadius = radius * 0.7;
             const maxWidth = radius * 0.6;
-            this.drawTextWithWrap(ctx, item, textRadius, 0, maxWidth);
+            this.drawTextWithWrap(ctx, item, textRadius, 0, maxWidth, dynamicFont, lineHeight);
             ctx.restore();
         });
     }
 
-    drawTextWithWrap(ctx, text, x, y, maxWidth) {
-        const words = text.split('');
-        const lineHeight = 16;
-        
-        // 6文字程度を目安に改行
-        if (text.length <= 6) {
-            ctx.fillText(text, x, y);
-            return;
-        }
-        
-        // 2行に分割して表示
-        const midPoint = Math.ceil(text.length / 2);
-        let firstLine = text.substring(0, midPoint);
-        let secondLine = text.substring(midPoint);
-        
-        // 単語境界で調整（ひらがな・カタカナ・漢字の場合は文字単位）
-        if (text.length > 6) {
-            firstLine = text.substring(0, Math.min(6, midPoint));
-            secondLine = text.substring(firstLine.length);
-            
-            // 2行目が長すぎる場合は省略
-            if (secondLine.length > 6) {
-                secondLine = secondLine.substring(0, 6) + '...';
+    drawTextWithWrap(ctx, text, x, y, maxWidth, fontSize, lineHeight) {
+        // 文字単位で改行しつつ最大幅に収める（最大3行、超過は省略）
+        const chars = Array.from(text);
+        const lines = [];
+        let current = '';
+
+        const fits = (s) => ctx.measureText(s).width <= maxWidth;
+
+        for (const ch of chars) {
+            if (current === '') {
+                current = ch;
+                continue;
+            }
+            const next = current + ch;
+            if (fits(next)) {
+                current = next;
+            } else {
+                lines.push(current);
+                current = ch;
+                if (lines.length >= 2) { // これ以上増える場合は省略処理に回す
+                    break;
+                }
             }
         }
-        
-        ctx.fillText(firstLine, x, y - lineHeight / 2);
-        ctx.fillText(secondLine, x, y + lineHeight / 2);
+        if (current) lines.push(current);
+
+        // 3行を超える場合は3行目を省略付きで調整
+        if (lines.length > 3) {
+            lines.length = 3;
+        }
+        if (lines.length === 3) {
+            let last = lines[2];
+            while (!fits(last + '…') && last.length > 0) {
+                last = last.slice(0, -1);
+            }
+            lines[2] = last + (last ? '…' : '');
+        }
+
+        // 垂直中央に配置
+        const totalHeight = lineHeight * (lines.length - 1);
+        lines.forEach((line, idx) => {
+            const yOffset = y - totalHeight / 2 + idx * lineHeight;
+            ctx.fillText(line, x, yOffset);
+        });
+    }
+
+    computeFontMetrics(canvas) {
+        // タブレット・PCではより大きく、SPでも見やすい下限に
+        const dynamicFont = Math.max(16, Math.min(28, Math.round(canvas.width * 0.05)));
+        const lineHeight = Math.round(dynamicFont * 1.2);
+        return { dynamicFont, lineHeight };
+    }
+
+    syncTextareaFontSize(setElement, canvas) {
+        if (!canvas) return;
+        const textarea = setElement.querySelector('.items-textarea');
+        if (!textarea) return;
+        const { dynamicFont } = this.computeFontMetrics(canvas);
+        textarea.style.fontSize = dynamicFont + 'px';
     }
 
     spinRoulette(setData, canvas, setElement) {
@@ -957,6 +805,8 @@ class RouletteManager {
         // データからも削除
         this.sets = this.sets.filter(set => set.id !== setId);
         this.saveToStorage();
+        this.applyLayoutClasses();
+        this.unobserveSet(setId);
     }
 
     saveToStorage() {
@@ -993,15 +843,83 @@ class RouletteManager {
         
         if (this.isViewMode) {
             app.classList.add('view-mode');
-            viewTab.classList.add('active');
-            editTab.classList.remove('active');
+            app.classList.remove('edit-mode');
+            viewTab.classList.add('bg-gray-600', 'text-white', 'shadow-md');
+            viewTab.classList.remove('text-gray-600');
+            editTab.classList.remove('bg-gray-600', 'text-white', 'shadow-md');
+            editTab.classList.add('text-gray-600');
         } else {
             app.classList.remove('view-mode');
-            viewTab.classList.remove('active');
-            editTab.classList.add('active');
+            app.classList.add('edit-mode');
+            editTab.classList.add('bg-gray-600', 'text-white', 'shadow-md');
+            editTab.classList.remove('text-gray-600');
+            viewTab.classList.remove('bg-gray-600', 'text-white', 'shadow-md');
+            viewTab.classList.add('text-gray-600');
         }
         
         this.saveViewModeState();
+        this.applyLayoutClasses();
+        this.observeAll();
+    }
+
+    observeSet(setElement) {
+        const id = parseInt(setElement.dataset.setId, 10);
+        this.unobserveSet(id);
+        const row = setElement.querySelector('.flex.flex-col.md\\:flex-row');
+        if (!row || !row.firstElementChild) return;
+        const leftCol = row.firstElementChild;
+        const canvas = setElement.querySelector('.roulette-canvas');
+        if (!canvas) return;
+        const ro = new ResizeObserver(() => {
+            this.updateCanvasSize(canvas);
+            const setData = this.sets.find(s => s.id === id);
+            if (setData) this.drawRoulette(canvas, setData.items);
+            this.syncTextareaFontSize(setElement, canvas);
+        });
+        ro.observe(leftCol);
+        this._resizeObservers.set(id, ro);
+    }
+
+    observeAll() {
+        document.querySelectorAll('[data-set-id]').forEach(node => this.observeSet(node));
+    }
+
+    unobserveSet(setId) {
+        const ro = this._resizeObservers.get(setId);
+        if (ro) {
+            try { ro.disconnect(); } catch (e) {}
+            this._resizeObservers.delete(setId);
+        }
+    }
+
+    applyLayoutClasses() {
+        const container = document.getElementById('rouletteSets');
+        if (!container) return;
+        container.className = 'mb-3'; // 表示はCSSで切替
+
+        // カード内レイアウト（ビュー: 左カラム全幅、編集: 左右1/2）
+        const cards = container.querySelectorAll('.roulette-card');
+        cards.forEach(card => {
+            const row = card.querySelector('.md\\:flex-row') || card.querySelector('.flex');
+            if (!row || !row.firstElementChild) return;
+            if (this.isViewMode) {
+                // ビュー: 左カラムは全幅
+                row.firstElementChild.classList.remove('md:w-1/2');
+                row.firstElementChild.classList.add('w-full');
+            } else {
+                // 編集: 画面幅に応じて幅クラスを調整
+                row.firstElementChild.classList.remove('md:w-1/2');
+                if (window.innerWidth >= 768) {
+                    // md以上は横並び想定のためw-fullは外す
+                    row.firstElementChild.classList.remove('w-full');
+                } else {
+                    // SP帯は縦積み・中央寄せのためw-fullを付与
+                    row.firstElementChild.classList.add('w-full');
+                }
+            }
+        });
+
+        requestAnimationFrame(() => this.resizeAllCanvases());
     }
 
     saveViewModeState() {
@@ -1013,29 +931,50 @@ class RouletteManager {
             const saved = localStorage.getItem('rouletteViewMode');
             if (saved !== null) {
                 this.isViewMode = JSON.parse(saved);
-                const app = document.querySelector('.roulette-app');
-                const viewTab = document.getElementById('viewTab');
-                const editTab = document.getElementById('editTab');
-                
-                if (this.isViewMode) {
-                    app.classList.add('view-mode');
-                    viewTab.classList.add('active');
-                    editTab.classList.remove('active');
-                } else {
-                    app.classList.remove('view-mode');
-                    viewTab.classList.remove('active');
-                    editTab.classList.add('active');
-                }
+                // setViewModeを呼び出して正しくスタイルを適用
+                this.setViewMode(this.isViewMode);
             }
         } catch (e) {
             console.error('Failed to load view mode state:', e);
             this.isViewMode = false;
+            this.setViewMode(false);
+        }
+    }
+
+    // DOM挿入前にモードのクラスだけ適用（レイアウト確定を早める）
+    bootstrapViewMode() {
+        try {
+            const saved = localStorage.getItem('rouletteViewMode');
+            if (saved !== null) this.isViewMode = JSON.parse(saved);
+        } catch (_) { this.isViewMode = false; }
+
+        const app = document.querySelector('.roulette-app');
+        const viewTab = document.getElementById('viewTab');
+        const editTab = document.getElementById('editTab');
+        if (!app || !viewTab || !editTab) return;
+
+        if (this.isViewMode) {
+            app.classList.add('view-mode');
+            app.classList.remove('edit-mode');
+            viewTab.classList.add('bg-gray-600', 'text-white', 'shadow-md');
+            viewTab.classList.remove('text-gray-600');
+            editTab.classList.remove('bg-gray-600', 'text-white', 'shadow-md');
+            editTab.classList.add('text-gray-600');
+        } else {
+            app.classList.remove('view-mode');
+            app.classList.add('edit-mode');
+            editTab.classList.add('bg-gray-600', 'text-white', 'shadow-md');
+            editTab.classList.remove('text-gray-600');
+            viewTab.classList.remove('bg-gray-600', 'text-white', 'shadow-md');
+            viewTab.classList.add('text-gray-600');
         }
     }
 }
 
 // アプリケーション初期化
 document.addEventListener('DOMContentLoaded', () => {
-    new RouletteManager();
+    const manager = new RouletteManager();
+    // 全リソースロード後にも再計算して初期サイズのぶれを抑制
+    window.addEventListener('load', () => manager.resizeAllCanvases());
 });
 </script>

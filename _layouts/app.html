@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title | default: site.title }}</title>
     <link rel="icon" href="{{ '/favicon.ico' | relative_url }}">
+    {% seo %}
+    {% if page.include_tailwind %}
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    {% endif %}
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
 
@@ -24,7 +28,8 @@
     <style>
     /* Layout base */
     .page__inner-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-    .page__content { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+    /* アプリ領域は幅制限を外してTailwindのラッパーで制御 */
+    .page__content { max-width: 100%; margin: 0 auto; padding: 0 1rem; }
 
     .app-header { background: #fff; border-bottom: 1px solid #e1e4e8; padding: 1rem 0; }
     .app-nav { display: flex; justify-content: space-between; align-items: center; }
