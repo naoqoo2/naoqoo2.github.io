@@ -10,24 +10,19 @@ custom_css: |
         transition: transform 3s cubic-bezier(0.6, 0, 0, 1);
     }
     
-    /* スマホ時の調整（サイズ固定は撤去、テキストのみ制御） */
+    /* スマホ時の調整: スピンは省略しない／追加は省略表示 */
     @media (max-width: 768px) {
-        .spin-text, .add-text {
-            display: none;
-        }
+        .add-text { display: none; }
         
-        /* スマホ時はボタンを丸型にしてアイコンのみ表示 */
-        #spinAll, #addRoulette {
+        /* 追加ボタンのみアイコン中心の丸型に */
+        #addRoulette {
             width: 60px !important;
             height: 60px !important;
             padding: 0 !important;
             border-radius: 50% !important;
             justify-content: center !important;
         }
-        
-        #spinAll i, #addRoulette i {
-            margin: 0 !important;
-        }
+        #addRoulette i { margin: 0 !important; }
     }
 
     /* ビューモード・編集モード用スタイル */
@@ -342,11 +337,16 @@ custom_css: |
         </div>
     </template>
     
-    <div class="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+    <!-- 下部中央のスピンボタン（ビュー時のみ表示） -->
+    <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
         <button id="spinAll" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 flex items-center gap-2 text-lg">
             <i class="fas fa-sync-alt text-xl"></i>
-            <span class="spin-text">全てスピン！</span>
+            <span class="spin-text">スピン！</span>
         </button>
+    </div>
+
+    <!-- 右下の追加ボタン（編集時のみ表示） -->
+    <div class="fixed bottom-4 right-4 z-50">
         <button id="addRoulette" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 flex items-center gap-2 text-lg" title="ルーレット追加">
             <i class="fas fa-plus text-xl"></i>
             <span class="add-text">ルーレットを追加</span>
