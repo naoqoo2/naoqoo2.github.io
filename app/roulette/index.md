@@ -10,19 +10,10 @@ custom_css: |
         transition: transform 3s cubic-bezier(0.6, 0, 0, 1);
     }
     
-    /* スマホ時の調整: スピンは省略しない／追加は省略表示 */
+    /* スマホ時の調整: ラベルの省略（形状は四角のまま） */
     @media (max-width: 768px) {
         .add-text { display: none; }
-        
-        /* 追加ボタンのみアイコン中心の丸型に */
-        #addRoulette {
-            width: 60px !important;
-            height: 60px !important;
-            padding: 0 !important;
-            border-radius: 50% !important;
-            justify-content: center !important;
-        }
-        #addRoulette i { margin: 0 !important; }
+        #modeToggle .mode-text { display: none; }
     }
 
     /* ビューモード・編集モード用スタイル */
@@ -77,6 +68,19 @@ custom_css: |
     .roulette-app .roulette-card .relative.flex { width: 100%; justify-content: center; }
 
     /* 以前のレイアウト強制は撤去し、Tailwindユーティリティで制御 */
+    
+    /* Sticky header visuals */
+    .roulette-sticky-header {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: saturate(1.2) blur(6px);
+        /* 下線・ホバー時の影は不要 */
+    }
+
+    /* Header row: ensure spin button is perfectly centered */
+    .roulette-header-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+    .roulette-header-left { justify-self: start; }
+    .roulette-header-center { justify-self: center; }
+    .roulette-header-right { justify-self: end; display: flex; align-items: center; gap: 0.5rem; }
     
     .result-overlay {
         position: absolute;
@@ -249,8 +253,7 @@ custom_css: |
     }
     
     .view-mode .roulette-right,
-    .view-mode .delete-btn,
-    .view-mode #addRoulette {
+    .view-mode .delete-btn {
         display: none;
     }
     
@@ -290,17 +293,28 @@ custom_css: |
 ---
 
 <div class="roulette-app max-w-screen-2xl mx-auto px-3" style="visibility:hidden;">
-    <div class="flex justify-between items-center pb-2 mb-3">
-        <h1 class="text-xl font-semibold text-gray-600 m-0">
-            Webルーレット
-        </h1>
-        <div class="bg-gray-200 border border-gray-400 rounded-lg p-1 flex">
-            <button id="viewTab" class="px-4 py-2 rounded-md text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-100" data-mode="view">
-                <i class="fas fa-eye"></i> ビュー
-            </button>
-            <button id="editTab" class="px-4 py-2 rounded-md text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-100" data-mode="edit">
-                <i class="fas fa-edit"></i> 編集
-            </button>
+    <!-- Sticky header: title (left), spin (center), add + mode toggle (right) -->
+    <div class="roulette-sticky-header sticky top-0 z-40">
+        <div class="roulette-header-row py-2">
+            <div class="roulette-header-left flex items-center gap-3">
+                <h1 class="text-xl font-semibold text-gray-700 m-0">Webルーレット</h1>
+            </div>
+            <div class="roulette-header-center flex items-center justify-center">
+                <button id="spinAll" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 text-lg">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                    <span class="spin-text">スピン！</span>
+                </button>
+            </div>
+            <div class="roulette-header-right">
+                <button id="addRoulette" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-md font-semibold shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2 text-sm" title="ルーレット追加">
+                    <i class="fas fa-plus"></i>
+                    <span class="add-text">追加</span>
+                </button>
+                <button id="modeToggle" type="button" class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-gray-200 border border-gray-400 hover:bg-gray-100 transition-all duration-200 flex items-center gap-2">
+                    <i class="fas fa-edit"></i>
+                    <span class="mode-text">編集</span>
+                </button>
+            </div>
         </div>
     </div>
     
@@ -337,21 +351,7 @@ custom_css: |
         </div>
     </template>
     
-    <!-- 下部中央のスピンボタン（ビュー時のみ表示） -->
-    <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <button id="spinAll" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 flex items-center gap-2 text-lg">
-            <i class="fas fa-sync-alt text-xl"></i>
-            <span class="spin-text">スピン！</span>
-        </button>
-    </div>
-
-    <!-- 右下の追加ボタン（編集時のみ表示） -->
-    <div class="fixed bottom-4 right-4 z-50">
-        <button id="addRoulette" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 flex items-center gap-2 text-lg" title="ルーレット追加">
-            <i class="fas fa-plus text-xl"></i>
-            <span class="add-text">ルーレットを追加</span>
-        </button>
-    </div>
+    <!-- floating controls removed; now in sticky header -->
 </div>
 
 <script>
@@ -392,15 +392,17 @@ class RouletteManager {
             this.spinAll();
         });
         
-        document.getElementById('viewTab').addEventListener('click', () => {
-            this.setViewMode(true);
-        });
-        
-        document.getElementById('editTab').addEventListener('click', () => {
-            this.setViewMode(false);
-        });
-        
+        const modeToggle = document.getElementById('modeToggle');
+        if (modeToggle) {
+            modeToggle.addEventListener('click', () => {
+                this.setViewMode(!this.isViewMode);
+            });
+        }
+
         document.getElementById('addRoulette').addEventListener('click', () => {
+            if (this.isViewMode) {
+                this.setViewMode(false);
+            }
             this.addSet();
         });
         window.addEventListener('resize', () => {
@@ -788,23 +790,20 @@ class RouletteManager {
     setViewMode(isViewMode) {
         this.isViewMode = isViewMode;
         const app = document.querySelector('.roulette-app');
-        const viewTab = document.getElementById('viewTab');
-        const editTab = document.getElementById('editTab');
+        const modeToggle = document.getElementById('modeToggle');
         
         if (this.isViewMode) {
             app.classList.add('view-mode');
             app.classList.remove('edit-mode');
-            viewTab.classList.add('bg-gray-600', 'text-white', 'shadow-md');
-            viewTab.classList.remove('text-gray-600');
-            editTab.classList.remove('bg-gray-600', 'text-white', 'shadow-md');
-            editTab.classList.add('text-gray-600');
+            if (modeToggle) {
+                modeToggle.innerHTML = `<i class="fas fa-edit"></i><span class="mode-text">編集</span>`;
+            }
         } else {
             app.classList.remove('view-mode');
             app.classList.add('edit-mode');
-            editTab.classList.add('bg-gray-600', 'text-white', 'shadow-md');
-            editTab.classList.remove('text-gray-600');
-            viewTab.classList.remove('bg-gray-600', 'text-white', 'shadow-md');
-            viewTab.classList.add('text-gray-600');
+            if (modeToggle) {
+            modeToggle.innerHTML = `<i class="fas fa-eye"></i><span class="mode-text">閲覧</span>`;
+            }
         }
         
         this.saveViewModeState();
@@ -885,24 +884,17 @@ class RouletteManager {
         } catch (_) { this.isViewMode = false; }
 
         const app = document.querySelector('.roulette-app');
-        const viewTab = document.getElementById('viewTab');
-        const editTab = document.getElementById('editTab');
-        if (!app || !viewTab || !editTab) return;
+        const modeToggle = document.getElementById('modeToggle');
+        if (!app || !modeToggle) return;
 
         if (this.isViewMode) {
             app.classList.add('view-mode');
             app.classList.remove('edit-mode');
-            viewTab.classList.add('bg-gray-600', 'text-white', 'shadow-md');
-            viewTab.classList.remove('text-gray-600');
-            editTab.classList.remove('bg-gray-600', 'text-white', 'shadow-md');
-            editTab.classList.add('text-gray-600');
+            modeToggle.innerHTML = `<i class="fas fa-edit"></i><span class=\"mode-text\">編集</span>`;
         } else {
             app.classList.remove('view-mode');
             app.classList.add('edit-mode');
-            editTab.classList.add('bg-gray-600', 'text-white', 'shadow-md');
-            editTab.classList.remove('text-gray-600');
-            viewTab.classList.remove('bg-gray-600', 'text-white', 'shadow-md');
-            viewTab.classList.add('text-gray-600');
+            modeToggle.innerHTML = `<i class="fas fa-eye"></i><span class=\"mode-text\">閲覧</span>`;
         }
     }
 }
