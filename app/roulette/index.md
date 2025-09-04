@@ -66,6 +66,26 @@ custom_css: |
     /* ルーレットを常に中央寄せ */
     .roulette-app .roulette-canvas { display: block; margin-left: auto; margin-right: auto; }
     .roulette-app .roulette-card .relative.flex { width: 100%; justify-content: center; }
+    .roulette-wrap { line-height: 0; }
+    .btn-fab-spin {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,.2);
+        transition: transform .15s ease, box-shadow .15s ease;
+        z-index: 12;
+    }
+    .btn-fab-spin:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,.25); }
+    .btn-fab-spin i { font-size: 16px; }
 
     /* 以前のレイアウト強制は撤去し、Tailwindユーティリティで制御 */
     
@@ -103,6 +123,7 @@ custom_css: |
         border-radius: 12px;
         font-weight: 700;
         font-size: 1.1rem;
+        line-height: 1.4; /* 親のline-height:0の影響を受けないよう明示 */
         opacity: 0;
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         z-index: 15;
@@ -347,10 +368,13 @@ custom_css: |
                 <div class="p-4">
                     <div class="flex flex-col md:flex-row w-full gap-4 md:gap-6 items-start">
                         <div class="flex flex-col items-center justify-center w-full md:w-1/2">
-                            <div class="relative flex justify-center">
-                                <div class="roulette-pin absolute text-gray-700 text-lg z-10" style="top: -8px; left: 50%; transform: translateX(-50%);">▼</div>
-                                <canvas class="roulette-canvas cursor-pointer rounded-full border-4 border-gray-300" width="260" height="260"></canvas>
-                                <div class="result-overlay absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                            <div class="flex justify-center">
+                                <div class="roulette-wrap relative inline-block">
+                                    <div class="roulette-pin absolute text-gray-700 text-lg z-10" style="top: -8px; left: 50%; transform: translateX(-50%);">▼</div>
+                                    <canvas class="roulette-canvas cursor-pointer rounded-full border-4 border-gray-300" width="260" height="260"></canvas>
+                                    <div class="result-overlay absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                    <button class="btn-fab-spin" type="button" title="スピン"><i class="fas fa-sync-alt"></i></button>
+                                </div>
                             </div>
                         </div>
                         <div class="roulette-right w-full md:w-1/2 flex flex-col">
@@ -627,6 +651,10 @@ class RouletteManager {
         // ルーレットクリック
         const spinHandler = () => this.spinRoulette(setData, canvas, setElement);
         canvas.addEventListener('click', spinHandler);
+        const spinBtn = setElement.querySelector('.btn-fab-spin');
+        if (spinBtn) {
+            spinBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); spinHandler(); });
+        }
 
         // テキストエリア変更
         textarea.addEventListener('input', () => {
