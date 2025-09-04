@@ -7,7 +7,7 @@ include_tailwind: true
 custom_css: |
     /* ルーレット固有のスタイル */
     .roulette-canvas {
-        transition: transform 3s cubic-bezier(0.6, 0, 0, 1);
+        transition: transform 5s cubic-bezier(0.6, 0, 0, 1);
     }
     
     /* スマホ時の調整: ラベルの省略（形状は四角のまま） */
@@ -774,17 +774,19 @@ class RouletteManager {
         const resultOverlay = setElement.querySelector('.result-overlay');
         resultOverlay.classList.remove('show');
 
-        // 回転角度計算
+        // 回転角度計算（方向は毎回ランダム、初回から反時計回りもあり）
         const lightSpin = Math.random() < 0.15;
-        const minRotation = lightSpin ? 720 : 1800;
-        const maxRotation = lightSpin ? 1440 : 3600;
-        const rotation = Math.random() * (maxRotation - minRotation) + minRotation;
-        
-        canvas.style.transform = `rotate(${rotation}deg)`;
+        const minRotation = lightSpin ? 720 : 1800;   // 2回転 or 5回転以上
+        const maxRotation = lightSpin ? 1440 : 3600;  // 4回転 or 10回転未満
+        const base = Math.random() * (maxRotation - minRotation) + minRotation;
+        const direction = Math.random() < 0.5 ? -1 : 1;
+        const deltaRotation = base * direction;
+        setData._angleDeg = (setData._angleDeg || 0) + deltaRotation;
+        canvas.style.transform = `rotate(${setData._angleDeg}deg)`;
 
         setTimeout(() => {
-            // 結果計算（重み付き）
-            const normalizedRotation = rotation % 360; // 0..359
+            // 結果計算（重み付き）: 今回の回転量で当たりを決定
+            const normalizedRotation = deltaRotation % 360; // 0..±359
             const weighted = weightedBefore; // スタート時の定義で固定
             const totalWeight = weighted.reduce((s, it) => s + it.weight, 0) || 1;
             // ポインタは常に上(-90deg)。回転が時計回りRのとき、元の座標系でのポインタ角は -90 - R
@@ -810,7 +812,7 @@ class RouletteManager {
                 this.showResult(setElement, setData.result);
             }
             this.saveToStorage();
-        }, 3000);
+        }, 5000);
 
         this.saveToStorage();
     }
