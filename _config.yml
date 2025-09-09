@@ -21,6 +21,10 @@ baseurl: "" # サブディレクトリを使用する場合はここに設定
 url: "https://naoqoo2.com" # サイトのベースURL
 twitter_username: naoqoo2
 github_username: naoqoo2
+
+# Twitter Card設定
+twitter:
+  username: naoqoo2
 minimal_mistakes_skin: default
 search: true
 
@@ -114,11 +118,9 @@ defaults:
       share: true
       related: true
       classes: wide #記事の表示幅を広げる
-      image: /assets/images/naoqoo2.jpg
+      image: https://naoqoo2.com/assets/images/naoqoo2.jpg
       # OG用の設定
-      og_image: /assets/images/naoqoo2.jpg
-      twitter:
-        card: summary_large_image
+      og_image: https://naoqoo2.com/assets/images/naoqoo2.jpg
   # _pages
   - scope:
       path: "_pages"
