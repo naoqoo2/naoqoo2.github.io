@@ -19,6 +19,8 @@ description: >- # this means to ignore newlines until "baseurl:"
   naoqoo2のエンジニアブログです。
 baseurl: "" # サブディレクトリを使用する場合はここに設定
 url: "https://naoqoo2.com" # サイトのベースURL
+lang: ja
+locale: ja_JP
 twitter_username: naoqoo2
 github_username: naoqoo2
 
@@ -30,6 +32,7 @@ search: true
 
 # SEO & OGイメージ設定
 logo: /assets/images/naoqoo2.jpg
+og_image: /assets/images/naoqoo2.jpg
 social:
   type: Person
   name: naoqoo2
@@ -118,9 +121,9 @@ defaults:
       share: true
       related: true
       classes: wide #記事の表示幅を広げる
-      image: https://naoqoo2.com/assets/images/naoqoo2.jpg
+      image: /assets/images/naoqoo2.jpg
       # OG用の設定
-      og_image: https://naoqoo2.com/assets/images/naoqoo2.jpg
+      og_image: /assets/images/naoqoo2.jpg
   # _pages
   - scope:
       path: "_pages"
@@ -128,6 +131,8 @@ defaults:
     values:
       layout: single
       author_profile: true
+      image: /assets/images/naoqoo2.jpg
+      og_image: /assets/images/naoqoo2.jpg
 
 # category_archive:
 #   type: liquid
