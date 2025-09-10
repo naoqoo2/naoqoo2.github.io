@@ -813,11 +813,12 @@ class RouletteManager {
         canvas.style.transform = `rotate(${setData._angleDeg}deg)`;
 
         setTimeout(() => {
-            // 結果計算（重み付き）: 今回の回転量で当たりを決定
-            const normalizedRotation = deltaRotation % 360; // 0..±359
+            // 結果計算（重み付き）: 最終的な角度で当たりを決定（累積回転を考慮）
+            const finalRotation = setData._angleDeg || 0; // 累積回転角
+            const normalizedRotation = ((finalRotation % 360) + 360) % 360; // 0..359
             const weighted = weightedBefore; // スタート時の定義で固定
             const totalWeight = weighted.reduce((s, it) => s + it.weight, 0) || 1;
-            // ポインタは常に上(-90deg)。回転が時計回りRのとき、元の座標系でのポインタ角は -90 - R
+            // ポインタは常に上(-90deg)。ホイールがRだけ回転したときの元の座標系でのポインタ角は -90 - R
             const pointerAngle = (((-90 - normalizedRotation) % 360) + 360) % 360; // 0..359
             let selectedIndex = 0;
             let startDeg = -90;
