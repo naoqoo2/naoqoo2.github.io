@@ -37,6 +37,7 @@ echo "MCPを使用して、以下のSlackチャンネルIDから先週1週間（
 - CCZKKDDR7
 - C02LH1C4BPD
 - CBVHMHMBM
+- C08U98ZLGMR
 - CCZGGA0PJ" | timeout 300 claude 2>&1 | tee -a "$LOG_FILE"
 
 EXIT_CODE=$?
