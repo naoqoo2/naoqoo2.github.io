@@ -139,14 +139,6 @@ args = ["chrome-devtools-mcp@latest"]
 TOML
 ```
 
-### 4. 動作確認
-
-MCP サーバーが正常に動作するかテスト：
-
-```bash
-npx chrome-devtools-mcp@latest --help
-```
-
 ## MCP の確認方法
 
 ### 現在利用可能な MCP 一覧
@@ -167,14 +159,14 @@ codex
 sed -n 's/^\[mcp_servers\.\(.*\)\]/\1/p' ~/.codex/config.toml
 ```
 
-## 使用例
+### 動作確認（使用例）
 
 Chrome DevTools MCP を追加後、以下のような指示で利用可能：
 
 ```bash
 codex
 # セッション内で
-Chrome DevTools を使って、localhost:3000 の DOM 構造を取得して
+MCPの Chrome DevTools を使用して https://www.google.com/ の 画面キャプチャを取得して。
 ```
 
 ## まとめ
