@@ -4,6 +4,7 @@ categories:
   - blog
 tags:
   - AI
+  - 週報
   - Claude
   - Slack
   - 自動化
