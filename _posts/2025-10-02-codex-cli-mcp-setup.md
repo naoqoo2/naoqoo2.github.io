@@ -177,20 +177,6 @@ codex
 Chrome DevTools を使って、localhost:3000 の DOM 構造を取得して
 ```
 
-## その他の便利な MCP
-
-```toml
-# Slack MCP（例）
-[mcp_servers."slack"]
-command = "npx"
-args = ["-y", "@slack/mcp-server"]
-
-# GitHub MCP（例）
-[mcp_servers."github"]
-command = "npx"
-args = ["-y", "@github/mcp-server"]
-```
-
 ## まとめ
 
 Codex CLI への MCP 追加は以下のポイントを押さえれば簡単：
