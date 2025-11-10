@@ -72,6 +72,15 @@ custom_css: |
         row-gap: 2.5rem;
     }
 
+    .roulette-app.present-mode .roulette-grid.single-roulette {
+        grid-template-columns: minmax(var(--roulette-card-min-width), min(100%, clamp(420px, 80vw, 960px)));
+    }
+
+    .roulette-app.present-mode .roulette-grid.single-roulette .roulette-card {
+        width: 100%;
+        max-width: min(100%, clamp(420px, 80vw, 960px));
+    }
+
     .roulette-wrap {
         line-height: 0;
     }
@@ -1122,7 +1131,7 @@ class RouletteManager {
 
         const baseClasses = ['roulette-grid', 'gap-4', 'w-full', 'mx-auto'];
         container.className = baseClasses.join(' ');
-        container.classList.remove('single-row', 'double-row');
+        container.classList.remove('single-row', 'double-row', 'single-roulette');
 
         // ルーレットグリッドが画面上部からどれだけ下にあるかを元に高さを算出
         const gridTop = Math.max(0, Math.round(container.getBoundingClientRect().top));
@@ -1138,10 +1147,11 @@ class RouletteManager {
             container.style.removeProperty('--roulette-card-edit-width');
         }
 
+        const totalSets = this.sets.length;
         const gap = 16;
         const width = container.clientWidth || window.innerWidth;
         const columns = Math.max(1, Math.floor((width + gap) / (minWidth + gap)));
-        const rows = Math.max(1, Math.ceil((this.sets.length || 1) / columns));
+        const rows = Math.max(1, Math.ceil((totalSets || 1) / columns));
 
         container.dataset.columns = columns;
         container.dataset.rows = rows;
@@ -1150,6 +1160,10 @@ class RouletteManager {
             container.classList.add('single-row');
         } else if (this.isPresentMode && rows === 2) {
             container.classList.add('double-row');
+        }
+
+        if (this.isPresentMode && totalSets === 1) {
+            container.classList.add('single-roulette');
         }
 
         container.style.marginBottom = rows <= 2 ? '1rem' : '1.5rem';
