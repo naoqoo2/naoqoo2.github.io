@@ -7,8 +7,8 @@ Qiita記事をブログ抜粋に書き換えるスクリプト。
 - Qiita API経由で該当記事の本文を置き換える
 
 Usage:
-    python3 scripts/update_qiita_excerpts.py           # ドライラン（更新しない）
-    python3 scripts/update_qiita_excerpts.py --apply   # Qiita記事を更新
+    python3 _includes/update_qiita_excerpts.py           # ドライラン（更新しない）
+    python3 _includes/update_qiita_excerpts.py --apply   # Qiita記事を更新
 """
 from __future__ import annotations
 

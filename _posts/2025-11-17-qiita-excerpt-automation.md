@@ -44,7 +44,7 @@ Qiitaにたくさん記事を書いてきたものの、個人ブログへ完全
 
 ## スクリプトの中身  
 
-`scripts/update_qiita_excerpts.py` で完結。ポイントだけ抜粋します。  
+`_includes/update_qiita_excerpts.py` で完結。ポイントだけ抜粋します。  
 
 ```python
 posts = load_posts()  # _posts から本文とカテゴリを取得
@@ -64,13 +64,13 @@ for item in items:
 
 1. Dryラン（Qiitaは更新しない）  
    ```bash
-   python3 scripts/update_qiita_excerpts.py --limit 3
+   python3 _includes/update_qiita_excerpts.py --limit 3
    ```  
    コンソールで各記事のテンプレ文を確認できる。`--limit` を外せば全件表示。  
 
 2. 本番更新  
    ```bash
-   python3 scripts/update_qiita_excerpts.py --apply
+   python3 _includes/update_qiita_excerpts.py --apply
    ```  
    API レートリミット対策で 1 件ごとに `sleep(1)` を入れているので、70 本で約 1.5 分。  
 
@@ -99,8 +99,9 @@ for item in items:
 
 ## ソースコード全文  
 
-> Jekyll の `include_relative` を使っているので、実際に使っているスクリプトと常に同じ内容がここに埋め込まれます。
-
+{% capture qiita_script %}
+{% include update_qiita_excerpts.py %}
+{% endcapture %}
 {% highlight python %}
-{% include_relative ../scripts/update_qiita_excerpts.py %}
+{{ qiita_script | strip }}
 {% endhighlight %}
