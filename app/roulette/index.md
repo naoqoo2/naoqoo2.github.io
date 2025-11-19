@@ -85,6 +85,23 @@ custom_css: |
         line-height: 0;
     }
 
+    .roulette-pin {
+        position: absolute;
+        top: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(1.1rem, calc(var(--roulette-scale, 1) * 1.2rem), 1.6rem);
+        line-height: 1;
+        color: #1f2937;
+        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+        transition: font-size 0.2s ease;
+    }
+
+    .roulette-app.present-mode .roulette-pin {
+        top: -6px;
+        font-size: clamp(1.6rem, calc(var(--roulette-scale, 1) * 1.9rem), 2.8rem);
+    }
+
     .roulette-card {
         --roulette-scale: 1;
     }
@@ -460,7 +477,7 @@ custom_css: |
                     <div class="roulette-visual w-full">
                         <div class="flex justify-center">
                             <div class="roulette-wrap relative inline-block">
-                                <div class="roulette-pin absolute text-gray-700 text-lg z-10" style="top: -8px; left: 50%; transform: translateX(-50%);">▼</div>
+                                <div class="roulette-pin absolute z-10">▼</div>
                                 <canvas class="roulette-canvas cursor-pointer rounded-full border-4 border-gray-300" width="260" height="260"></canvas>
                                 <div class="result-overlay absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
                                 <button class="btn-fab-spin" type="button" title="スピン"><i class="fas fa-sync-alt"></i></button>
