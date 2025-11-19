@@ -785,7 +785,13 @@ class RouletteManager {
         const desired = Math.floor(available - 24);
         const limits = this.getCanvasSizeLimits();
         const heightAdjusted = limits.cap ? Math.min(limits.cap, desired) : desired;
-        const size = Math.max(limits.min, Math.min(limits.max, heightAdjusted));
+        let size = Math.max(limits.min, Math.min(limits.max, heightAdjusted));
+        const totalSets = Array.isArray(this.sets) ? this.sets.length : 0;
+        const shrinkPreview = this.isPresentMode && (totalSets === 1 || totalSets === 2);
+        if (shrinkPreview && size > limits.min) {
+            const previewScale = 0.9;
+            size = Math.max(limits.min, Math.round(size * previewScale));
+        }
         const card = canvas?.closest ? canvas.closest('.roulette-card') : null;
         if (card) {
             const scale = Math.min(1.6, Math.max(0.75, size / 420));
