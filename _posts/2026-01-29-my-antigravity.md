@@ -42,3 +42,126 @@ GoogleのAIエージェント「Antigravity」のショートカットや設定�
 サンドボックス内でネットワークリクエストを許可する設定です。
 これがOFFだと、`npm install` や外部APIへのアクセスなどが失敗してしまうため、基本的にはONにしておきます。
 
+# MCP
+
+## 設定ファイルのパス
+
+`~/.gemini/antigravity/mcp_config.json`
+
+中身こんな感じ。JSONなので最後にカンマあるとエラーになるので編集時注意。
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+    },
+    "notionApi": {
+    }
+  }
+}
+```
+
+## Slack MCP
+
+### 手順
+
+1. [Slack API](https://api.slack.com/apps) でアプリを作成（From scratch）
+2. **OAuth & Permissions** で `chat:write`, `channels:history` などの権限を付与
+3. **Install to Workspace** を実行し、`Bot User OAuth Token` (`xoxb-...`) を取得
+4. ワークスペースのURLなどから `Team ID` (`T...`) を取得
+
+### 設定の記述
+
+```json
+"slack": {
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-slack"],
+  "env": {
+    "SLACK_BOT_TOKEN": "xoxb-xxxx...",
+    "SLACK_TEAM_ID": "Txxxx..."
+  }
+}
+```
+
+## Notion MCP
+
+### 手順
+
+1. [My Integrations](https://www.notion.so/my-integrations) で新しいインテグレーションを作成
+2. `Internal Integration Secret` (`ntn_...`) を取得
+3. 接続したいページで、右上の「...」メニュー > **Connect** (接続) > 作成したインテグレーションを選択
+
+### 設定の記述
+
+`OPENAPI_MCP_HEADERS` にJSON形式で認証情報を渡します。
+
+```json
+"notionApi": {
+  "command": "npx",
+  "args": ["-y", "@notionhq/notion-mcp-server"],
+  "env": {
+    "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer ntn_xxxx...\", \"Notion-Version\": \"2022-06-28\" }"
+  }
+}
+```
+
+## Figma MCP
+
+### 手順
+
+FigmaデスクトップアプリをインストールしてデスクトップMCPサーバーとして実行します。そのためトークンは不要。
+
+1. Figmaデスクトップアプリをインストール（最新版）
+2. Figma Designファイルを開く
+3. **Dev Mode** に切り替える (`Shift + D`)
+4. インスペクトパネルの **MCP Server** セクションで「デスクトップMCPサーバーを有効化」をクリック
+
+### 設定の記述
+
+Figmaアプリとローカル通信を行う設定になります。
+
+```json
+"figma-dev-mode-mcp-server": {
+  "command": "npx",
+  "args": [
+    "mcp-remote",
+    "http://127.0.0.1:3845/sse"
+  ],
+  "env": {}
+}
+```
+
+### 備考
+
+Figmaアプリ入れずにリモートMCPサーバーで動作させてみようとしたがイマイチ記法がわからず諦めました。
+
+参考：[Figmaの公式ヘルプ](https://help.figma.com/hc/ja/articles/32132100833559)
+
+
+## GitHub MCP
+
+### 手順
+
+1. GitHubの [Developer Settings](https://github.com/settings/tokens) へ
+2. **Personal access tokens (Classic)** または **Fine-grained tokens** を作成
+3. 必要な権限（Repo, Userなど）を付与して生成
+
+### 設定の記述
+
+```json
+"github-mcp-server": {
+  "command": "docker",
+  "args": [
+    "run",
+    "-i",
+    "--rm",
+    "-e",
+    "GITHUB_PERSONAL_ACCESS_TOKEN",
+    "ghcr.io/github/github-mcp-server"
+  ],
+  "env": {
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxx..."
+  }
+}
+```
+
