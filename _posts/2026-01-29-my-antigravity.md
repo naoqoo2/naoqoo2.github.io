@@ -42,6 +42,24 @@ GoogleのAIエージェント「Antigravity」のショートカットや設定�
 サンドボックス内でネットワークリクエストを許可する設定です。
 これがOFFだと、`npm install` や外部APIへのアクセスなどが失敗してしまうため、基本的にはONにしておきます。
 
+## Artifact Review Policy = Agent Decides
+
+成果物（Artifact）のレビューを求めるか。
+Agent Decides はタスクの複雑さやユーザーの好みに基づいて、エージェントが自律的に判断します。
+基本的には効率よくAIに作業してもらうため、エージェントの自律性を優先しています。
+
+## Terminal Command Auto Execution = Always Proceed
+
+ターミナルコマンドの実行前にユーザーに確認を求めるか。
+Always Proceedにして、拒否リストにあるものを除き許可しています。
+こちらは予期せぬコマンドを実行される懸念もありますが、サンドボックスで実行されるようになったので安心かなと。
+
+## Browser Javascript Execution Policy = Always Proceed
+
+ブラウザでのJavaScript実行時に許可を求めない設定です。
+JavaScriptは基本ONでないと多くのサイトが操作できないため、Always Proceedにしています。
+セキュリティ的な懸念もそこまで高くないと判断しています。
+
 # MCP
 
 ## 設定ファイルのパス
