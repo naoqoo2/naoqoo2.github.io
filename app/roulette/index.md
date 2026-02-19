@@ -864,10 +864,11 @@ class RouletteManager {
         if (weighted.length === 0) return;
         const totalWeight = weighted.reduce((s, it) => s + it.weight, 0);
         const colors = [
-            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
+            '#4ECDC4', '#FF6B6B', '#45B7D1', '#96CEB4',
             '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
             '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'
         ];
+        const getBaseColorIndex = (i) => i % colors.length;
 
         // フォントサイズをキャンバスサイズに応じて可変（テキストエリアと共通化）
         const { dynamicFont, lineHeight } = this.computeFontMetrics(canvas);
@@ -876,6 +877,7 @@ class RouletteManager {
         }
 
         let currentAngle = -Math.PI / 2;
+        const assignedColors = [];
         weighted.forEach(({ label, weight }, index) => {
             const angle = (2 * Math.PI) * (weight / totalWeight);
             const startAngle = currentAngle;
@@ -886,10 +888,22 @@ class RouletteManager {
             ctx.moveTo(centerX, centerY);
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
             ctx.closePath();
-            // 1個目と2個目の色を入れ替える
-            let ci = index % colors.length;
-            if (ci === 0) ci = 1; else if (ci === 1) ci = 0;
-            ctx.fillStyle = colors[ci];
+            let ci = getBaseColorIndex(index);
+            let fill = colors[ci];
+            const prev = assignedColors[assignedColors.length - 1];
+            if (prev && fill === prev) {
+                ci = (ci + 1) % colors.length;
+                fill = colors[ci];
+            }
+            if (index === weighted.length - 1 && assignedColors.length > 0 && fill === assignedColors[0]) {
+                ci = (ci + 1) % colors.length;
+                if (colors[ci] === prev) {
+                    ci = (ci + 1) % colors.length;
+                }
+                fill = colors[ci];
+            }
+            assignedColors.push(fill);
+            ctx.fillStyle = fill;
             ctx.fill();
 
             // テキスト描画
