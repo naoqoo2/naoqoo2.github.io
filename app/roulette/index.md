@@ -5,428 +5,427 @@ app_name: "Webルーレット"
 description: "入力した項目からランダムに即決定できる無料のオンラインルーレット。複数ルーレット管理、編集/ビュー切替、スマホ対応。イベントや当番決めに最適。"
 include_tailwind: true
 custom_css: |
-    .roulette-canvas {
-        transition: transform 5s cubic-bezier(0.6, 0, 0, 1);
-    }
+  .roulette-canvas {
+      transition: transform 5s cubic-bezier(0.6, 0, 0, 1);
+  }
 
-    body.roulette-present-mode .app-header {
-        display: none;
-    }
+  body.roulette-present-mode .app-header {
+      display: none;
+  }
 
-    .roulette-app {
-        position: relative;
-        width: 100%;
-        margin: 0 auto;
-        --roulette-card-min-width: 320px;
-        --roulette-viewport-offset: 140px;
-    }
+  .roulette-app {
+      position: relative;
+      width: 100%;
+      margin: 0 auto;
+      --roulette-card-min-width: 320px;
+      --roulette-viewport-offset: 140px;
+  }
 
-    .roulette-grid {
-        display: grid;
-        gap: 1rem;
-        width: 100%;
-        grid-template-columns: repeat(auto-fit, minmax(var(--roulette-card-min-width), 1fr));
-        align-content: flex-start;
-        justify-items: stretch;
-        justify-content: center;
-    }
+  .roulette-grid {
+      display: grid;
+      gap: 1rem;
+      width: 100%;
+      grid-template-columns: repeat(auto-fit, minmax(var(--roulette-card-min-width), 1fr));
+      align-content: flex-start;
+      justify-items: stretch;
+      justify-content: center;
+  }
 
-    .roulette-grid > .roulette-card {
-        width: 100%;
-    }
+  .roulette-grid > .roulette-card {
+      width: 100%;
+  }
 
-    .roulette-app.edit-mode .roulette-grid {
-        grid-template-columns: repeat(auto-fit, minmax(var(--roulette-card-edit-width, var(--roulette-card-min-width)), var(--roulette-card-edit-width, var(--roulette-card-min-width))));
-        justify-items: center;
-    }
+  .roulette-app.edit-mode .roulette-grid {
+      grid-template-columns: repeat(auto-fit, minmax(var(--roulette-card-edit-width, var(--roulette-card-min-width)), var(--roulette-card-edit-width, var(--roulette-card-min-width))));
+      justify-items: center;
+  }
 
-    .roulette-app.edit-mode .roulette-grid > .roulette-card {
-        max-width: var(--roulette-card-edit-width, var(--roulette-card-min-width));
-    }
+  .roulette-app.edit-mode .roulette-grid > .roulette-card {
+      max-width: var(--roulette-card-edit-width, var(--roulette-card-min-width));
+  }
 
-    .roulette-grid.single-row,
-    .roulette-grid.double-row {
-        min-height: calc(100vh - var(--roulette-viewport-offset, 0px));
-        height: calc(100vh - var(--roulette-viewport-offset, 0px));
-    }
+  .roulette-grid.single-row,
+  .roulette-grid.double-row {
+      min-height: calc(100vh - var(--roulette-viewport-offset, 0px));
+      height: calc(100vh - var(--roulette-viewport-offset, 0px));
+  }
 
-    .roulette-grid.single-row .roulette-card,
-    .roulette-grid.double-row .roulette-card {
-        height: 100%;
-    }
+  .roulette-grid.single-row .roulette-card,
+  .roulette-grid.double-row .roulette-card {
+      height: 100%;
+  }
 
-    .roulette-grid.double-row {
-        grid-auto-rows: minmax(0, 1fr);
-    }
+  .roulette-grid.double-row {
+      grid-auto-rows: minmax(0, 1fr);
+  }
 
-    .roulette-app.present-mode .roulette-grid {
-        grid-template-columns: repeat(auto-fit, minmax(var(--roulette-card-min-width), 1fr));
-        justify-content: center;
-        justify-items: center;
-    }
+  .roulette-app.present-mode .roulette-grid {
+      grid-template-columns: repeat(auto-fit, minmax(var(--roulette-card-min-width), 1fr));
+      justify-content: center;
+      justify-items: center;
+  }
 
-    .roulette-app.present-mode .roulette-grid.double-row {
-        min-height: auto;
-        height: auto;
-        grid-auto-rows: auto;
-        row-gap: 2.5rem;
-    }
+  .roulette-app.present-mode .roulette-grid.double-row {
+      min-height: auto;
+      height: auto;
+      grid-auto-rows: auto;
+      row-gap: 2.5rem;
+  }
 
-    .roulette-app.present-mode .roulette-grid.single-roulette {
-        grid-template-columns: minmax(var(--roulette-card-min-width), min(100%, clamp(420px, 80vw, 960px)));
-    }
+  .roulette-app.present-mode .roulette-grid.single-roulette {
+      grid-template-columns: minmax(var(--roulette-card-min-width), min(100%, clamp(420px, 80vw, 960px)));
+  }
 
-    .roulette-app.present-mode .roulette-grid.single-roulette .roulette-card {
-        width: 100%;
-        max-width: min(100%, clamp(420px, 80vw, 960px));
-    }
+  .roulette-app.present-mode .roulette-grid.single-roulette .roulette-card {
+      width: 100%;
+      max-width: min(100%, clamp(420px, 80vw, 960px));
+  }
 
-    .roulette-wrap {
-        line-height: 0;
-    }
+  .roulette-wrap {
+      line-height: 0;
+  }
 
-    .roulette-pin {
-        position: absolute;
-        top: -2px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: clamp(1.1rem, calc(var(--roulette-scale, 1) * 1.2rem), 1.6rem);
-        line-height: 1;
-        color: #1f2937;
-        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
-        transition: font-size 0.2s ease;
-    }
+  .roulette-pin {
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(1.1rem, calc(var(--roulette-scale, 1) * 1.2rem), 1.6rem);
+      line-height: 1;
+      color: #1f2937;
+      text-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+      transition: font-size 0.2s ease;
+  }
 
-    .roulette-app.present-mode .roulette-pin {
-        top: -6px;
-        font-size: clamp(1.6rem, calc(var(--roulette-scale, 1) * 1.9rem), 2.8rem);
-    }
+  .roulette-app.present-mode .roulette-pin {
+      top: -6px;
+      font-size: clamp(1.6rem, calc(var(--roulette-scale, 1) * 1.9rem), 2.8rem);
+  }
 
-    .roulette-card {
-        --roulette-scale: 1;
-    }
+  .roulette-card {
+      --roulette-scale: 1;
+  }
 
-    .roulette-card .card-inner {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        border-radius: 1rem;
-        padding: 0;
-        transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    }
+  .roulette-card .card-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      border-radius: 1rem;
+      padding: 0;
+      transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
 
-    .roulette-card .card-body {
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
+  .roulette-card .card-body {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+  }
 
-    .roulette-card .card-body[data-roulette-layout] {
-        gap: 1.75rem;
-    }
+  .roulette-card .card-body[data-roulette-layout] {
+      gap: 1.75rem;
+  }
 
-    .roulette-visual {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-    }
+  .roulette-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+  }
 
-    .roulette-editor {
-        display: flex;
-        flex-direction: column;
-    }
+  .roulette-editor {
+      display: flex;
+      flex-direction: column;
+  }
 
-    .roulette-card .roulette-title {
-        font-size: clamp(1rem, var(--roulette-font-size, 1.1rem), 1.5rem);
-        transition: font-size 0.2s ease;
-    }
+  .roulette-card .roulette-title {
+      font-size: clamp(1rem, var(--roulette-font-size, 1.1rem), 1.5rem);
+      transition: font-size 0.2s ease;
+  }
 
-    .roulette-card .roulette-title[readonly] {
-        color: #4b5563;
-    }
+  .roulette-card .roulette-title[readonly] {
+      color: #4b5563;
+  }
 
-    .roulette-card .result-overlay {
-        font-size: var(--roulette-font-size, 1.1rem);
-    }
+  .roulette-card .result-overlay {
+      font-size: var(--roulette-font-size, 1.1rem);
+  }
 
-    .roulette-app.edit-mode .card-inner {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-    }
+  .roulette-app.edit-mode .card-inner {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  }
 
-    .roulette-app.present-mode .card-inner {
-        background: transparent;
-        border: none;
-        box-shadow: none;
-    }
+  .roulette-app.present-mode .card-inner {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+  }
 
-    .roulette-app.present-mode .present-hidden-title {
-        display: none !important;
-    }
+  .roulette-app.present-mode .present-hidden-title {
+      display: none !important;
+  }
 
-    .btn-fab-spin {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        width: 44px;
-        height: 44px;
-        border-radius: 9999px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-        color: #fff;
-        border: none;
-        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-        z-index: 12;
-    }
+  .btn-fab-spin {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 44px;
+      height: 44px;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      z-index: 12;
+  }
 
-    .btn-fab-spin:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 22px rgba(59, 130, 246, 0.45);
-    }
+  .btn-fab-spin:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(59, 130, 246, 0.45);
+  }
 
-    .roulette-sticky-header {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: saturate(1.2) blur(6px);
-    }
+  .roulette-sticky-header {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(1.2) blur(6px);
+  }
 
-    .roulette-controls-row {
-        min-height: 56px;
-    }
+  .roulette-controls-row {
+      min-height: 56px;
+  }
 
-    .spin-wrapper {
-        display: flex;
-    }
+  .spin-wrapper {
+      display: flex;
+  }
 
-    #addRoulette .add-text {
-        display: inline;
-    }
+  #addRoulette .add-text {
+      display: inline;
+  }
 
-    @media (max-width: 768px) {
-        .roulette-controls-row {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .controls-center {
-            position: static !important;
-            left: auto !important;
-            transform: none !important;
-            margin-right: auto;
-        }
-        .controls-right {
-            position: relative;
-            width: 100%;
-            margin-left: 0 !important;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: nowrap;
-        }
-        .spin-wrapper {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            display: inline-flex;
-            justify-content: center;
-        }
-        #spinAll {
-            white-space: nowrap;
-        }
-        #addRoulette {
-            padding: 0.5rem;
-            width: 44px;
-            height: 40px;
-            border-radius: 10px;
-            justify-content: center;
-            align-items: center;
-        }
-        #addRoulette .add-text {
-            display: none;
-        }
-    }
+  @media (max-width: 768px) {
+      .roulette-controls-row {
+          display: flex;
+          flex-wrap: wrap;
+      }
+      .controls-center {
+          position: static !important;
+          left: auto !important;
+          transform: none !important;
+          margin-right: auto;
+      }
+      .controls-right {
+          position: relative;
+          width: 100%;
+          margin-left: 0 !important;
+          justify-content: flex-end;
+          align-items: center;
+          gap: 0.5rem;
+          flex-wrap: nowrap;
+      }
+      .spin-wrapper {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          display: inline-flex;
+          justify-content: center;
+      }
+      #spinAll {
+          white-space: nowrap;
+      }
+      #addRoulette {
+          padding: 0.5rem;
+          width: 44px;
+          height: 40px;
+          border-radius: 10px;
+          justify-content: center;
+          align-items: center;
+      }
+      #addRoulette .add-text {
+          display: none;
+      }
+  }
 
-    body.roulette-present-mode main.page__content {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
+  body.roulette-present-mode main.page__content {
+      padding-top: 0;
+      padding-bottom: 0;
+  }
 
-    .roulette-app.present-mode {
-        --roulette-card-min-width: 380px;
-        --roulette-viewport-offset: 16px;
-    }
+  .roulette-app.present-mode {
+      --roulette-card-min-width: 380px;
+      --roulette-viewport-offset: 16px;
+  }
 
-    .roulette-app.present-mode .controls-left,
-    .roulette-app.present-mode #addRoulette {
-        display: none !important;
-    }
+  .roulette-app.present-mode .controls-left,
+  .roulette-app.present-mode #addRoulette {
+      display: none !important;
+  }
 
-    .roulette-app.present-mode #rouletteSets {
-        margin-bottom: 0;
-    }
+  .roulette-app.present-mode #rouletteSets {
+      margin-bottom: 0;
+  }
 
-    .roulette-app.present-mode .roulette-editor,
-    .roulette-app.present-mode .delete-btn {
-        display: none !important;
-    }
+  .roulette-app.present-mode .roulette-editor,
+  .roulette-app.present-mode .delete-btn {
+      display: none !important;
+  }
 
-    #modeToggle.mode-toggle-btn {
-        position: static;
-        border: none;
-        background: transparent;
-        color: #6b7280;
-        padding: 0.25rem;
-        font-size: 1.25rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: color 0.2s ease;
-    }
+  #modeToggle.mode-toggle-btn {
+      position: static;
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      padding: 0.25rem;
+      font-size: 1.25rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+  }
 
-    #modeToggle.mode-toggle-btn:hover {
-        color: #374151;
-    }
+  #modeToggle.mode-toggle-btn:hover {
+      color: #374151;
+  }
 
-    .roulette-app.present-mode #modeToggle.mode-toggle-btn {
-        color: rgba(31, 41, 55, 0.35);
-    }
+  .roulette-app.present-mode #modeToggle.mode-toggle-btn {
+      color: rgba(31, 41, 55, 0.35);
+  }
 
-    .roulette-app.present-mode #modeToggle.mode-toggle-btn:hover {
-        color: rgba(31, 41, 55, 0.55);
-    }
+  .roulette-app.present-mode #modeToggle.mode-toggle-btn:hover {
+      color: rgba(31, 41, 55, 0.55);
+  }
 
-    .result-overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 0.75rem 1.25rem;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: var(--roulette-font-size, 1.1rem);
-        line-height: 1.4; /* 親のline-height:0の影響を受けないよう明示 */
-        opacity: 0;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        z-index: 15;
-        max-width: 80%;
-        text-align: center;
-        word-break: break-word;
-        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        cursor: text;
-        user-select: text;
-        pointer-events: none;
-    }
-    
-    .result-overlay.show {
-        opacity: 1;
-        pointer-events: auto;
-    }
-    
-    .btn-spin {
-        background: #6366f1;
-        border: 1px solid #6366f1;
-        color: white;
-        padding: 0.375rem 0.75rem;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        align-self: flex-start;
-        margin-bottom: 0.5rem;
-    }
-    
-    .btn-spin:hover:not(:disabled) {
-        background: #5b21b6;
-        border-color: #5b21b6;
-        transform: translateY(-1px);
-    }
-    
-    .btn-spin:disabled {
-        background: #6c757d;
-        border-color: #6c757d;
-        cursor: not-allowed;
-        transform: none;
-    }
-    
-    .roulette-editor {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: flex-start;
-        width: 100%;
-    }
-    
-    
-    .items-textarea {
-        width: 100%;
-        min-height: 180px;
-        border: 1px solid #ced4da;
-        border-radius: 6px;
-        padding: 0.5rem;
-        font-size: 16px; /* iOSの自動ズーム回避（16px以上で発動しない） */
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'YuGothic', 'Meiryo', sans-serif;
-        resize: vertical;
-        transition: border-color 0.2s ease;
-        background: #f8f9fa;
-    }
-    
-    .items-textarea:focus {
-        outline: none;
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-        background: white;
-    }
-    
-    .btn-primary {
-        background: #6366f1;
-        border: 1px solid #6366f1;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        cursor: pointer;
-    }
-    
-    .btn-primary:hover {
-        background: #5b21b6;
-        border-color: #5b21b6;
-        transform: translateY(-1px);
-    }
-    
-    .btn-secondary {
-        background: #6c757d;
-        border: 1px solid #6c757d;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 100px;
-        text-align: center;
-    }
-    
-    .btn-secondary:hover {
-        background: #5a6268;
-        border-color: #5a6268;
-        transform: translateY(-1px);
-    }
-    
+  .result-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: var(--roulette-font-size, 1.1rem);
+      line-height: 1.4; /* 親のline-height:0の影響を受けないよう明示 */
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 15;
+      max-width: 80%;
+      text-align: center;
+      word-break: break-word;
+      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      cursor: text;
+      user-select: text;
+      pointer-events: none;
+  }
+
+  .result-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+  }
+
+  .btn-spin {
+      background: #6366f1;
+      border: 1px solid #6366f1;
+      color: white;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      align-self: flex-start;
+      margin-bottom: 0.5rem;
+  }
+
+  .btn-spin:hover:not(:disabled) {
+      background: #5b21b6;
+      border-color: #5b21b6;
+      transform: translateY(-1px);
+  }
+
+  .btn-spin:disabled {
+      background: #6c757d;
+      border-color: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+  }
+
+  .roulette-editor {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-start;
+      width: 100%;
+  }
+
+
+  .items-textarea {
+      width: 100%;
+      min-height: 180px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      padding: 0.5rem;
+      font-size: 16px; /* iOSの自動ズーム回避（16px以上で発動しない） */
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'YuGothic', 'Meiryo', sans-serif;
+      resize: vertical;
+      transition: border-color 0.2s ease;
+      background: #f8f9fa;
+  }
+
+  .items-textarea:focus {
+      outline: none;
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+      background: white;
+  }
+
+  .btn-primary {
+      background: #6366f1;
+      border: 1px solid #6366f1;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+  }
+
+  .btn-primary:hover {
+      background: #5b21b6;
+      border-color: #5b21b6;
+      transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+      background: #6c757d;
+      border: 1px solid #6c757d;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 100px;
+      text-align: center;
+  }
+
+  .btn-secondary:hover {
+      background: #5a6268;
+      border-color: #5a6268;
+      transform: translateY(-1px);
+  }
 ---
 
 <div class="roulette-app w-full px-3 md:px-6 lg:px-10" style="visibility:hidden;">
@@ -458,18 +457,18 @@ custom_css: |
             </div>
         </div>
     </div>
-    
+
     <!-- 初期クラスは最小限。JSでモード別にTailwindを付与 -->
     <div id="rouletteSets" class="roulette-grid gap-4 mb-6">
         <!-- ルーレットが動的に追加されます -->
     </div>
-    
+
     <!-- Template: ルーレットカード（複製用） -->
     <template id="roulette-template">
         <div class="roulette-card h-full">
             <div class="card-inner h-full">
                 <div class="flex justify-between items-center py-2 px-4">
-                    <input type="text" class="flex-1 border-0 bg-transparent font-bold text-gray-700 roulette-title focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white rounded px-2 py-1" 
+                    <input type="text" class="flex-1 border-0 bg-transparent font-bold text-gray-700 roulette-title focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white rounded px-2 py-1"
                            value="" maxlength="30" placeholder="ルーレット名">
                     <button class="delete-btn text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 transition-all" title="削除">×</button>
                 </div>
@@ -485,15 +484,16 @@ custom_css: |
                         </div>
                     </div>
                     <div class="roulette-editor w-full">
-                        <textarea class="w-full border border-gray-300 rounded-md px-3 py-2 items-textarea bg-gray-50 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white flex-1" 
+                        <textarea class="w-full border border-gray-300 rounded-md px-3 py-2 items-textarea bg-gray-50 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white flex-1"
                                 placeholder="項目（1行につき1つ）" rows="8"></textarea>
                     </div>
                 </div>
             </div>
         </div>
     </template>
-    
+
     <!-- floating controls removed; now in sticky header -->
+
 </div>
 
 <script>
@@ -514,9 +514,9 @@ class RouletteManager {
             // 通常（均等）
             '1\n2\n3\n4\n5\n6',
             // 改行重み付（空行で直前項目の重み+1）
-            'グー👊\n\nチョキ✌️\nパー✋',
+            'グー👊\n\nチョキ✌️\n\n\nパー✋',
             // 数値重み付（末尾 *N）
-            'たわし*19\nパジェロ'
+            'パジェロ\nたわし*19'
         ];
         return patterns[Math.floor(Math.random() * patterns.length)];
     }
@@ -864,11 +864,12 @@ class RouletteManager {
         if (weighted.length === 0) return;
         const totalWeight = weighted.reduce((s, it) => s + it.weight, 0);
         const colors = [
-            '#4ECDC4', '#FF6B6B', '#45B7D1', '#96CEB4',
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
             '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
             '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'
         ];
-        const getBaseColorIndex = (i) => i % colors.length;
+        const primaryColor = colors[0]; // 赤は目立つため「当たり」的に1個だけ表示する
+        const cycleColors = colors.slice(1); // 2個目以降は赤を除いた11色で循環させる(赤を含んでいると13個で赤が隣り合う不具合も避けている)
 
         // フォントサイズをキャンバスサイズに応じて可変（テキストエリアと共通化）
         const { dynamicFont, lineHeight } = this.computeFontMetrics(canvas);
@@ -877,7 +878,6 @@ class RouletteManager {
         }
 
         let currentAngle = -Math.PI / 2;
-        const assignedColors = [];
         weighted.forEach(({ label, weight }, index) => {
             const angle = (2 * Math.PI) * (weight / totalWeight);
             const startAngle = currentAngle;
@@ -888,21 +888,9 @@ class RouletteManager {
             ctx.moveTo(centerX, centerY);
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
             ctx.closePath();
-            let ci = getBaseColorIndex(index);
-            let fill = colors[ci];
-            const prev = assignedColors[assignedColors.length - 1];
-            if (prev && fill === prev) {
-                ci = (ci + 1) % colors.length;
-                fill = colors[ci];
-            }
-            if (index === weighted.length - 1 && assignedColors.length > 0 && fill === assignedColors[0]) {
-                ci = (ci + 1) % colors.length;
-                if (colors[ci] === prev) {
-                    ci = (ci + 1) % colors.length;
-                }
-                fill = colors[ci];
-            }
-            assignedColors.push(fill);
+            const fill = index === 0
+                ? primaryColor
+                : cycleColors[(index - 1) % cycleColors.length];
             ctx.fillStyle = fill;
             ctx.fill();
 
