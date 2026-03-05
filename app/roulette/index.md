@@ -191,6 +191,27 @@ custom_css: |
       box-shadow: 0 10px 22px rgba(59, 130, 246, 0.45);
   }
 
+  .btn-fab-spin.long-press-lv1,
+  .btn-fab-spin.long-press-lv2,
+  .btn-fab-spin.long-press-lv3 {
+      transition: transform 0.08s ease, box-shadow 0.08s ease !important;
+  }
+
+  .btn-fab-spin.long-press-lv1 {
+      transform: translateY(1px) !important;
+      box-shadow: 0 3px 10px rgba(59, 130, 246, 0.28) !important;
+  }
+
+  .btn-fab-spin.long-press-lv2 {
+      transform: translateY(3px) !important;
+      box-shadow: 0 2px 7px rgba(59, 130, 246, 0.22) !important;
+  }
+
+  .btn-fab-spin.long-press-lv3 {
+      transform: translateY(5px) !important;
+      box-shadow: 0 1px 4px rgba(59, 130, 246, 0.16) !important;
+  }
+
   .roulette-sticky-header {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: saturate(1.2) blur(6px);
@@ -202,6 +223,27 @@ custom_css: |
 
   .spin-wrapper {
       display: flex;
+  }
+
+  #spinAll.long-press-lv1,
+  #spinAll.long-press-lv2,
+  #spinAll.long-press-lv3 {
+      transition: transform 0.08s ease, box-shadow 0.08s ease !important;
+  }
+
+  #spinAll.long-press-lv1 {
+      transform: translateY(1px) !important;
+      box-shadow: 0 1px 6px rgba(59, 130, 246, 0.25) !important;
+  }
+
+  #spinAll.long-press-lv2 {
+      transform: translateY(3px) !important;
+      box-shadow: 0 1px 4px rgba(59, 130, 246, 0.2) !important;
+  }
+
+  #spinAll.long-press-lv3 {
+      transform: translateY(5px) !important;
+      box-shadow: 0 1px 2px rgba(59, 130, 246, 0.16) !important;
   }
 
   #addRoulette .add-text {
@@ -506,6 +548,10 @@ class RouletteManager {
         this.viewportOffset = 0;
         this._resizeObservers = new Map();
         this._resizeTimer = null;
+        this.spinPressThresholds = { level2: 500, level3: 1200 };
+        this.spinLevelMultipliers = { 1: 1, 2: 2, 3: 4 };
+        this.spinDurationsMs = { 1: 5000, 2: 6000, 3: 7000 };
+        this.spinPressState = { active: false, level: 1, startAt: 0, intervalId: null, keyActive: false };
         this.init();
     }
 
@@ -548,7 +594,7 @@ class RouletteManager {
     setupEventListeners() {
         const spinAll = document.getElementById('spinAll');
         if (spinAll) {
-            spinAll.addEventListener('click', () => this.spinAll());
+            this.setupSpinAllLongPress(spinAll);
         }
         
         const modeToggle = document.getElementById('modeToggle');
@@ -576,6 +622,188 @@ class RouletteManager {
             }, 120);
         };
         window.addEventListener('resize', this.handleResize);
+    }
+
+    setupSpinAllLongPress(button) {
+        const startPress = (e) => {
+            if (e?.button != null && e.button !== 0) return;
+            if (this.spinPressState.active) return;
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            this.spinPressState.active = true;
+            this.spinPressState.startAt = performance.now();
+            this.spinPressState.level = 1;
+            if (this.spinPressState.intervalId) clearInterval(this.spinPressState.intervalId);
+            this.updateSpinButtonPressState(1, true);
+            this.spinPressState.intervalId = setInterval(() => {
+                if (!this.spinPressState.active) return;
+                const elapsed = performance.now() - this.spinPressState.startAt;
+                const level = this.getSpinLevelFromElapsed(elapsed);
+                if (level !== this.spinPressState.level) {
+                    this.spinPressState.level = level;
+                    this.updateSpinButtonPressState(level, true);
+                }
+            }, 40);
+            if (e?.pointerId != null && typeof button.setPointerCapture === 'function') {
+                button.setPointerCapture(e.pointerId);
+            }
+        };
+
+        const endPress = (shouldSpin) => {
+            if (!this.spinPressState.active) return;
+            if (this.spinPressState.intervalId) {
+                clearInterval(this.spinPressState.intervalId);
+                this.spinPressState.intervalId = null;
+            }
+            const elapsed = performance.now() - this.spinPressState.startAt;
+            const level = this.getSpinLevelFromElapsed(elapsed);
+            this.spinPressState.active = false;
+            this.spinPressState.level = 1;
+            this.updateSpinButtonPressState(level, false);
+            if (shouldSpin) {
+                this.spinAll(level);
+            }
+        };
+
+        button.addEventListener('pointerdown', (e) => startPress(e));
+        button.addEventListener('pointerup', () => endPress(true));
+        button.addEventListener('pointercancel', () => endPress(false));
+        button.addEventListener('lostpointercapture', () => endPress(false));
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        button.addEventListener('keydown', (e) => {
+            if ((e.code === 'Space' || e.code === 'Enter') && !this.spinPressState.keyActive) {
+                this.spinPressState.keyActive = true;
+                startPress(e);
+            }
+        });
+        button.addEventListener('keyup', (e) => {
+            if ((e.code === 'Space' || e.code === 'Enter') && this.spinPressState.keyActive) {
+                this.spinPressState.keyActive = false;
+                endPress(true);
+            }
+        });
+        button.addEventListener('blur', () => {
+            this.spinPressState.keyActive = false;
+            endPress(false);
+        });
+    }
+
+    getSpinLevelFromElapsed(elapsedMs) {
+        if (elapsedMs >= this.spinPressThresholds.level3) return 3;
+        if (elapsedMs >= this.spinPressThresholds.level2) return 2;
+        return 1;
+    }
+
+    getSpinLevelMultiplier(level) {
+        return this.spinLevelMultipliers[level] || this.spinLevelMultipliers[1];
+    }
+
+    getSpinDurationMs(level) {
+        return this.spinDurationsMs[level] || this.spinDurationsMs[1];
+    }
+
+    getSpinTimingFunction(level) {
+        // Lv3は開始直後の勢いを強くしつつ、終盤はしっかり減速させる
+        return level === 3 ? 'cubic-bezier(0.08, 0.95, 0.24, 1)' : 'cubic-bezier(0.6, 0, 0, 1)';
+    }
+
+    updateSpinButtonPressState(level, pressing) {
+        const button = document.getElementById('spinAll');
+        if (!button) return;
+        const safeLevel = [1, 2, 3].includes(level) ? level : 1;
+        button.classList.remove('long-press-lv1', 'long-press-lv2', 'long-press-lv3');
+        if (pressing) {
+            button.classList.add(`long-press-lv${safeLevel}`);
+        }
+    }
+
+    updateElementPressState(target, level, pressing) {
+        if (!target || !target.classList) return;
+        const safeLevel = [1, 2, 3].includes(level) ? level : 1;
+        target.classList.remove('long-press-lv1', 'long-press-lv2', 'long-press-lv3');
+        if (pressing) {
+            target.classList.add(`long-press-lv${safeLevel}`);
+        }
+    }
+
+    setupPerSetLongPressSpin(target, setData, canvas, setElement, options = {}) {
+        const { stopPropagation = false, enableKeyboard = false } = options;
+        const pressState = { active: false, level: 1, startAt: 0, intervalId: null, keyActive: false };
+
+        const startPress = (e) => {
+            if (e?.button != null && e.button !== 0) return;
+            if (pressState.active) return;
+            if (stopPropagation && e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            pressState.active = true;
+            pressState.startAt = performance.now();
+            pressState.level = 1;
+            if (pressState.intervalId) clearInterval(pressState.intervalId);
+            this.updateElementPressState(target, 1, true);
+            pressState.intervalId = setInterval(() => {
+                if (!pressState.active) return;
+                const elapsed = performance.now() - pressState.startAt;
+                const level = this.getSpinLevelFromElapsed(elapsed);
+                if (level !== pressState.level) {
+                    pressState.level = level;
+                    this.updateElementPressState(target, level, true);
+                }
+            }, 40);
+            if (e?.pointerId != null && typeof target.setPointerCapture === 'function') {
+                target.setPointerCapture(e.pointerId);
+            }
+        };
+
+        const endPress = (shouldSpin) => {
+            if (!pressState.active) return;
+            if (pressState.intervalId) {
+                clearInterval(pressState.intervalId);
+                pressState.intervalId = null;
+            }
+            const elapsed = performance.now() - pressState.startAt;
+            const level = this.getSpinLevelFromElapsed(elapsed);
+            pressState.active = false;
+            pressState.level = 1;
+            this.updateElementPressState(target, level, false);
+            if (shouldSpin) {
+                this.spinRoulette(setData, canvas, setElement, level);
+            }
+        };
+
+        target.addEventListener('pointerdown', (e) => startPress(e));
+        target.addEventListener('pointerup', () => endPress(true));
+        target.addEventListener('pointercancel', () => endPress(false));
+        target.addEventListener('lostpointercapture', () => endPress(false));
+        target.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (stopPropagation) e.stopPropagation();
+        });
+
+        if (enableKeyboard) {
+            target.addEventListener('keydown', (e) => {
+                if ((e.code === 'Space' || e.code === 'Enter') && !pressState.keyActive) {
+                    pressState.keyActive = true;
+                    startPress(e);
+                }
+            });
+            target.addEventListener('keyup', (e) => {
+                if ((e.code === 'Space' || e.code === 'Enter') && pressState.keyActive) {
+                    pressState.keyActive = false;
+                    endPress(true);
+                }
+            });
+            target.addEventListener('blur', () => {
+                pressState.keyActive = false;
+                endPress(false);
+            });
+        }
     }
 
     addFirstSet() {
@@ -820,13 +1048,12 @@ class RouletteManager {
         const textarea = setElement.querySelector('.items-textarea');
         const deleteBtn = setElement.querySelector('.delete-btn');
         const titleInput = setElement.querySelector('.roulette-title');
-
-        // ルーレットクリック
-        const spinHandler = () => this.spinRoulette(setData, canvas, setElement);
-        canvas.addEventListener('click', spinHandler);
         const spinBtn = setElement.querySelector('.btn-fab-spin');
+
+        // ルーレット本体とカード内スピンボタンを長押し対応
+        this.setupPerSetLongPressSpin(canvas, setData, canvas, setElement);
         if (spinBtn) {
-            spinBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); spinHandler(); });
+            this.setupPerSetLongPressSpin(spinBtn, setData, canvas, setElement, { stopPropagation: true, enableKeyboard: true });
         }
 
         // テキストエリア変更
@@ -966,7 +1193,7 @@ class RouletteManager {
 
     // テキストエリアと結果オーバーレイのフォントはCSSに委ねる
 
-    spinRoulette(setData, canvas, setElement) {
+    spinRoulette(setData, canvas, setElement, spinLevel = 1) {
         if (setData.isSpinning) return;
         // 事前に重みを確認（空ルーレットなら何もしない）
         const weightedBefore = this.getWeightedItems(setElement);
@@ -980,14 +1207,21 @@ class RouletteManager {
         const resultOverlay = setElement.querySelector('.result-overlay');
         resultOverlay.classList.remove('show');
 
-        // 回転角度計算（方向は毎回ランダム、初回から反時計回りもあり）
-        const lightSpin = Math.random() < 0.15;
-        const minRotation = lightSpin ? 720 : 1800;   // 2回転 or 5回転以上
-        const maxRotation = lightSpin ? 1440 : 3600;  // 4回転 or 10回転未満
+        // 回転角度計算（Lv1は現状維持、長押しLv2/Lv3は回転数を増やす）
+        const safeLevel = [1, 2, 3].includes(spinLevel) ? spinLevel : 1;
+        const spinMultiplier = this.getSpinLevelMultiplier(safeLevel);
+        const spinDurationMs = this.getSpinDurationMs(safeLevel);
+        const spinTimingFunction = this.getSpinTimingFunction(safeLevel);
+        const lightSpin = safeLevel === 1 ? (Math.random() < 0.15) : false;
+        const minRotationBase = lightSpin ? 720 : 1800;   // 2回転 or 5回転以上
+        const maxRotationBase = lightSpin ? 1440 : 3600;  // 4回転 or 10回転未満
+        const minRotation = minRotationBase * spinMultiplier;
+        const maxRotation = maxRotationBase * spinMultiplier;
         const base = Math.random() * (maxRotation - minRotation) + minRotation;
         const direction = Math.random() < 0.5 ? -1 : 1;
         const deltaRotation = base * direction;
         setData._angleDeg = (setData._angleDeg || 0) + deltaRotation;
+        canvas.style.transition = `transform ${spinDurationMs}ms ${spinTimingFunction}`;
         canvas.style.transform = `rotate(${setData._angleDeg}deg)`;
 
         setTimeout(() => {
@@ -1019,7 +1253,7 @@ class RouletteManager {
                 this.showResult(setElement, setData.result);
             }
             this.saveToStorage();
-        }, 5000);
+        }, spinDurationMs);
 
         this.saveToStorage();
     }
@@ -1032,12 +1266,12 @@ class RouletteManager {
         }
     }
 
-    spinAll() {
+    spinAll(spinLevel = 1) {
         this.sets.forEach(setData => {
             const setElement = document.querySelector(`[data-set-id="${setData.id}"]`);
             if (setElement) {
                 const canvas = setElement.querySelector('.roulette-canvas');
-                this.spinRoulette(setData, canvas, setElement);
+                this.spinRoulette(setData, canvas, setElement, spinLevel);
             }
         });
     }
@@ -1076,6 +1310,8 @@ class RouletteManager {
             }
             // itemsは保存しない（将来はtextのみをソースオブトゥルースに）
             delete copy.items;
+            // 累積回転角は保存しない（初回だけ異常に回る不具合を防ぐ）
+            delete copy._angleDeg;
             return copy;
         });
         const saveData = { sets: setsForSave, nextId: this.nextId };
@@ -1087,7 +1323,11 @@ class RouletteManager {
         if (!saved) return;
         try {
             const data = JSON.parse(saved);
-            this.sets = data.sets || [];
+            this.sets = (data.sets || []).map(set => ({
+                ...set,
+                isSpinning: false,
+                _angleDeg: 0
+            }));
             this.nextId = data.nextId || 1;
         } catch (e) {
             console.error('Failed to load saved data:', e);
