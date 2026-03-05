@@ -7,6 +7,10 @@ include_tailwind: true
 custom_css: |
   .roulette-canvas {
       transition: transform 5s cubic-bezier(0.6, 0, 0, 1);
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
   }
 
   body.roulette-present-mode .app-header {
@@ -184,6 +188,10 @@ custom_css: |
       box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
       z-index: 12;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
   }
 
   .btn-fab-spin:hover {
@@ -229,6 +237,13 @@ custom_css: |
   #spinAll.long-press-lv2,
   #spinAll.long-press-lv3 {
       transition: transform 0.08s ease, box-shadow 0.08s ease !important;
+  }
+
+  #spinAll {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
   }
 
   #spinAll.long-press-lv1 {
@@ -675,6 +690,9 @@ class RouletteManager {
             e.preventDefault();
             e.stopPropagation();
         });
+        button.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
         button.addEventListener('keydown', (e) => {
             if ((e.code === 'Space' || e.code === 'Enter') && !this.spinPressState.keyActive) {
                 this.spinPressState.keyActive = true;
@@ -782,6 +800,10 @@ class RouletteManager {
         target.addEventListener('pointercancel', () => endPress(false));
         target.addEventListener('lostpointercapture', () => endPress(false));
         target.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (stopPropagation) e.stopPropagation();
+        });
+        target.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             if (stopPropagation) e.stopPropagation();
         });
