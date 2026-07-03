@@ -282,8 +282,9 @@ custom_css: |
 
   .roulette-grid.single-row,
   .roulette-grid.double-row {
+      /* 画面の高さを基本にしつつ、中身が収まらないときは伸ばす（フッターとの重なり防止） */
       min-height: calc(100vh - var(--roulette-viewport-offset, 0px) - var(--rl-dock-h, 0px));
-      height: calc(100vh - var(--roulette-viewport-offset, 0px) - var(--rl-dock-h, 0px));
+      grid-auto-rows: minmax(min-content, 1fr);
   }
 
   .roulette-grid.single-row .roulette-card,
