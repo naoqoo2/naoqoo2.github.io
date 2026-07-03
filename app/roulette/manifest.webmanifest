@@ -1,0 +1,16 @@
+{
+  "name": "ルレッタ",
+  "short_name": "ルレッタ",
+  "description": "入力した項目からランダムに即決定できるWebルーレット",
+  "start_url": "/app/roulette/",
+  "scope": "/app/roulette/",
+  "display": "standalone",
+  "background_color": "#FAF6F0",
+  "theme_color": "#FAF6F0",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
