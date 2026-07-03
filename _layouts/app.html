@@ -60,6 +60,10 @@
         <script src="{{ script | relative_url }}"></script>
       {% endfor %}
     {% endif %}
+
+    {% if page.custom_head %}
+    {{ page.custom_head }}
+    {% endif %}
   </head>
   <body class="layout--app" dir="ltr">
 
