@@ -1,5 +1,5 @@
 ---
-title: "🧀にいくらさんちのチーズケーキ"
+title: "🧀新倉さんちのチーズケーキ"
 categories:
   - cooking
 tags:
