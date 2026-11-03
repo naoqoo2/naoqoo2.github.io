@@ -1,0 +1,15 @@
+- name: ルレッタ
+  kind: Webルーレット
+  description: ごはん、当番、イベントの抽選。項目を入れてまわすだけの、シンプルなWebルーレット。
+  url: /app/roulette/
+  icon: /app/roulette/icon.svg
+- name: ストッカ
+  kind: 買い物メモ
+  description: 調味料や日用品の「ある・ない」を1タップで管理。「ない」ものが、そのまま買い物リストに。
+  url: /app/stocca/
+  icon: /app/stocca/icon.svg
+- name: リスタ
+  kind: ポモドーロタイマー
+  description: リスと一緒にこつこつ作業。集中するたびにどんぐりがたまる、ポモドーロタイマーです。
+  url: /app/risuta/
+  icon: /app/risuta/icon.svg

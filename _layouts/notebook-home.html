@@ -1,0 +1,91 @@
+---
+layout: default
+---
+{% assign first_page = true %}
+{% if paginator.page > 1 %}{% assign first_page = false %}{% endif %}
+<main id="main" class="notebook" tabindex="-1">
+  {% if first_page %}
+  <section class="notebook-intro" aria-labelledby="notebook-title">
+    <div class="notebook-intro__identity"><h1 id="notebook-title">naoqoo2</h1><p>Webエンジニア <span aria-hidden="true">／</span> <a href="{{ '/about/' | relative_url }}">自己紹介 ↗</a></p></div>
+    <p class="notebook-intro__bio">アプリ開発と日々のことを書いています。育休中に作ったごはんの記録も。</p>
+    <nav class="notebook-pillars" aria-label="このページの内容">
+      <a href="#apps"><span class="notebook-eyebrow">01</span><strong>アプリ <span aria-hidden="true">↓</span></strong><span class="notebook-pillars__description">タイマー・買い物メモ・ルーレット</span></a>
+      <a href="#reading"><span class="notebook-eyebrow">02</span><strong>ブログ <span aria-hidden="true">↓</span></strong><span class="notebook-pillars__description">技術と仕事・今週の気づき</span></a>
+      <a href="{{ '/cooking/' | relative_url }}"><span class="notebook-eyebrow">03</span><strong>育休メシ <span aria-hidden="true">↗</span></strong><span class="notebook-pillars__description">作った料理の材料と手順</span></a>
+    </nav>
+  </section>
+
+  <section id="apps" class="notebook-apps" aria-labelledby="apps-title">
+    <header class="notebook-section-heading">
+      <div><p class="notebook-eyebrow">01 / APPS</p><h2 id="apps-title">アプリ</h2></div>
+      <a class="notebook-text-link" href="{{ '/apps/' | relative_url }}">アプリをすべて見る <span aria-hidden="true">↗</span></a>
+    </header>
+    <div class="notebook-apps__grid">
+      {% for app in site.data.home_apps %}
+      <article class="notebook-app">
+        <div class="notebook-app__identity"><img src="{{ app.icon | relative_url }}" width="80" height="80" alt="{{ app.name }}のアイコン"><div><span class="notebook-eyebrow">{{ app.kind }}</span><h3><a href="{{ app.url | relative_url }}">{{ app.name }}</a></h3></div></div>
+        <p class="notebook-app__description">{{ app.description }}</p>
+        <a class="notebook-app__open" href="{{ app.url | relative_url }}" aria-label="{{ app.name }}を使ってみる">使ってみる <span aria-hidden="true">↗</span></a>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% assign tech = site.posts | where: 'slug', 'ai-agent-cording-2026' | first %}
+  {% assign reflection = site.categories.retrospective | first %}
+  <section id="reading" class="notebook-reading" aria-labelledby="reading-title">
+    <header class="notebook-section-heading"><div><p class="notebook-eyebrow">02 / BLOG</p><h2 id="reading-title">ブログ</h2></div><a class="notebook-text-link" href="{{ '/posts/' | relative_url }}">記事一覧 <span aria-hidden="true">↗</span></a></header>
+    <div class="notebook-reading__grid">
+      <article class="notebook-story notebook-story--tech">
+        <a class="notebook-topic" href="{{ '/categories/#blog' | relative_url }}">技術と仕事 <span aria-hidden="true">↗</span></a>
+        {% if tech %}<p class="notebook-story__label">AI CODING</p><h3><a href="{{ tech.url | relative_url }}">{{ tech.title | escape }}</a></h3><p class="notebook-story__excerpt">{{ tech.excerpt | strip_html | strip_newlines | truncate: 116 }}</p><a class="notebook-text-link" href="{{ tech.url | relative_url }}">続きを読む <span aria-hidden="true">→</span></a>{% endif %}
+      </article>
+      <article class="notebook-story notebook-story--reflection">
+        <a class="notebook-topic" href="{{ '/categories/#retrospective' | relative_url }}">今週の気づき <span aria-hidden="true">↗</span></a>
+        {% if reflection %}<p class="notebook-story__label">WORK &amp; LIFE</p><h3><a href="{{ reflection.url | relative_url }}">{{ reflection.title | escape }}</a></h3><p class="notebook-story__excerpt">{{ reflection.excerpt | strip_html | strip_newlines | truncate: 106 }}</p><a class="notebook-text-link" href="{{ reflection.url | relative_url }}">続きを読む <span aria-hidden="true">→</span></a>{% endif %}
+      </article>
+    </div>
+  </section>
+
+  <section id="meals" class="notebook-meals" aria-labelledby="meals-title">
+    <header class="notebook-section-heading"><div><p class="notebook-eyebrow">03 / RECIPES</p><h2 id="meals-title">育休メシ</h2></div><a class="notebook-text-link" href="{{ '/cooking/' | relative_url }}">育休メシをすべて見る <span aria-hidden="true">↗</span></a></header>
+    <div class="notebook-meals__grid">
+      {% assign home_recipes = site.data.recipes | where_exp: 'entry', 'entry.home_order != nil' | sort: 'home_order' %}
+      {% for entry in home_recipes %}
+      {% assign recipe = site.posts | where: 'slug', entry.slug | first %}
+      {% if recipe %}
+      <article class="notebook-recipe{% if forloop.first %} notebook-recipe--lead{% endif %}">
+        <a class="notebook-recipe__photo" href="{{ recipe.url | relative_url }}" tabindex="-1" aria-hidden="true"><img src="{{ entry.image | relative_url }}" alt="{{ entry.alt | escape }}" width="720" height="480" loading="lazy"></a>
+        <div class="notebook-recipe__text"><h3><a href="{{ recipe.url | relative_url }}">{{ recipe.title | escape }}</a></h3><p>{{ entry.description }}</p><a class="notebook-text-link" href="{{ recipe.url | relative_url }}">材料と作り方 <span aria-hidden="true">→</span></a></div>
+      </article>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% else %}
+  <header class="notebook-archive-intro"><p class="notebook-eyebrow">NAOQOO2 / ARCHIVE</p><h1>記事一覧</h1><p>{{ paginator.page }}ページ目</p><a class="notebook-text-link" href="{{ '/' | relative_url }}">トップへ戻る <span aria-hidden="true">↗</span></a></header>
+  {% endif %}
+
+  <div class="notebook-bottom{% unless first_page %} notebook-bottom--archive{% endunless %}">
+    <section class="notebook-latest" aria-labelledby="latest-title">
+      <header class="notebook-section-heading"><div><p class="notebook-eyebrow">{% if first_page %}LATEST{% else %}ARTICLES{% endif %}</p><h2 id="latest-title">{% if first_page %}新着記事{% else %}これまでの記事{% endif %}</h2></div><a class="notebook-text-link" href="{{ '/posts/' | relative_url }}">年別に読む <span aria-hidden="true">↗</span></a></header>
+      {% if paginator %}{% assign recent_posts = paginator.posts %}{% else %}{% assign recent_posts = site.posts | slice: 0, 5 %}{% endif %}
+      <div class="notebook-posts">
+        {% for post in recent_posts %}
+        <article class="notebook-post"><div class="notebook-post__meta"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time><span>{% if post.tags contains '育休メシ' %}育休メシ{% elsif post.categories contains 'retrospective' %}今週の気づき{% else %}技術と仕事{% endif %}</span></div><h3><a href="{{ post.url | relative_url }}">{{ post.title | escape }} <span aria-hidden="true">↗</span></a></h3></article>
+        {% endfor %}
+      </div>
+      {% include paginator.html locale=site.locale %}
+    </section>
+    {% if first_page %}
+    <aside class="notebook-memos" aria-labelledby="memos-title">
+      <p class="notebook-eyebrow">MEMOS</p><h2 id="memos-title">俺のメモ帳</h2><p class="notebook-memos__intro">Codex・Laravel・SQLなどの技術メモ。</p>
+      <ul>{% for post in site.tags['俺の'] limit: 5 %}<li><a href="{{ post.url | relative_url }}">{{ post.title | escape }} <span aria-hidden="true">↗</span></a></li>{% endfor %}</ul>
+      <a class="notebook-text-link" href="{{ '/tags/#俺の' | relative_url }}">メモをすべて見る <span aria-hidden="true">→</span></a>
+    </aside>
+    {% endif %}
+  </div>
+  {% if first_page %}
+  <section class="notebook-about" aria-labelledby="about-title"><img src="{{ site.author.avatar | relative_url }}" width="72" height="72" alt="naoqoo2"><div><p class="notebook-eyebrow">PROFILE</p><h2 id="about-title">naoqoo2</h2><p>Webエンジニア・新倉 直明</p></div><a class="notebook-text-link" href="{{ '/about/' | relative_url }}">自己紹介を読む <span aria-hidden="true">↗</span></a></section>
+  {% endif %}
+</main>

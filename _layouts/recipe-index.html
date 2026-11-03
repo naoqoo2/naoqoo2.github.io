@@ -1,0 +1,34 @@
+---
+layout: default
+---
+<main id="main" class="notebook recipe-index" tabindex="-1">
+  <header class="recipe-index__intro">
+    <nav class="recipe-index__breadcrumb" aria-label="パンくず"><a href="{{ '/' | relative_url }}">naoqoo2</a><span aria-hidden="true">/</span><span aria-current="page">育休メシ</span></nav>
+    <div class="recipe-index__title"><h1>育休メシ</h1><p>作った料理の材料と手順をまとめています。</p></div>
+    <nav class="recipe-index__categories" aria-label="料理の分類">
+      {% for group in page.recipe_groups %}<a href="#{{ group.id }}">{{ group.title }} <span aria-hidden="true">↓</span></a>{% endfor %}
+    </nav>
+  </header>
+
+  {% for group in page.recipe_groups %}
+  {% assign recipes = site.data.recipes | where: 'group', group.id %}
+  <section id="{{ group.id }}" class="recipe-index__section" aria-labelledby="{{ group.id }}-title">
+    <header class="recipe-index__section-heading"><h2 id="{{ group.id }}-title">{{ group.title }}</h2></header>
+    <div class="recipe-index__grid{% if group.id == 'sweets' %} recipe-index__grid--sweets{% endif %}">
+      {% for entry in recipes %}
+      {% assign recipe = site.posts | where: 'slug', entry.slug | first %}
+      {% if recipe %}
+      <article class="recipe-card{% unless entry.image %} recipe-card--text{% endunless %}">
+        <a href="{{ recipe.url | relative_url }}" class="recipe-card__link">
+          {% if entry.image %}<div class="recipe-card__photo"><img src="{{ entry.image | relative_url }}" alt="{{ entry.alt | escape }}" width="720" height="480"{% unless forloop.first and group.id == 'meals' %} loading="lazy"{% endunless %}></div>{% endif %}
+          <div class="recipe-card__body"><h3>{{ entry.name | escape }}</h3><p>{{ entry.description }}</p><span class="recipe-card__read">材料と作り方 <span aria-hidden="true">→</span></span></div>
+        </a>
+      </article>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+  <nav class="recipe-index__footer" aria-label="関連ページ"><a href="{{ '/' | relative_url }}">← naoqoo2 トップ</a><a href="{{ '/tags/#育休メシ' | relative_url }}">育休メシのタグ一覧 <span aria-hidden="true">↗</span></a></nav>
+</main>
