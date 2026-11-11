@@ -1,0 +1,29 @@
+.site-header { flex-shrink: 0; }
+.site-header .site-name {
+  display: inline-block;
+  margin: 0;
+  color: inherit;
+  font-size: clamp(2rem, 9vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -.06em;
+  text-decoration: none;
+}
+.site-header p { margin: 0; font-size: .85rem; }
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 16px;
+  flex-shrink: 0;
+  font-size: .8rem;
+  color: #52675a;
+}
+.site-footer a { color: #235840; }
+.site-footer p { margin: 0; }
+@media (min-width: 600px) {
+  .site-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 20px; }
+}
+@media (max-height: 650px) {
+  .site-header .site-name { font-size: 1.8rem; }
+}

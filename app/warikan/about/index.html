@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>warikanの使い方と計算ルール｜warikan</title>
+  <meta name="description" content="飲み会で多めに払う人がいるときに。傾斜割り勘の意味、warikanの使い方、5段階の負担とおつりの計算を実例で紹介します。">
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../shared.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f7f5ef; color: #20342c; font: 16px/1.75 system-ui, sans-serif; }
+    main { width: min(100%, 680px); margin: 0 auto; padding: 20px 16px 40px; }
+    article { background: #fff; border: 1px solid #d9ded6; border-radius: 20px; padding: clamp(16px, 5vw, 32px); }
+    a { color: #235840; }
+    h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.3; margin: 0; }
+    h2 { font-size: 1.2rem; margin: 28px 0 8px; }
+    p { margin: 8px 0 14px; }
+    ul, ol { padding-left: 1.5em; }
+    li + li { margin-top: 6px; }
+    .site-header, article { margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    caption { text-align: left; font-weight: 650; margin-bottom: 8px; }
+    th, td { border-bottom: 1px solid #d9ded6; padding: 6px 4px; text-align: right; }
+    th:first-child { text-align: left; }
+    thead th { background: #edf4ed; }
+    .faq dt { font-weight: 700; margin-top: 14px; }
+    .faq dd { margin: 4px 0 0; }
+    .button { display: block; margin-top: 24px; padding: 10px 14px; border-radius: 10px; text-align: center; background: #235840; color: #fff; font-weight: 750; text-decoration: none; }
+    a:focus-visible { outline: 3px solid #408b64; outline-offset: 3px; }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="site-header">
+      <a class="site-name" href="../index.html">warikan</a>
+      <p>飲み会のお会計を、いい感じに割り勘。</p>
+    </header>
+    <article>
+      <h1>warikanの使い方と計算ルール</h1>
+      <p>「今日は自分がちょっと多めに出すよ」。飲み会でそんな話になったら、warikanで一人ずつの金額を出してみましょう。</p>
+
+      <h2>使い方</h2>
+      <ol>
+        <li>お店のお会計を入力します。</li>
+        <li>「＋」「−」で各区分の人数をセットします。使わない区分は0人でOK。</li>
+        <li>「割り勘」を押すと、1人あたりの金額と、集める合計、おつりが表示されます。別の配分を見たいときは「再計算」を押してください。</li>
+      </ol>
+
+      <h2>計算ルール</h2>
+      <p>たとえば、先輩が多めに出して、後輩は少なめに。人によって払う額に差をつける方法を「傾斜割り勘」といいます。warikanでは、大富豪から大貧民までの5段階で、「いい感じ」にその差をつけています。</p>
+      <p>平民を基準に、上の区分は多め、下の区分は少なめに。割り勘するたびに負担の割合を引き直し、現金で払いやすい金額に調整します。</p>
+      <ul>
+        <li>大富豪は5,000円単位、富豪は1,000円単位を目安にします。</li>
+        <li>平民と貧民は500円単位を優先します。</li>
+        <li>参加者がいる中で一番下の区分が1人なら、その人に残額を割り当てて、おつりが0円になる組み合わせを探します。</li>
+      </ul>
+      <p>丸め方は、お会計や人数に合わせて調整します。集める合計がお会計を上回った分が「おつり」です。</p>
+
+      <h2>4人で16,543円だったら</h2>
+      <table>
+        <caption>割り勘結果の一例</caption>
+        <thead><tr><th scope="col">区分</th><th scope="col">人数</th><th scope="col">1人あたり</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">富豪</th><td>1人</td><td>6,000円</td></tr>
+          <tr><th scope="row">平民</th><td>2人</td><td>4,000円</td></tr>
+          <tr><th scope="row">貧民</th><td>1人</td><td>2,543円</td></tr>
+        </tbody>
+      </table>
+      <p>合計 16,543円・お会計 16,543円・おつり 0円。</p>
+      <h2>よくある質問</h2>
+      <dl class="faq">
+        <dt>5つの区分を全部使うの？</dt>
+        <dd>使う区分だけでOK。たとえば富豪・平民・貧民の3つで分けられます。全員が同じ負担でよければ、平民だけに人数を入れます。</dd>
+        <dt>再計算すると結果は変わる？</dt>
+        <dd>同じお会計と人数でも、「再計算」を押すと負担の割合を引き直すので、結果が変わることがあります。</dd>
+        <dt>おつりはいつ出る？</dt>
+        <dd>人数が入っている中で一番下の区分が1人なら、その人が端数を引き受けて、おつりが0円になるように調整します。その区分が複数人いるときや、1人でも金額の丸め方によっては、おつりが出ることがあります。おつりを誰がもらうかは、じゃんけんでよしなに。</dd>
+      </dl>
+      <a class="button" href="../index.html">warikanで割り勘する</a>
+    </article>
+    <footer class="site-footer">
+      <a href="../index.html">アプリに戻る</a>
+      <p>made with <span aria-label="love">♥</span> by <a href="https://naoqoo2.com/apps/">naoqoo2</a></p>
+    </footer>
+  </main>
+</body>
+</html>
