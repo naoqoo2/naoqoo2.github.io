@@ -144,6 +144,9 @@ function updateCountButtons() {
       ? value <= Number(input.min)
       : value >= Number(input.max);
   });
+  countInputs.forEach(input => {
+    input.closest('.count-card').classList.toggle('is-zero', !(input.valueAsNumber > 0));
+  });
 }
 
 countButtons.forEach(button => {
@@ -152,9 +155,25 @@ countButtons.forEach(button => {
     const value = Math.trunc(input.valueAsNumber || 0);
     input.value = Math.min(Number(input.max), Math.max(Number(input.min), value + Number(button.dataset.step)));
     input.dispatchEvent(new Event('input', { bubbles: true }));
+    const card = input.closest('.count-card');
+    card.classList.remove('bump');
+    void card.offsetWidth;
+    card.classList.add('bump');
   });
 });
 updateCountButtons();
+
+// On-screen keypad: edits the total without opening the OS keyboard.
+form.querySelector('.keypad').addEventListener('click', event => {
+  const key = event.target.closest('[data-key]')?.dataset.key;
+  if (!key) return;
+  const current = totalInput.value.replace(/\D/g, '');
+  let next = key === 'clear' ? '' : key === 'back' ? current.slice(0, -1) : current + key;
+  next = next.replace(/^0+/, '');
+  if (next.length > totalInput.max.length) return;
+  totalInput.value = next;
+  totalInput.dispatchEvent(new Event('input', { bubbles: true }));
+});
 
 form.addEventListener('input', () => {
   updateCountButtons();
@@ -162,19 +181,28 @@ form.addEventListener('input', () => {
   error.textContent = '';
 });
 
+// Typing replaces the current value instead of appending to it.
+form.addEventListener('focusin', event => {
+  if (event.target.matches('input')) event.target.select();
+});
+
+// Focusing an input on a touch device would pop the keyboard over the screen.
+const hasKeyboard = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
 form.addEventListener('submit', event => {
   event.preventDefault();
   const counts = countInputs.map(input => input.valueAsNumber);
   if (counts.every(count => count === 0)) {
     error.textContent = '人数を合計1人以上にしてください。';
-    countInputs[0].focus();
+    if (hasKeyboard) countInputs[0].focus();
     return;
   }
 
   const total = totalInput.valueAsNumber;
   const { prices, collected, change } = splitBill(total, counts);
   priceFields.forEach((field, index) => {
-    field.textContent = counts[index] === 0 ? '—' : formatYen(prices[index]);
+    field.textContent = formatYen(prices[index]);
+    field.closest('.tier').hidden = counts[index] === 0;
   });
   countFields.forEach((field, index) => {
     field.textContent = counts[index] + '人';
@@ -183,6 +211,9 @@ form.addEventListener('submit', event => {
   paymentField.textContent = formatYen(total);
   changeField.textContent = formatYen(change);
   form.hidden = true;
+  // Toggle through hidden so the pop-in animation replays on every calculation.
+  result.hidden = true;
+  void result.offsetWidth;
   result.hidden = false;
   document.querySelector('#result-title').focus();
 });
@@ -190,7 +221,7 @@ form.addEventListener('submit', event => {
 document.querySelector('#back').addEventListener('click', () => {
   result.hidden = true;
   form.hidden = false;
-  totalInput.focus();
+  if (hasKeyboard) totalInput.focus();
 });
 
 document.querySelector('#retry').addEventListener('click', () => {

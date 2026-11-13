@@ -1,14 +1,54 @@
-.site-header { flex-shrink: 0; }
-.site-header .site-name {
-  display: inline-block;
+:root {
+  --ink: #173c2e;
+  --muted: #4a6558;
+  --bg: #ffd84d;
+  --bg-dot: #ffc928;
+  --card: #fff;
+  --cream: #fff8e8;
+  --coral: #ff7a59;
+  --mint: #6fdcab;
+  --line: 2.5px solid var(--ink);
+  --font: ui-rounded, "Hiragino Maru Gothic ProN", "Tsukushi A Round Gothic", system-ui, sans-serif;
+  --font-pop: ui-rounded, "Arial Rounded MT Bold", "Hiragino Maru Gothic ProN", "Tsukushi A Round Gothic", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
   margin: 0;
-  color: inherit;
-  font-size: clamp(2rem, 9vw, 3rem);
-  font-weight: 700;
-  letter-spacing: -.06em;
+  color: var(--ink);
+  font-family: var(--font);
+  background: var(--bg) radial-gradient(var(--bg-dot) 2px, transparent 2.5px) 0 0 / 20px 20px;
+  -webkit-tap-highlight-color: transparent;
+}
+.t0 { --tint: #ffe0d6; }
+.t1 { --tint: #e8dfff; }
+.t2 { --tint: #d3f5e5; }
+.t3 { --tint: #d8edff; }
+.t4 { --tint: #fff1bd; }
+.char { display: block; flex: none; width: 40px; height: 40px; }
+
+.site-header { flex-shrink: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; }
+.site-header .site-name {
+  display: inline-flex;
+  align-items: center;
+  gap: .08em;
+  margin: 0 4px 4px 2px;
+  padding: 0 .45em .05em .28em;
+  color: var(--ink);
+  background: var(--card);
+  border: var(--line);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--ink);
+  transform: rotate(-3deg);
+  font-family: var(--font-pop);
+  font-size: clamp(1.6rem, 7.5vw, 2.3rem);
+  font-weight: 900;
+  line-height: 1.3;
+  letter-spacing: -.02em;
   text-decoration: none;
 }
-.site-header p { margin: 0; font-size: .85rem; }
+.site-header .site-name .char { width: .9em; height: 1.1em; margin-top: -.08em; }
+.site-header p { margin: 0; font-size: .85rem; font-weight: 700; }
 .site-footer {
   display: flex;
   flex-wrap: wrap;
@@ -17,13 +57,10 @@
   gap: 4px 16px;
   flex-shrink: 0;
   font-size: .8rem;
-  color: #52675a;
+  font-weight: 700;
 }
-.site-footer a { color: #235840; }
+.site-footer a { color: var(--ink); }
 .site-footer p { margin: 0; }
-@media (min-width: 600px) {
-  .site-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 20px; }
-}
 @media (max-height: 650px) {
-  .site-header .site-name { font-size: 1.8rem; }
+  .site-header .site-name { font-size: 1.5rem; }
 }
