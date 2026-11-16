@@ -10,16 +10,37 @@ naoqoo2がつくったアプリたちです。気になったら試してみて�
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin: 1.5rem 0;">
 
   <div style="border: 1px solid #e5e0d8; border-radius: 14px; overflow: hidden; background: #fff; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-    <a href="/app/risuta/" target="_blank" rel="noopener noreferrer" style="display: block; background: #F5EEDF; padding: 1.75rem; text-align: center;">
-      <img src="/app/risuta/icon.svg" alt="リスタ アイコン" style="width: 76px; height: 76px; border-radius: 20px; box-shadow: 0 4px 12px rgba(155,96,62,0.3);">
+    <a href="/app/warikan/" target="_blank" rel="noopener noreferrer" style="display: block; background: #FFF4C2; padding: 1.75rem; text-align: center;">
+      <img src="/app/warikan/icon.svg" alt="warikan アイコン" style="width: 76px; height: 76px; border-radius: 20px; box-shadow: 0 4px 12px rgba(36,81,63,0.3);">
+    </a>
+    <div style="padding: 1rem 1.25rem 1.25rem; display: flex; flex-direction: column; flex: 1; gap: 0.5rem;">
+      <div style="font-size: 1.15rem; font-weight: 700;">warikan</div>
+      <p style="margin: 0; font-size: 0.9rem; color: #555;">飲み会のお会計を「いい感じ」に割り勘。先輩は多め、後輩は少なめ、といった傾斜割り勘がすぐに出せます。</p>
+      <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.85rem; color: #666;">
+        <li>お会計と人数を入れて「割り勘」を押すだけ</li>
+        <li>大富豪〜大貧民の5段階で負担に差をつけられる</li>
+        <li>現金で払いやすい金額に調整、おつりも表示</li>
+        <li>「再計算」で別の配分も試せる</li>
+      </ul>
+      <div style="margin-top: auto; padding-top: 0.75rem; text-align: center;">
+        <a href="/app/warikan/" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #24513F; color: white; padding: 0.65rem 2rem; border-radius: 999px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(36,81,63,0.35);">
+          使ってみる
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div style="border: 1px solid #e5e0d8; border-radius: 14px; overflow: hidden; background: #fff; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+    <a href="/app/risuta/" target="_blank" rel="noopener noreferrer" style="display: block; background: #E6F5FB; padding: 1.75rem; text-align: center;">
+      <img src="/app/risuta/icon.svg?v=2" alt="リスタ アイコン" style="width: 76px; height: 76px; border-radius: 20px; box-shadow: 0 4px 12px rgba(155,96,62,0.3);">
     </a>
     <div style="padding: 1rem 1.25rem 1.25rem; display: flex; flex-direction: column; flex: 1; gap: 0.5rem;">
       <div style="font-size: 1.15rem; font-weight: 700;">リスタ</div>
       <p style="margin: 0; font-size: 0.9rem; color: #555;">リスと一緒にこつこつ作業できる「作業のおとも」。タイマーで集中するたび、どんぐりがたまっていきます。</p>
       <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.85rem; color: #666;">
         <li>ポモドーロタイマー（集中でどんぐりゲット）</li>
-        <li>休憩中はリスがちょっかいを出してくる</li>
-        <li>雨・たき火・森の環境音とローファイBGM</li>
+        <li>リスの表情としぐさがいろいろ。なでたり、あっちむいてホイで遊べる</li>
+        <li>雨・たき火・森の環境音とローファイBGM、4つの風景</li>
         <li>きょうのやることリスト＆メモつき</li>
       </ul>
       <div style="margin-top: auto; padding-top: 0.75rem; text-align: center;">

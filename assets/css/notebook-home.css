@@ -47,14 +47,14 @@ body:is(.layout--notebook-home, .layout--recipe-index) #main.notebook { max-widt
 .notebook .notebook-text-link { display: inline-block; font-size: 11px; white-space: nowrap; color: var(--green); }
 .notebook-text-link span { margin-left: 12px; }
 .notebook-apps { padding: 28px 28px 30px; background: #e9ede3; border-top: 2px solid var(--green); border-bottom: 1px solid var(--rule); }
-.notebook-apps__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.notebook-app { padding: 0 26px; display: flex; flex-direction: column; }
+.notebook-apps__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.notebook-app { padding: 0 22px; display: flex; flex-direction: column; }
 .notebook-app:first-child { padding-left: 0; }
 .notebook-app:last-child { padding-right: 0; }
 .notebook-app + .notebook-app { border-left: 1px solid #c8cebf; }
-.notebook-app__identity { display: flex; align-items: center; gap: 18px; }
-.notebook-app__identity img { flex-shrink: 0; width: 68px; height: 68px; border-radius: 15px; }
-.notebook-app h3 { font-size: 26px; line-height: 1.4; margin-top: 6px; letter-spacing: .04em; }
+.notebook-app__identity { display: flex; align-items: center; gap: 14px; }
+.notebook-app__identity img { flex-shrink: 0; width: 60px; height: 60px; border-radius: 14px; }
+.notebook-app h3 { font-size: 23px; line-height: 1.4; margin-top: 6px; letter-spacing: .04em; }
 .notebook .notebook-app__description { font-size: 13px; line-height: 1.9; margin: 18px 0; color: #566251; }
 .notebook-app .notebook-app__open { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #aab6a3; padding: 7px 0; margin-top: auto; font-size: 12px; font-weight: 600; color: var(--green); }
 .notebook-reading { padding: 38px 0; }
@@ -110,7 +110,10 @@ body:is(.layout--notebook-home, .layout--recipe-index) #main.notebook { max-widt
 :is(.layout--notebook-home, .layout--recipe-index) .search-content .search-input { color: var(--ink); background: transparent; }
 :is(.layout--notebook-home, .layout--recipe-index) section[id] { scroll-margin-top: 30px; }
 @media (max-width: 850px) {
+  .notebook-apps__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 26px; }
   .notebook-app { padding: 0 17px; }
+  .notebook-app:nth-child(odd) { padding-left: 0; border-left: 0; }
+  .notebook-app:nth-child(even) { padding-right: 0; }
   .notebook-app__identity { gap: 12px; }
   .notebook-app__identity img { width: 48px; height: 48px; border-radius: 12px; }
   .notebook-app h3 { font-size: 22px; }

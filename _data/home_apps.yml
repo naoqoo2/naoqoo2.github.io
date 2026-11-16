@@ -10,6 +10,11 @@
   icon: /app/stocca/icon.svg
 - name: リスタ
   kind: ポモドーロタイマー
-  description: リスと一緒にこつこつ作業。集中するたびにどんぐりがたまる、ポモドーロタイマーです。
+  description: リスと一緒にこつこつ作業。集中するたびにどんぐりがたまる、ポモドーロタイマー。休憩中はリスと遊べます。
   url: /app/risuta/
-  icon: /app/risuta/icon.svg
+  icon: /app/risuta/icon.svg?v=2
+- name: warikan
+  kind: 割り勘計算
+  description: 飲み会のお会計を「いい感じ」に割り勘。多めに払う人・少なめの人を5段階で分けて、1人あたりの金額を出します。
+  url: /app/warikan/
+  icon: /app/warikan/icon.svg
